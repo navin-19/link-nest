@@ -3,6 +3,9 @@ import { createAdminClient } from '@/lib/supabaseServer';
 import ProfileHeader from '@/components/profile/ProfileHeader';
 import SocialIcons from '@/components/profile/SocialIcons';
 import LinkList from '@/components/links/LinkList';
+import ProductList from '@/components/products/ProductList';
+import GoogleReviewsSection from '@/components/products/GoogleReviewsSection';
+import SubscribeBar from '@/components/profile/SubscribeBar';
 import Link from 'next/link';
 import { Link2 } from 'lucide-react';
 
@@ -83,6 +86,13 @@ export default async function PublicProfilePage({ params }) {
     .eq('is_active', true)
     .order('position', { ascending: true });
 
+  const { data: products } = await supabase
+    .from('products')
+    .select('*')
+    .eq('user_id', profile.id)
+    .eq('is_active', true)
+    .order('position', { ascending: true });
+
   const theme = profile.themes;
   const bg = theme?.background;
   let bgStyle = { backgroundColor: '#ffffff' };
@@ -106,22 +116,43 @@ export default async function PublicProfilePage({ params }) {
 
   return (
     <main
-      style={{ ...bgStyle, fontFamily: font }}
+      style={bgStyle}
       className="min-h-screen text-slate-900 flex flex-col justify-between py-12 px-4 selection:bg-slate-900 selection:text-white"
     >
       <div className="w-full max-w-md mx-auto space-y-6">
+        {/* Logo and Subscribe Controls */}
+        <SubscribeBar username={username} />
+
         {/* Profile Avatar, Display Name & Bio */}
         <ProfileHeader profile={profile} />
 
         {/* Social platform quick links */}
         <SocialIcons links={links || []} />
 
-        {/* Dynamic Link List */}
+        {/* Dynamic Link List with Theme Font */}
         <LinkList
           links={links || []}
           buttonStyle={buttonStyle}
+          font={font}
           username={username}
         />
+
+        {/* Products & Services Showcase */}
+        {products && products.length > 0 && (
+          <ProductList
+            products={products}
+            buttonStyle={buttonStyle}
+            font={font}
+          />
+        )}
+
+        {/* Google Business Reviews */}
+        {profile.show_google_reviews && profile.google_place_id && (
+          <GoogleReviewsSection
+            placeId={profile.google_place_id}
+            font={font}
+          />
+        )}
       </div>
 
       {/* Subtle LinkNest Brand Footer */}

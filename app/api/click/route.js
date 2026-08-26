@@ -4,18 +4,20 @@ import { checkRateLimit } from '@/lib/rateLimiter';
 
 export async function POST(request) {
   try {
-    const { linkId, referrer } = await request.json();
+    const { linkId, productId, referrer } = await request.json();
 
-    if (!linkId) {
-      return NextResponse.json({ error: 'Missing linkId' }, { status: 400 });
+    if (!linkId && !productId) {
+      return NextResponse.json({ error: 'Missing linkId or productId' }, { status: 400 });
     }
+
+    const targetId = linkId || productId;
 
     // Extract client IP
     const forwarded = request.headers.get('x-forwarded-for');
     const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1';
 
     // Rate-limit check
-    const { limited } = checkRateLimit(ip, linkId);
+    const { limited } = checkRateLimit(ip, targetId);
     if (limited) {
       return NextResponse.json(
         { error: 'Rate limit exceeded' },
@@ -25,36 +27,58 @@ export async function POST(request) {
 
     const supabase = createAdminClient();
 
-    // 1. Insert row into link_clicks
-    const { error: insertError } = await supabase.from('link_clicks').insert({
-      link_id: linkId,
-      referrer: referrer || null,
-      country: request.headers.get('x-vercel-ip-country') || null,
-    });
+    if (productId) {
+      // 1. Insert product click
+      await supabase.from('product_clicks').insert({
+        product_id: productId,
+        referrer: referrer || null,
+        country: request.headers.get('x-vercel-ip-country') || null,
+      }).catch(() => {});
 
-    if (insertError) {
-      console.error('Click insert error:', insertError);
-    }
-
-    // 2. Increment click_count atomically via RPC or direct update
-    // We try RPC first, if not configured fall back to manual fetch + increment
-    const { error: rpcError } = await supabase.rpc('increment_click_count', {
-      link_id: linkId,
-    });
-
-    if (rpcError) {
-      // Fallback: direct update
-      const { data: currentLink } = await supabase
-        .from('links')
+      // 2. Increment product click_count
+      const { data: currentProduct } = await supabase
+        .from('products')
         .select('click_count')
-        .eq('id', linkId)
+        .eq('id', productId)
         .single();
 
-      if (currentLink) {
+      if (currentProduct) {
         await supabase
+          .from('products')
+          .update({ click_count: (currentProduct.click_count || 0) + 1 })
+          .eq('id', productId);
+      }
+    } else {
+      // 1. Insert row into link_clicks
+      const { error: insertError } = await supabase.from('link_clicks').insert({
+        link_id: linkId,
+        referrer: referrer || null,
+        country: request.headers.get('x-vercel-ip-country') || null,
+      });
+
+      if (insertError) {
+        console.error('Click insert error:', insertError);
+      }
+
+      // 2. Increment click_count atomically via RPC or direct update
+      const { error: rpcError } = await supabase.rpc('increment_click_count', {
+        link_id: linkId,
+      });
+
+      if (rpcError) {
+        // Fallback: direct update
+        const { data: currentLink } = await supabase
           .from('links')
-          .update({ click_count: (currentLink.click_count || 0) + 1 })
-          .eq('id', linkId);
+          .select('click_count')
+          .eq('id', linkId)
+          .single();
+
+        if (currentLink) {
+          await supabase
+            .from('links')
+            .update({ click_count: (currentLink.click_count || 0) + 1 })
+            .eq('id', linkId);
+        }
       }
     }
 

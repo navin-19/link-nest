@@ -1,54 +1,130 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, Link2, LayoutDashboard } from 'lucide-react';
-import { createClient } from '@/lib/supabaseClient';
+import { useUser } from '@/hooks/useUser';
 
 const NAV_LINKS = [
-  { label: 'Products', href: '#' },
-  { label: 'Templates', href: '#' },
-  { label: 'Marketplace', href: '#' },
-  { label: 'Learn', href: '#' },
-  { label: 'Pricing', href: '#' },
+  { label: 'Product', href: '#product' },
+  { label: 'Pricing', href: '#pricing' },
 ];
 
+/**
+ * Auth button states for the right side of the navbar.
+ *
+ * Three explicit states — never an unhandled "unknown" that renders blank:
+ *   loading  → skeleton pill placeholder
+ *   signed-in  → Dashboard button
+ *   signed-out → Log in (ghost) + Sign up (filled)
+ *
+ * Uses the shared useUser() hook so auth state is consistent across the app.
+ * Auth errors inside useUser() always resolve to { user: null, loading: false }
+ * so the signed-out UI is always the safe fallback.
+ */
+function NavAuthButtons({ onNavigate }) {
+  const { user, loading } = useUser();
+
+  // ── Loading skeleton ──────────────────────────────────────────────────────
+  // Shows a width-fixed placeholder so the navbar layout doesn't shift.
+  if (loading) {
+    return (
+      <div
+        aria-hidden="true"
+        className="flex items-center gap-2.5 sm:gap-3"
+      >
+        <div className="h-9 w-20 rounded-full bg-stone-200/70 animate-pulse" />
+        <div className="h-9 w-24 rounded-full bg-stone-200/70 animate-pulse" />
+      </div>
+    );
+  }
+
+  // ── Signed-in ─────────────────────────────────────────────────────────────
+  if (user) {
+    return (
+      <Link
+        href="/dashboard"
+        onClick={onNavigate}
+        className="px-4 sm:px-5 py-2 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-full shadow-sm transition-all inline-flex items-center gap-2 cursor-pointer"
+      >
+        <LayoutDashboard size={14} />
+        Dashboard
+      </Link>
+    );
+  }
+
+  // ── Signed-out (default / error fallback) ─────────────────────────────────
+  return (
+    <>
+      <Link
+        href="/login"
+        onClick={onNavigate}
+        className="px-4 sm:px-5 py-2 text-sm font-medium text-stone-800 hover:text-stone-950 bg-stone-100 hover:bg-stone-200/70 border border-stone-200/60 rounded-full transition-all inline-flex items-center justify-center cursor-pointer"
+      >
+        Log in
+      </Link>
+      <Link
+        href="/signup"
+        onClick={onNavigate}
+        className="px-4 sm:px-5 py-2 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-full shadow-sm transition-all inline-flex items-center justify-center cursor-pointer"
+      >
+        Sign up free
+      </Link>
+    </>
+  );
+}
+
+// ── Mobile dropdown auth section ──────────────────────────────────────────────
+function MobileAuthButtons({ onNavigate }) {
+  const { user, loading } = useUser();
+
+  if (loading) {
+    return (
+      <div aria-hidden="true" className="flex flex-col gap-2">
+        <div className="h-10 w-full rounded-full bg-stone-100 animate-pulse" />
+      </div>
+    );
+  }
+
+  if (user) {
+    return (
+      <Link
+        href="/dashboard"
+        onClick={onNavigate}
+        className="w-full text-center px-4 py-2.5 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-full shadow-sm transition-all"
+      >
+        Go to Dashboard
+      </Link>
+    );
+  }
+
+  return (
+    <>
+      <Link
+        href="/login"
+        onClick={onNavigate}
+        className="w-full text-center px-4 py-2.5 text-sm font-medium text-stone-800 bg-stone-100 hover:bg-stone-200/70 rounded-full transition-all"
+      >
+        Log in
+      </Link>
+      <Link
+        href="/signup"
+        onClick={onNavigate}
+        className="w-full text-center px-4 py-2.5 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-full shadow-sm transition-all"
+      >
+        Sign up free
+      </Link>
+    </>
+  );
+}
+
+// ── Main Navbar ────────────────────────────────────────────────────────────────
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  // undefined = loading (show nothing), null = confirmed logged out, user = logged in
-  const [sessionUser, setSessionUser] = useState(undefined);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function checkAuth() {
-      try {
-        const supabase = createClient();
-
-        // Use getUser() instead of getSession() — it revalidates with
-        // Supabase's auth server, so expired/invalid sessions are caught
-        // rather than appearing "logged in" from a stale cookie.
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (!cancelled) {
-          setSessionUser(error ? null : user ?? null);
-        }
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-          if (!cancelled) {
-            setSessionUser(session?.user || null);
-          }
-        });
-
-        return () => subscription?.unsubscribe();
-      } catch {
-        // Default to logged-out on any error — never default to "logged in"
-        if (!cancelled) setSessionUser(null);
-      }
-    }
-
-    checkAuth();
-    return () => { cancelled = true; };
-  }, []);
+  function closeMobile() {
+    setMobileMenuOpen(false);
+  }
 
   return (
     <header className="sticky top-4 z-50 w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -82,31 +158,10 @@ export default function Navbar() {
 
         {/* Right: Auth Buttons + Mobile Toggle */}
         <div className="flex items-center gap-2.5 sm:gap-3">
-          {sessionUser === undefined ? null : sessionUser ? (
-            <Link
-              href="/dashboard"
-              className="px-4 sm:px-5 py-2 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-full shadow-sm transition-all inline-flex items-center gap-2 cursor-pointer"
-            >
-              <LayoutDashboard size={14} />
-              Dashboard
-            </Link>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="px-4 sm:px-5 py-2 text-sm font-medium text-stone-800 hover:text-stone-950 bg-stone-100 hover:bg-stone-200/70 border border-stone-200/60 rounded-full transition-all inline-flex items-center justify-center cursor-pointer"
-              >
-                Log in
-              </Link>
-
-              <Link
-                href="/signup"
-                className="px-4 sm:px-5 py-2 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-full shadow-sm transition-all inline-flex items-center justify-center cursor-pointer"
-              >
-                Sign up free
-              </Link>
-            </>
-          )}
+          {/* Desktop auth — always renders one of the three states */}
+          <div className="hidden md:flex items-center gap-2.5 sm:gap-3">
+            <NavAuthButtons />
+          </div>
 
           {/* Mobile menu toggle button */}
           <button
@@ -114,6 +169,7 @@ export default function Navbar() {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden p-2 rounded-full text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors ml-1"
             aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -127,7 +183,7 @@ export default function Navbar() {
             <Link
               key={item.label}
               href={item.href}
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={closeMobile}
               className="px-3 py-2 text-sm font-medium text-stone-700 hover:text-stone-950 hover:bg-stone-50 rounded-xl transition-colors"
             >
               {item.label}
@@ -135,32 +191,8 @@ export default function Navbar() {
           ))}
 
           <div className="pt-3 border-t border-stone-100 flex flex-col gap-2">
-            {sessionUser === undefined ? null : sessionUser ? (
-              <Link
-                href="/dashboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center px-4 py-2.5 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-full shadow-sm transition-all"
-              >
-                Go to Dashboard
-              </Link>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center px-4 py-2.5 text-sm font-medium text-stone-800 bg-stone-100 hover:bg-stone-200/70 rounded-full transition-all"
-                >
-                  Log in
-                </Link>
-                <Link
-                  href="/signup"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center px-4 py-2.5 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-full shadow-sm transition-all"
-                >
-                  Sign up free
-                </Link>
-              </>
-            )}
+            {/* Mobile auth — same three-state guarantee */}
+            <MobileAuthButtons onNavigate={closeMobile} />
           </div>
         </div>
       )}

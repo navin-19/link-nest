@@ -1,41 +1,44 @@
 import {
-  Twitter,
-  Instagram,
-  Youtube,
-  Github,
-  Linkedin,
-  Facebook,
-  Globe,
-  Music,
-  Twitch,
-  Mail,
-} from 'lucide-react';
+  InstagramIcon,
+  YouTubeIcon,
+  TikTokIcon,
+  TwitterXIcon,
+  FacebookIcon,
+  LinkedInIcon,
+  WhatsAppIcon,
+  GitHubIcon,
+  WebsiteIcon,
+  EmailIcon,
+} from '@/components/ui/BrandIcons';
+import { Twitch } from 'lucide-react';
 
 const SOCIAL_PATTERNS = [
-  { pattern: /twitter\.com|x\.com/i,    Icon: Twitter,   label: 'Twitter / X' },
-  { pattern: /instagram\.com/i,          Icon: Instagram, label: 'Instagram' },
-  { pattern: /youtube\.com|youtu\.be/i,  Icon: Youtube,   label: 'YouTube' },
-  { pattern: /github\.com/i,             Icon: Github,    label: 'GitHub' },
-  { pattern: /linkedin\.com/i,           Icon: Linkedin,  label: 'LinkedIn' },
-  { pattern: /facebook\.com/i,           Icon: Facebook,  label: 'Facebook' },
-  { pattern: /tiktok\.com/i,             Icon: Music,     label: 'TikTok' },
-  { pattern: /twitch\.tv/i,              Icon: Twitch,    label: 'Twitch' },
-  { pattern: /mailto:/i,                 Icon: Mail,      label: 'Email' },
+  { pattern: /instagram\.com/i,          Icon: InstagramIcon, label: 'Instagram' },
+  { pattern: /youtube\.com|youtu\.be/i,  Icon: YouTubeIcon,   label: 'YouTube' },
+  { pattern: /tiktok\.com/i,             Icon: TikTokIcon,    label: 'TikTok' },
+  { pattern: /twitter\.com|x\.com/i,    Icon: TwitterXIcon,  label: 'Twitter / X' },
+  { pattern: /facebook\.com|fb\.me/i,    Icon: FacebookIcon,  label: 'Facebook' },
+  { pattern: /linkedin\.com/i,           Icon: LinkedInIcon,  label: 'LinkedIn' },
+  { pattern: /whatsapp\.com|wa\.me/i,    Icon: WhatsAppIcon,  label: 'WhatsApp' },
+  { pattern: /github\.com/i,             Icon: GitHubIcon,    label: 'GitHub' },
+  { pattern: /twitch\.tv/i,              Icon: Twitch,        label: 'Twitch' },
+  { pattern: /mailto:/i,                 Icon: EmailIcon,     label: 'Email' },
 ];
 
 function getIconForUrl(url) {
+  if (!url) return { Icon: WebsiteIcon, label: 'Website' };
   for (const { pattern, Icon, label } of SOCIAL_PATTERNS) {
     if (pattern.test(url)) return { Icon, label };
   }
-  return { Icon: Globe, label: 'Website' };
+  return { Icon: WebsiteIcon, label: 'Website' };
 }
 
 /**
  * SocialIcons with light theme pill styling and drop shadow hover.
  */
-export default function SocialIcons({ links = [], size = 16 }) {
+export default function SocialIcons({ links = [], size = 20, preview = false }) {
   const socialLinks = links.filter((l) =>
-    SOCIAL_PATTERNS.some(({ pattern }) => pattern.test(l.url))
+    l.is_active && SOCIAL_PATTERNS.some(({ pattern }) => pattern.test(l.url))
   );
 
   if (socialLinks.length === 0) return null;
@@ -47,17 +50,14 @@ export default function SocialIcons({ links = [], size = 16 }) {
         return (
           <a
             key={link.id}
-            href={link.url}
+            href={preview ? link.url : `/api/track/${link.id}`}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={label}
-            className={[
-              'p-2 rounded-full text-slate-700 hover:text-slate-950',
-              'bg-white hover:bg-slate-50 border border-slate-200/80 shadow-xs hover:shadow-soft',
-              'transition-all duration-150 hover:scale-110 active:scale-95',
-            ].join(' ')}
+            title={label}
+            className="flex items-center justify-center shrink-0 hover:scale-110 active:scale-95 transition-all focus:outline-none"
           >
-            <Icon size={size} />
+            <Icon size={28} className="shrink-0 drop-shadow-2xs" />
           </a>
         );
       })}

@@ -56,7 +56,7 @@ export default function ThemePage() {
       </div>
 
       {/* Right: Live Phone Mockup Preview */}
-      <div className="lg:col-span-5 sticky top-24 hidden lg:block">
+      <div className="lg:col-span-5 sticky top-0 hidden lg:block self-start">
         <div className="bg-white rounded-3xl border border-slate-200/90 p-4 shadow-card">
           <LivePreview
             profile={profile}

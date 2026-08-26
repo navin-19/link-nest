@@ -23,16 +23,18 @@ export default async function DashboardLayout({ children }) {
     .single();
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] text-slate-900 flex flex-col font-sans">
-      {/* Top Navbar */}
-      <header className="h-16 border-b border-slate-200/80 bg-white/90 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
-        <Link href="/dashboard" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white shadow-soft">
-            <Link2 size={16} strokeWidth={2.5} />
+    <div className="h-screen overflow-hidden bg-[#fafaf9] text-slate-900 flex flex-col font-sans">
+      {/* Top Navbar — Fixed at top */}
+      <header className="h-16 shrink-0 border-b border-slate-200/80 bg-white/90 backdrop-blur-md px-6 flex items-center justify-between z-30 shadow-xs">
+        <Link
+          href="/dashboard"
+          className="flex items-center group"
+          title="Dashboard Home"
+          aria-label="Dashboard Home"
+        >
+          <div className="w-9 h-9 rounded-2xl bg-slate-900 flex items-center justify-center text-white shadow-soft group-hover:scale-105 group-hover:bg-slate-800 transition-all">
+            <Link2 size={18} strokeWidth={2.5} />
           </div>
-          <span className="font-bold text-lg text-slate-900 tracking-tight">
-            LinkNest
-          </span>
         </Link>
 
         <div className="flex items-center gap-4">
@@ -42,10 +44,10 @@ export default async function DashboardLayout({ children }) {
         </div>
       </header>
 
-      {/* Body: Sidebar + Main Content */}
-      <div className="flex-1 flex">
+      {/* Body: Pinned Sidebar + Independently Scrollable Main Content */}
+      <div className="flex-1 flex overflow-hidden">
         <Sidebar profile={profile} />
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 pb-24 md:pb-8 bg-slate-50/50">
+        <main className="flex-1 h-full overflow-y-auto p-6 md:p-8 pb-24 md:pb-8 bg-slate-50/50">
           {children}
         </main>
       </div>

@@ -36,8 +36,7 @@ function LoginForm() {
         return;
       }
 
-      router.push('/dashboard');
-      router.refresh();
+      window.location.href = '/dashboard';
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {

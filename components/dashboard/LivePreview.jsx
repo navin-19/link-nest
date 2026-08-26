@@ -3,12 +3,14 @@
 import ProfileHeader from '@/components/profile/ProfileHeader';
 import LinkButton from '@/components/links/LinkButton';
 import SocialIcons from '@/components/profile/SocialIcons';
+import ProductList from '@/components/products/ProductList';
+import GoogleReviewsSection from '@/components/products/GoogleReviewsSection';
 import { Smartphone } from 'lucide-react';
 
 /**
- * Live phone-mockup preview in light theme mode.
+ * Live phone-mockup preview.
  */
-export default function LivePreview({ profile, links = [], theme }) {
+export default function LivePreview({ profile, links = [], products = [], theme }) {
   const activeLinks = links.filter((l) => l.is_active);
 
   const bg = theme?.background;
@@ -45,21 +47,37 @@ export default function LivePreview({ profile, links = [], theme }) {
 
         {/* Screen Container */}
         <div
-          style={{ ...bgStyle, fontFamily: font }}
+          style={bgStyle}
           className="w-full h-full rounded-[36px] overflow-y-auto overflow-x-hidden p-4 pt-8 flex flex-col justify-between scrollbar-none transition-all duration-300 shadow-inner"
         >
           <div className="space-y-4">
-            {/* Profile Header */}
+            {/* WYSIWYG Logo and Subscribe Bar (Preview only) */}
+            <div className="w-full flex items-center justify-between py-1 mb-1 shrink-0 opacity-90 select-none pointer-events-none">
+              {/* Logo */}
+              <div className="flex items-center gap-1.5 text-slate-900 dark:text-white font-bold text-[10px] tracking-tight bg-white/80 dark:bg-slate-900/80 px-2.5 py-1.5 rounded-full border border-slate-200/90 dark:border-slate-800 shadow-2xs">
+                <div className="w-4 h-4 rounded-full bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-900">
+                  <span className="text-[8px] font-bold">L</span>
+                </div>
+                <span>LinkNest</span>
+              </div>
+
+              {/* Subscribe Button */}
+              <div className="px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] font-bold shadow-btn">
+                Subscribe
+              </div>
+            </div>
+
+            {/* Profile Header (Title Font stays independent) */}
             <ProfileHeader profile={profile} compact />
 
             {/* Social Icons Bar */}
-            <SocialIcons links={links} size={14} />
+            <SocialIcons links={links} size={14} preview={true} />
 
-            {/* Links */}
+            {/* Links (Link cards use custom Theme Font) */}
             <div className="space-y-2.5 pt-2">
-              {activeLinks.length === 0 ? (
+              {activeLinks.length === 0 && products.length === 0 ? (
                 <div className="text-center py-8 text-xs text-slate-400 font-medium">
-                  No active links
+                  No active links or products
                 </div>
               ) : (
                 activeLinks.map((link) => (
@@ -67,12 +85,31 @@ export default function LivePreview({ profile, links = [], theme }) {
                     key={link.id}
                     link={link}
                     buttonStyle={buttonStyle}
+                    font={font}
                     username={profile?.username}
                     preview={true}
                   />
                 ))
               )}
             </div>
+
+            {/* Product Showcase (Separate visually from links) */}
+            {products.length > 0 && (
+              <ProductList
+                products={products}
+                buttonStyle={buttonStyle}
+                font={font}
+                preview={true}
+              />
+            )}
+
+            {/* Google Reviews Section */}
+            {profile?.show_google_reviews && profile?.google_place_id && (
+              <GoogleReviewsSection
+                placeId={profile.google_place_id}
+                font={font}
+              />
+            )}
           </div>
 
           {/* Footer Logo */}

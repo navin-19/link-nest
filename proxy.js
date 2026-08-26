@@ -45,18 +45,23 @@ export async function proxy(request) {
     }
   }
 
+  // Redirect logged-in users away from /login and /signup to dashboard
+  if ((pathname === '/login' || pathname === '/signup') && user) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = '/dashboard';
+    return NextResponse.redirect(redirectUrl);
+  }
+
   return supabaseResponse;
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico, sitemap.xml, robots.txt
-     * - public folder files
-     */
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/dashboard/:path*',
+    '/login',
+    '/signup',
+    '/api/profile',
+    '/api/links/:path*',
+    '/api/products/:path*',
   ],
 };

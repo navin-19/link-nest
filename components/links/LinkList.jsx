@@ -3,12 +3,12 @@ import LinkButton from './LinkButton';
 /**
  * LinkList renders the full list of active links on the public profile page.
  */
-export default function LinkList({ links = [], buttonStyle = 'rounded', username }) {
+export default function LinkList({ links = [], buttonStyle = 'rounded', font, username }) {
   const activeLinks = links.filter((l) => l.is_active);
 
   if (activeLinks.length === 0) {
     return (
-      <p className="text-center text-white/30 text-sm py-8">
+      <p className="text-center text-slate-400 text-sm py-8">
         No links added yet.
       </p>
     );
@@ -21,6 +21,7 @@ export default function LinkList({ links = [], buttonStyle = 'rounded', username
           key={link.id}
           link={link}
           buttonStyle={buttonStyle}
+          font={font}
           username={username}
           preview={false}
         />

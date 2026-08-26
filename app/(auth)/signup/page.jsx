@@ -125,8 +125,7 @@ function SignupForm() {
       }
 
       if (data?.session) {
-        router.push('/dashboard');
-        router.refresh();
+        window.location.href = '/dashboard';
       } else {
         router.push('/login?message=Account created! Please check your email to confirm or sign in.');
       }

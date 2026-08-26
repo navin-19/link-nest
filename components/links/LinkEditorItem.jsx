@@ -92,9 +92,16 @@ export default function LinkEditorItem({ link, onUpdate, onDelete }) {
       </button>
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
+      <div
+        className={`flex-1 min-w-0 ${!editing ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+        onClick={() => {
+          if (!editing) {
+            window.open(link.url, '_blank', 'noopener,noreferrer');
+          }
+        }}
+      >
         {editing ? (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
             <Input
               id={`link-title-${link.id}`}
               value={title}

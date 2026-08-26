@@ -75,10 +75,11 @@ export default function UserNavDropdown({ user, profile }) {
 
   async function handleSignOut() {
     setIsOpen(false);
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push('/login');
-    router.refresh();
+    // Use the server-side signout route — it invalidates the session on Supabase's
+    // auth server AND clears the auth cookies from the browser in one request.
+    // This is more reliable than client-only signOut() which can leave stale
+    // cookies if the browser client fails for any reason.
+    window.location.href = '/api/auth/signout';
   }
 
   const username = profile?.username || '';
