@@ -136,6 +136,42 @@ export function useTheme(profileThemeId) {
     }
   }, [router]);
 
+  /**
+   * Update an existing custom theme.
+   */
+  const updateTheme = useCallback(async (themeId, themeData) => {
+    setError(null);
+    try {
+      const supabase = createClient();
+      const { data: { user }, error: authErr } = await supabase.auth.getUser();
+      if (authErr || !user) {
+        throw new Error('You must be logged in to update a custom theme.');
+      }
+
+      const { data, error: updateError } = await supabase
+        .from('themes')
+        .update(themeData)
+        .eq('id', themeId)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error('[useTheme.updateTheme error]', updateError);
+        throw new Error(`Failed to update theme: ${updateError.message}`);
+      }
+
+      setThemes((prev) => prev.map((t) => (t.id === themeId ? data : t)));
+      setActiveTheme(data);
+      router.refresh();
+      return data;
+    } catch (err) {
+      console.error('[useTheme] Exception updating theme:', err);
+      setError(err.message);
+      throw err;
+    }
+  }, [router]);
+
   const getThemeStyles = useCallback((theme) => {
     if (!theme) return {};
     const bg = theme.background;
@@ -151,5 +187,5 @@ export function useTheme(profileThemeId) {
     };
   }, []);
 
-  return { themes, activeTheme, loading, error, applyTheme, createTheme, getThemeStyles };
+  return { themes, activeTheme, loading, error, applyTheme, createTheme, updateTheme, getThemeStyles };
 }

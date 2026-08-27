@@ -1,6 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import { ExternalLink, ShoppingBag, Package } from 'lucide-react';
+import { buttonStyles } from '@/components/links/buttonStyles';
 
 export default function ProductCard({
   product,
@@ -16,6 +18,7 @@ export default function ProductCard({
   }
 
   const customFontStyle = font ? { fontFamily: font } : {};
+  const buttonClass = buttonStyles[buttonStyle] ?? buttonStyles.rounded;
 
   return (
     <a
@@ -29,9 +32,11 @@ export default function ProductCard({
       {/* Product Image / Thumbnail */}
       <div className="w-full sm:w-20 h-32 sm:h-20 rounded-2xl bg-slate-100 border border-slate-200/60 overflow-hidden flex items-center justify-center shrink-0 shadow-2xs relative">
         {product.image_url ? (
-          <img
+          <Image
             src={product.image_url}
-            alt={product.name}
+            alt={product.name || 'Product Image'}
+            width={160}
+            height={160}
             className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
           />
         ) : (
@@ -66,9 +71,9 @@ export default function ProductCard({
         )}
       </div>
 
-      {/* Action Button Pill */}
+      {/* Action Button Pill with matching buttonStyle */}
       <div className="shrink-0 flex items-center justify-end sm:justify-center pt-2 sm:pt-0">
-        <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold shadow-btn group-hover:bg-slate-800 transition-all">
+        <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold transition-all ${buttonClass}`}>
           <span>View</span>
           <ExternalLink size={12} />
         </span>

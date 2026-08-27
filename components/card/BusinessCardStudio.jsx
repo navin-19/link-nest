@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import {
@@ -629,10 +630,11 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
                     <div className="flex items-center gap-2.5">
                       {showAvatar && profile?.avatar_url && (
                         <div className="w-8 h-8 rounded-full overflow-hidden border border-white/20 shrink-0">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
+                          <Image
                             src={profile.avatar_url}
-                            alt={name}
+                            alt={name || 'Avatar'}
+                            width={32}
+                            height={32}
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -718,10 +720,11 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
                 <div className="flex flex-col items-center space-y-2">
                   {showAvatar && profile?.avatar_url && (
                     <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/20 shadow-lg">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={profile.avatar_url}
-                        alt={name}
+                        alt={name || 'Avatar'}
+                        width={64}
+                        height={64}
                         className="w-full h-full object-cover"
                       />
                     </div>

@@ -8,9 +8,10 @@ import {
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import { resolveLinkIcon } from '@/components/links/resolveLinkIcon';
 
 /**
- * LinkEditorItem — draggable, editable link row with light theme styling and drop shadow.
+ * LinkEditorItem — draggable, editable link row with light theme styling, brand icon, and drop shadow.
  */
 export default function LinkEditorItem({ link, onUpdate, onDelete }) {
   const [editing, setEditing]   = useState(false);
@@ -18,6 +19,8 @@ export default function LinkEditorItem({ link, onUpdate, onDelete }) {
   const [url, setUrl]           = useState(link.url);
   const [saving, setSaving]     = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  const { Icon } = resolveLinkIcon(link);
 
   const {
     attributes,
@@ -91,6 +94,11 @@ export default function LinkEditorItem({ link, onUpdate, onDelete }) {
         <GripVertical size={18} />
       </button>
 
+      {/* Brand Icon */}
+      <div className="w-8 h-8 flex items-center justify-center shrink-0">
+        <Icon size={26} className="shrink-0 drop-shadow-2xs" />
+      </div>
+
       {/* Content */}
       <div
         className={`flex-1 min-w-0 ${!editing ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
@@ -118,7 +126,14 @@ export default function LinkEditorItem({ link, onUpdate, onDelete }) {
           </div>
         ) : (
           <div>
-            <p className="text-sm font-semibold text-slate-900 truncate">{link.title}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold text-slate-900 truncate">{link.title}</p>
+              {!link.is_active && (
+                <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full shrink-0">
+                  Hidden from public page
+                </span>
+              )}
+            </div>
             <p className="text-xs text-slate-500 truncate mt-0.5 font-mono">{link.url}</p>
           </div>
         )}

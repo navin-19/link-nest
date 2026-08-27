@@ -56,8 +56,8 @@ export default function AvatarFramePicker({
       setMessage(`Avatar style set to ${layoutId}!`);
       setTimeout(() => setMessage(null), 3000);
     } catch (err) {
-      console.warn('Avatar style save warning:', err.message);
-      // Even if database update fails temporarily, local preview is updated
+      console.error('Avatar style save error:', err);
+      setError(err.message || 'Failed to save avatar style');
     } finally {
       setSaving(false);
     }

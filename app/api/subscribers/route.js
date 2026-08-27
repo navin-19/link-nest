@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabaseServer';
+import { createClient } from '@/lib/supabaseServer';
 
 export async function POST(request) {
   try {
@@ -16,7 +16,8 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid email address.' }, { status: 400 });
     }
 
-    const supabase = createAdminClient();
+    // Security: Use RLS-respecting server client for public reads and inserts
+    const supabase = await createClient();
 
     // 1. Fetch user ID for the given profile username
     const { data: profile, error: profileError } = await supabase

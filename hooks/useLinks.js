@@ -7,9 +7,9 @@ import { createClient } from '@/lib/supabaseClient';
  * Hook for managing the current user's links.
  * Fetches, creates, updates, deletes, and reorders links.
  */
-export function useLinks(userId) {
-  const [links, setLinks] = useState([]);
-  const [loading, setLoading] = useState(true);
+export function useLinks(userId, initialData = null) {
+  const [links, setLinks] = useState(initialData || []);
+  const [loading, setLoading] = useState(initialData === null);
   const [error, setError] = useState(null);
 
   const fetchLinks = useCallback(async () => {
@@ -19,7 +19,9 @@ export function useLinks(userId) {
       return;
     }
 
-    setLoading(true);
+    if (!initialData) {
+      setLoading(true);
+    }
     setError(null);
 
     try {

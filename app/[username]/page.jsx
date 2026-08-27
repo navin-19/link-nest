@@ -1,26 +1,19 @@
 import { notFound } from 'next/navigation';
-import { createAdminClient } from '@/lib/supabaseServer';
-import ProfileHeader from '@/components/profile/ProfileHeader';
-import SocialIcons from '@/components/profile/SocialIcons';
-import LinkList from '@/components/links/LinkList';
-import ProductList from '@/components/products/ProductList';
-import GoogleReviewsSection from '@/components/products/GoogleReviewsSection';
-import SubscribeBar from '@/components/profile/SubscribeBar';
+import { createClient } from '@/lib/supabaseServer';
+import { getProfileByUsername } from '@/lib/profile';
+import PublicProfileClient from '@/components/profile/PublicProfileClient';
 import Link from 'next/link';
 import { Link2 } from 'lucide-react';
 
-export const revalidate = 0; // Fresh SSR on every load
+// Task 2: ISR revalidation window (60s) to cache public profile pages while keeping content fresh
+export const revalidate = 60;
 
 export async function generateMetadata({ params }) {
   const { username: rawUsername } = await params;
   const username = rawUsername?.toLowerCase();
-  const supabase = createAdminClient();
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('display_name, bio, avatar_url')
-    .eq('username', username)
-    .maybeSingle();
+  
+  // Security & Perf: Use RLS-scoped cached helper instead of createAdminClient
+  const profile = await getProfileByUsername(username);
 
   if (!profile) {
     return {
@@ -51,13 +44,9 @@ export async function generateMetadata({ params }) {
 export default async function PublicProfilePage({ params }) {
   const { username: rawUsername } = await params;
   const username = rawUsername?.toLowerCase();
-  const supabase = createAdminClient();
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*, themes!profiles_theme_id_fkey(*)')
-    .eq('username', username)
-    .maybeSingle();
+  // Security & Perf: Shared request-deduplicated RLS profile fetch
+  const profile = await getProfileByUsername(username);
 
   if (!profile) {
     return (
@@ -79,94 +68,34 @@ export default async function PublicProfilePage({ params }) {
     );
   }
 
-  const { data: links } = await supabase
-    .from('links')
-    .select('*')
-    .eq('user_id', profile.id)
-    .eq('is_active', true)
-    .order('position', { ascending: true });
+  // Security: Use anon RLS-respecting server client for public links & products reads
+  const supabase = await createClient();
 
-  const { data: products } = await supabase
-    .from('products')
-    .select('*')
-    .eq('user_id', profile.id)
-    .eq('is_active', true)
-    .order('position', { ascending: true });
+  // Performance: Fetch active links and active products concurrently with Promise.all
+  const [linksRes, productsRes] = await Promise.all([
+    supabase
+      .from('links')
+      .select('*')
+      .eq('user_id', profile.id)
+      .eq('is_active', true)
+      .order('position', { ascending: true }),
+    supabase
+      .from('products')
+      .select('*')
+      .eq('user_id', profile.id)
+      .eq('is_active', true)
+      .order('position', { ascending: true }),
+  ]);
 
-  const theme = profile.themes;
-  const bg = theme?.background;
-  let bgStyle = { backgroundColor: '#ffffff' };
-
-  if (bg?.type === 'solid') {
-    bgStyle = { backgroundColor: bg.value };
-  } else if (bg?.type === 'gradient') {
-    bgStyle = { background: bg.value };
-  } else if (bg?.type === 'image') {
-    bgStyle = {
-      backgroundImage: `url(${bg.value})`,
-      backgroundPosition: 'center',
-      backgroundSize: 'cover',
-      backgroundRepeat: 'no-repeat',
-      backgroundAttachment: 'fixed',
-    };
-  }
-
-  const font = theme?.font || 'Inter';
-  const buttonStyle = theme?.button_style || 'rounded';
+  const links = linksRes.data || [];
+  const products = productsRes.data || [];
 
   return (
-    <main
-      style={bgStyle}
-      className="min-h-screen text-slate-900 flex flex-col justify-between py-12 px-4 selection:bg-slate-900 selection:text-white"
-    >
-      <div className="w-full max-w-md mx-auto space-y-6">
-        {/* Logo and Subscribe Controls */}
-        <SubscribeBar username={username} />
-
-        {/* Profile Avatar, Display Name & Bio */}
-        <ProfileHeader profile={profile} />
-
-        {/* Social platform quick links */}
-        <SocialIcons links={links || []} />
-
-        {/* Dynamic Link List with Theme Font */}
-        <LinkList
-          links={links || []}
-          buttonStyle={buttonStyle}
-          font={font}
-          username={username}
-        />
-
-        {/* Products & Services Showcase */}
-        {products && products.length > 0 && (
-          <ProductList
-            products={products}
-            buttonStyle={buttonStyle}
-            font={font}
-          />
-        )}
-
-        {/* Google Business Reviews */}
-        {profile.show_google_reviews && profile.google_place_id && (
-          <GoogleReviewsSection
-            placeId={profile.google_place_id}
-            font={font}
-          />
-        )}
-      </div>
-
-      {/* Subtle LinkNest Brand Footer */}
-      <footer className="w-full text-center pt-12 pb-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 border border-slate-200/90 text-xs text-slate-600 hover:text-slate-950 transition-all shadow-xs hover:shadow-soft"
-        >
-          <div className="w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-[9px] font-bold">
-            L
-          </div>
-          <span>Create your own <strong className="text-slate-900 font-semibold">LinkNest</strong></span>
-        </Link>
-      </footer>
-    </main>
+    <PublicProfileClient
+      profile={profile}
+      links={links}
+      products={products}
+      username={username}
+    />
   );
 }

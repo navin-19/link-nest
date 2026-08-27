@@ -1,25 +1,11 @@
 'use client';
 
 import { ExternalLink } from 'lucide-react';
-import { getIconForUrl } from '@/components/profile/SocialIcons';
-
-const buttonStyles = {
-  rounded:
-    'rounded-2xl bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 shadow-soft hover:shadow-card hover:border-slate-300',
-  filled:
-    'rounded-2xl bg-slate-900 hover:bg-slate-800 text-white shadow-btn hover:shadow-btn-hover border border-slate-900',
-  outline:
-    'rounded-2xl bg-transparent border-2 border-slate-300 hover:border-slate-900 text-slate-800 hover:bg-slate-50 shadow-xs',
-  shadow:
-    'rounded-2xl bg-white hover:bg-slate-50 border border-slate-100 shadow-card hover:shadow-card-hover text-slate-800',
-  glassmorphism:
-    'rounded-2xl bg-white/70 hover:bg-white/90 backdrop-blur-md border border-white/60 text-slate-900 shadow-soft hover:shadow-card',
-  hardshadow:
-    'rounded-xl bg-white hover:bg-slate-50 border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] text-slate-900',
-};
+import { resolveLinkIcon } from '@/components/links/resolveLinkIcon';
+import { buttonStyles } from '@/components/links/buttonStyles';
 
 /**
- * LinkButton applies the custom Theme Font specifically to the link button text.
+ * LinkButton applies the custom Theme Font and selected button style preset to the link item.
  */
 export default function LinkButton({
   link,
@@ -28,7 +14,7 @@ export default function LinkButton({
   username,
   preview = false,
 }) {
-  const { Icon } = getIconForUrl(link.url);
+  const { Icon } = resolveLinkIcon(link);
 
   function handleClick(e) {
     if (preview) {
@@ -39,7 +25,36 @@ export default function LinkButton({
 
   const buttonClass = buttonStyles[buttonStyle] ?? buttonStyles.rounded;
   const isFilled = buttonStyle === 'filled';
+  const isBento = buttonStyle === 'bentogrid';
   const customFontStyle = font ? { fontFamily: font } : {};
+
+  if (isBento) {
+    return (
+      <a
+        href={preview ? '#' : `/api/track/${link.id}`}
+        target={preview ? '_self' : '_blank'}
+        rel="noopener noreferrer"
+        onClick={handleClick}
+        style={customFontStyle}
+        className={[
+          'group flex flex-col items-center justify-center text-center gap-2 w-full p-4 aspect-square',
+          'font-semibold text-xs sm:text-sm',
+          'transition-all duration-150 ease-out',
+          'hover:scale-[1.02] active:scale-[0.98]',
+          buttonClass,
+          preview ? 'cursor-default select-none' : 'cursor-pointer',
+        ].join(' ')}
+      >
+        {/* Centered Brand Icon */}
+        <span className="flex items-center justify-center w-8 h-8 shrink-0 transition-transform group-hover:scale-110">
+          <Icon size={28} className="shrink-0 drop-shadow-2xs" />
+        </span>
+
+        {/* Link Title */}
+        <span className="w-full text-center line-clamp-2 leading-snug px-1">{link.title}</span>
+      </a>
+    );
+  }
 
   return (
     <a

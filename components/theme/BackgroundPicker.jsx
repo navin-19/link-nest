@@ -23,13 +23,6 @@ const GRADIENT_PRESETS = [
   'linear-gradient(135deg, #0a2e0a 0%, #1a4a1a 50%, #2d8a2d 100%)',
 ];
 
-const GRADIENT_ANGLES = [
-  { label: '↘ 135°', value: '135deg' },
-  { label: '→ 90°',  value: '90deg'  },
-  { label: '↓ 180°', value: '180deg' },
-  { label: '↗ 45°',  value: '45deg'  },
-];
-
 export default function BackgroundPicker({ value, onChange }) {
   const currentType = value?.type || 'solid';
   const currentValue = value?.value || '#ffffff';
@@ -39,10 +32,9 @@ export default function BackgroundPicker({ value, onChange }) {
   );
   const [colorMode, setColorMode] = useState(currentType === 'gradient' ? 'gradient' : 'solid');
 
-  // Gradient stops
+  // Gradient stops (fixed angle 135deg per Issue 4c)
   const [gradColor1, setGradColor1] = useState('#1a1a2e');
   const [gradColor2, setGradColor2] = useState('#0f3460');
-  const [gradAngle, setGradAngle] = useState('135deg');
 
   // Image states
   const [imageUrl, setImageUrl] = useState(currentType === 'image' ? currentValue : '');
@@ -55,16 +47,15 @@ export default function BackgroundPicker({ value, onChange }) {
     if (mode === 'solid') {
       onChange({ type: 'solid', value: SOLID_PRESETS[0] });
     } else {
-      const grad = `linear-gradient(${gradAngle}, ${gradColor1} 0%, ${gradColor2} 100%)`;
+      const grad = `linear-gradient(135deg, ${gradColor1} 0%, ${gradColor2} 100%)`;
       onChange({ type: 'gradient', value: grad });
     }
   }
 
-  function handleGradColorChange(c1, c2, angle) {
+  function handleGradColorChange(c1, c2) {
     setGradColor1(c1);
     setGradColor2(c2);
-    setGradAngle(angle);
-    const grad = `linear-gradient(${angle}, ${c1} 0%, ${c2} 100%)`;
+    const grad = `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`;
     onChange({ type: 'gradient', value: grad });
   }
 
@@ -105,7 +96,7 @@ export default function BackgroundPicker({ value, onChange }) {
       setImageUrl(freshUrl);
       onChange({ type: 'image', value: freshUrl });
     } catch (err) {
-      setUploadError(err.message || 'Background upload failed');
+      setUploadError(err.message || 'Background upload failed. You can also paste a direct image URL in the "Image URL" tab.');
     } finally {
       setUploading(false);
     }
@@ -122,7 +113,7 @@ export default function BackgroundPicker({ value, onChange }) {
             if (colorMode === 'solid') {
               onChange({ type: 'solid', value: currentValue.startsWith('#') ? currentValue : '#ffffff' });
             } else {
-              onChange({ type: 'gradient', value: `linear-gradient(${gradAngle}, ${gradColor1} 0%, ${gradColor2} 100%)` });
+              onChange({ type: 'gradient', value: `linear-gradient(135deg, ${gradColor1} 0%, ${gradColor2} 100%)` });
             }
           }}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
@@ -214,7 +205,7 @@ export default function BackgroundPicker({ value, onChange }) {
             </div>
           )}
 
-          {/* Gradient Color Picker (2 stops + direction) */}
+          {/* Gradient Color Picker (2 stops) */}
           {colorMode === 'gradient' && (
             <div className="space-y-3">
               <div className="flex items-center gap-4 p-3 bg-slate-50 border border-slate-200 rounded-2xl">
@@ -224,7 +215,7 @@ export default function BackgroundPicker({ value, onChange }) {
                     <input
                       type="color"
                       value={gradColor1}
-                      onChange={(e) => handleGradColorChange(e.target.value, gradColor2, gradAngle)}
+                      onChange={(e) => handleGradColorChange(e.target.value, gradColor2)}
                       className="w-8 h-8 rounded-xl border border-slate-200 bg-transparent cursor-pointer"
                     />
                     <span className="text-xs font-mono font-semibold">{gradColor1}</span>
@@ -239,34 +230,11 @@ export default function BackgroundPicker({ value, onChange }) {
                     <input
                       type="color"
                       value={gradColor2}
-                      onChange={(e) => handleGradColorChange(gradColor1, e.target.value, gradAngle)}
+                      onChange={(e) => handleGradColorChange(gradColor1, e.target.value)}
                       className="w-8 h-8 rounded-xl border border-slate-200 bg-transparent cursor-pointer"
                     />
                     <span className="text-xs font-mono font-semibold">{gradColor2}</span>
                   </div>
-                </div>
-              </div>
-
-              {/* Gradient Angles */}
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
-                  Gradient Direction
-                </label>
-                <div className="flex gap-2">
-                  {GRADIENT_ANGLES.map((a) => (
-                    <button
-                      key={a.value}
-                      type="button"
-                      onClick={() => handleGradColorChange(gradColor1, gradColor2, a.value)}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                        gradAngle === a.value
-                          ? 'bg-slate-900 text-white shadow-btn'
-                          : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      {a.label}
-                    </button>
-                  ))}
                 </div>
               </div>
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import ProfileHeader from '@/components/profile/ProfileHeader';
 import LinkButton from '@/components/links/LinkButton';
 import SocialIcons from '@/components/profile/SocialIcons';
@@ -8,10 +10,23 @@ import GoogleReviewsSection from '@/components/products/GoogleReviewsSection';
 import { Smartphone } from 'lucide-react';
 
 /**
- * Live phone-mockup preview.
+ * Live phone-mockup preview with smooth auto-scroll & animated link cards.
  */
 export default function LivePreview({ profile, links = [], products = [], theme }) {
+  const scrollContainerRef = useRef(null);
+  const prevLinksCount = useRef(links.length);
   const activeLinks = links.filter((l) => l.is_active);
+
+  // Auto-scroll when links are added
+  useEffect(() => {
+    if (links.length > prevLinksCount.current && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: scrollContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+    prevLinksCount.current = links.length;
+  }, [links.length]);
 
   const bg = theme?.background;
   let bgStyle = { backgroundColor: '#ffffff' };
@@ -45,10 +60,11 @@ export default function LivePreview({ profile, links = [], products = [], theme 
         {/* Dynamic Island / Notch */}
         <div className="absolute top-5 left-1/2 -translate-x-1/2 w-24 h-4 bg-black rounded-full z-20" />
 
-        {/* Screen Container */}
+        {/* Screen Container with smooth scrollable overflow */}
         <div
+          ref={scrollContainerRef}
           style={bgStyle}
-          className="w-full h-full rounded-[36px] overflow-y-auto overflow-x-hidden p-4 pt-8 flex flex-col justify-between scrollbar-none transition-all duration-300 shadow-inner"
+          className="w-full h-full rounded-[36px] overflow-y-auto overflow-x-hidden p-4 pt-8 flex flex-col justify-between scroll-smooth scrollbar-none transition-all duration-300 shadow-inner"
         >
           <div className="space-y-4">
             {/* WYSIWYG Logo and Subscribe Bar (Preview only) */}
@@ -70,28 +86,64 @@ export default function LivePreview({ profile, links = [], products = [], theme 
             {/* Profile Header (Title Font stays independent) */}
             <ProfileHeader profile={profile} compact />
 
-            {/* Social Icons Bar */}
-            <SocialIcons links={links} size={14} preview={true} />
-
-            {/* Links (Link cards use custom Theme Font) */}
-            <div className="space-y-2.5 pt-2">
+            {/* Links (Link cards use custom Theme Font & fluid animation) */}
+            <div>
               {activeLinks.length === 0 && products.length === 0 ? (
-                <div className="text-center py-8 text-xs text-slate-400 font-medium">
-                  No active links or products
+                <div className="text-center py-5 px-3 rounded-2xl border-2 border-dashed border-slate-300/80 bg-white/60 backdrop-blur-xs text-slate-600 shadow-2xs space-y-1 my-1">
+                  <p className="text-xs font-semibold text-slate-800">Your links will appear here</p>
+                  <p className="text-[10px] text-slate-500">Add your first link to get started</p>
+                </div>
+              ) : buttonStyle === 'bentogrid' ? (
+                <div className="grid grid-cols-2 gap-2.5 w-full">
+                  <AnimatePresence mode="popLayout">
+                    {activeLinks.map((link) => (
+                      <motion.div
+                        key={link.id}
+                        layout
+                        initial={{ opacity: 0, scale: 0.9, y: 12 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.15 } }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+                      >
+                        <LinkButton
+                          link={link}
+                          buttonStyle={buttonStyle}
+                          font={font}
+                          username={profile?.username}
+                          preview={true}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
               ) : (
-                activeLinks.map((link) => (
-                  <LinkButton
-                    key={link.id}
-                    link={link}
-                    buttonStyle={buttonStyle}
-                    font={font}
-                    username={profile?.username}
-                    preview={true}
-                  />
-                ))
+                <div className="space-y-2.5">
+                  <AnimatePresence mode="popLayout">
+                    {activeLinks.map((link) => (
+                      <motion.div
+                        key={link.id}
+                        layout
+                        initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+                      >
+                        <LinkButton
+                          link={link}
+                          buttonStyle={buttonStyle}
+                          font={font}
+                          username={profile?.username}
+                          preview={true}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
               )}
             </div>
+
+            {/* Social Icons Bar (rendered below link cards) */}
+            <SocialIcons profile={profile} links={links} size={14} preview={true} />
 
             {/* Product Showcase (Separate visually from links) */}
             {products.length > 0 && (

@@ -7,9 +7,9 @@ import { createClient } from '@/lib/supabaseClient';
  * Hook for managing the current user's products.
  * Fetches, creates, updates, deletes, and reorders products.
  */
-export function useProducts(userId) {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+export function useProducts(userId, initialData = null) {
+  const [products, setProducts] = useState(initialData || []);
+  const [loading, setLoading] = useState(initialData === null);
   const [error, setError] = useState(null);
 
   const fetchProducts = useCallback(async () => {
@@ -19,7 +19,9 @@ export function useProducts(userId) {
       return;
     }
 
-    setLoading(true);
+    if (!initialData) {
+      setLoading(true);
+    }
     setError(null);
 
     try {

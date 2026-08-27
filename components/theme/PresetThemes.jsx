@@ -32,18 +32,7 @@ export default function PresetThemes({
   }
 
   return (
-    <div className="space-y-6 text-slate-900 animate-in fade-in duration-150">
-      {/* Header Banner */}
-      <div className="flex items-center justify-between p-5 rounded-3xl bg-slate-900 text-white shadow-card">
-        <div>
-          <h3 className="text-sm font-bold flex items-center gap-2">
-            <Sparkles size={16} className="text-amber-400" /> Preset Themes
-          </h3>
-          <p className="text-xs text-slate-300 mt-0.5">
-            Click any curated style to instantly refresh your page background, buttons, and font.
-          </p>
-        </div>
-      </div>
+    <div className="space-y-4 pt-1 text-slate-900 animate-in fade-in duration-150">
 
       {/* Notifications */}
       {success && (

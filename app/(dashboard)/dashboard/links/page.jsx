@@ -47,6 +47,7 @@ export default function LinksPage() {
     activeTheme,
     applyTheme,
     createTheme,
+    updateTheme,
   } = useTheme(profile?.theme_id);
 
   // Tab State — "links" is default on load
@@ -212,6 +213,7 @@ export default function LinksPage() {
             userPlan={profile?.plan || 'free'}
             profile={effectiveProfile}
             onCreateCustomTheme={createTheme}
+            onUpdateCustomTheme={updateTheme}
             onSelectTheme={applyTheme}
             setPreviewTheme={setPreviewTheme}
             onLocalProfileChange={handleLocalProfileChange}

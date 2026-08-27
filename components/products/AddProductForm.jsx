@@ -153,6 +153,7 @@ export default function AddProductForm({ userId, onAdd }) {
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center relative shrink-0 shadow-2xs">
             {imageUrl ? (
+              /* Using <img> for local blob/data preview URLs that cannot be pre-optimized by next/image */
               <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
             ) : (
               <ImageIcon size={22} className="text-slate-400" />
@@ -168,7 +169,7 @@ export default function AddProductForm({ userId, onAdd }) {
             )}
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-1 flex-1">
             <input
               type="file"
               ref={fileInputRef}
@@ -176,17 +177,33 @@ export default function AddProductForm({ userId, onAdd }) {
               accept="image/*"
               className="hidden"
             />
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={() => fileInputRef.current?.click()}
-              loading={uploading}
-              className="text-xs shadow-2xs"
-            >
-              <Upload size={13} /> {imageUrl ? 'Change Image' : 'Upload Image'}
-            </Button>
-            <p className="text-[10px] text-slate-400">PNG, JPG or WebP (max 3MB)</p>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                loading={uploading}
+                className="text-xs shadow-2xs shrink-0"
+              >
+                <Upload size={13} /> {imageUrl ? 'Change Image' : 'Upload Image'}
+              </Button>
+              <span className="text-[10px] text-slate-400">PNG, JPG or WebP (max 3MB)</span>
+            </div>
+            
+            {/* Direct image URL input fallback */}
+            <div className="pt-1.5">
+              <Input
+                id="product-image-url"
+                placeholder="Or paste an image URL (https://...)"
+                value={imageUrl}
+                onChange={(e) => {
+                  setImageUrl(e.target.value);
+                  if (errors.image) setErrors((prev) => ({ ...prev, image: null }));
+                }}
+                className="text-xs py-1.5"
+              />
+            </div>
           </div>
         </div>
         {errors.image && <p className="text-xs text-red-500 mt-1">{errors.image}</p>}

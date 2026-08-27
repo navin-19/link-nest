@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@/hooks/useUser';
 import { useLinks } from '@/hooks/useLinks';
 import { useTheme } from '@/hooks/useTheme';
-import ThemePicker from '@/components/theme/ThemePicker';
+import CustomThemeDesigner from '@/components/theme/CustomThemeDesigner';
 import LivePreview from '@/components/dashboard/LivePreview';
 
 export default function ThemePage() {
@@ -16,15 +16,29 @@ export default function ThemePage() {
     loading,
     applyTheme,
     createTheme,
+    updateTheme,
   } = useTheme(profile?.theme_id);
 
   const [previewTheme, setPreviewTheme] = useState(null);
+  const [localProfileEdits, setLocalProfileEdits] = useState({});
 
   useEffect(() => {
     if (activeTheme) {
       setPreviewTheme(activeTheme);
     }
   }, [activeTheme]);
+
+  const handleLocalProfileChange = (profileUpdates) => {
+    setLocalProfileEdits((prev) => ({
+      ...prev,
+      ...profileUpdates,
+    }));
+  };
+
+  const effectiveProfile = {
+    ...profile,
+    ...localProfileEdits,
+  };
 
   if (loading) {
     return (
@@ -45,13 +59,17 @@ export default function ThemePage() {
           </p>
         </div>
 
-        <ThemePicker
+        <CustomThemeDesigner
+          currentTheme={previewTheme || profile?.themes}
           themes={themes}
-          activeThemeId={profile?.theme_id}
-          onSelectTheme={applyTheme}
+          activeThemeId={previewTheme?.id || profile?.theme_id}
+          userPlan={profile?.plan || 'free'}
+          profile={effectiveProfile}
           onCreateCustomTheme={createTheme}
-          previewTheme={previewTheme}
+          onUpdateCustomTheme={updateTheme}
+          onSelectTheme={applyTheme}
           setPreviewTheme={setPreviewTheme}
+          onLocalProfileChange={handleLocalProfileChange}
         />
       </div>
 
@@ -59,7 +77,7 @@ export default function ThemePage() {
       <div className="lg:col-span-5 sticky top-0 hidden lg:block self-start">
         <div className="bg-white rounded-3xl border border-slate-200/90 p-4 shadow-card">
           <LivePreview
-            profile={profile}
+            profile={effectiveProfile}
             links={links}
             theme={previewTheme || profile?.themes}
           />

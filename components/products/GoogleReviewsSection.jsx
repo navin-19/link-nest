@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Star, ExternalLink, MessageSquare, CheckCircle2 } from 'lucide-react';
 
@@ -126,7 +127,13 @@ export default function GoogleReviewsSection({ placeId, font }) {
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 rounded-full bg-slate-200 overflow-hidden shrink-0">
                     {r.profile_photo_url ? (
-                      <img src={r.profile_photo_url} alt={r.author_name} className="w-full h-full object-cover" />
+                      <Image
+                        src={r.profile_photo_url}
+                        alt={r.author_name || 'Reviewer'}
+                        width={24}
+                        height={24}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-slate-700">
                         {r.author_name.charAt(0)}

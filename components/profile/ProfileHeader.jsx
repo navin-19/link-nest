@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Avatar from './Avatar';
 import { User } from 'lucide-react';
 
@@ -20,27 +21,27 @@ export default function ProfileHeader({ profile, compact = false }) {
   const username = profile.username;
   const bio = profile.bio;
 
-  // Title styling based on title_style
+  // Title styling based on title_style with tightened tracking for modern aesthetics
   const titleStyle = profile.title_style || 'bold';
-  let titleClasses = 'font-extrabold text-slate-900 leading-tight';
+  let titleClasses = 'font-extrabold text-slate-900 leading-tight tracking-tight';
   if (titleStyle === 'classic') titleClasses = 'font-serif font-bold text-slate-900 leading-tight';
-  if (titleStyle === 'soft') titleClasses = 'font-medium tracking-wide text-slate-800 leading-tight';
+  if (titleStyle === 'soft') titleClasses = 'font-medium text-slate-800 leading-tight tracking-tight';
 
   const titleAndBio = (
     <>
       <div className="space-y-0.5">
-        <h1 className={`${titleClasses} ${compact ? 'text-base' : 'text-xl'}`}>
+        <h1 className={`${titleClasses} ${compact ? 'text-lg sm:text-xl' : 'text-2xl sm:text-3xl'}`}>
           {displayName}
         </h1>
         {username && (
-          <p className={`text-slate-500 font-medium ${compact ? 'text-xs' : 'text-sm'}`}>
+          <p className={`font-bold tracking-tight text-slate-700 ${compact ? 'text-sm sm:text-base' : 'text-base sm:text-lg'}`}>
             @{username}
           </p>
         )}
       </div>
 
       {bio && (
-        <p className={`text-slate-600 leading-relaxed max-w-xs ${compact ? 'text-xs mt-1' : 'text-sm mt-1.5'}`}>
+        <p className={`font-normal text-slate-500 leading-relaxed max-w-xs ${compact ? 'text-sm mt-1' : 'text-base mt-1.5'}`}>
           {bio}
         </p>
       )}
@@ -51,7 +52,7 @@ export default function ProfileHeader({ profile, compact = false }) {
   if (layout === 'hero') {
     const avatarSize = compact ? 76 : 100;
     return (
-      <div className={`flex flex-col items-center text-center ${compact ? 'gap-2.5 py-3' : 'gap-3.5 py-6'}`}>
+      <div className={`flex flex-col items-center text-center ${compact ? 'gap-2 py-2' : 'gap-2.5 py-4'}`}>
         <div className="relative inline-flex items-center justify-center my-1">
           {/* Soft colored gradient glow aura bleeding behind the circular image */}
           <div className="absolute -inset-3 rounded-full bg-linear-to-tr from-indigo-500/40 via-purple-500/40 to-pink-500/40 blur-xl opacity-90 animate-pulse pointer-events-none" />
@@ -76,7 +77,7 @@ export default function ProfileHeader({ profile, compact = false }) {
   if (layout === 'banner') {
     const avatarSize = compact ? 64 : 84;
     return (
-      <div className={`flex flex-col items-center text-center w-full ${compact ? 'pb-3' : 'pb-6'}`}>
+      <div className={`flex flex-col items-center text-center w-full ${compact ? 'pb-2' : 'pb-4'}`}>
         {/* Banner background block */}
         <div className="w-full h-20 sm:h-24 rounded-2xl bg-linear-to-r from-slate-900 via-indigo-950 to-slate-900 shadow-md relative overflow-hidden flex items-center justify-center border border-slate-800/60">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(99,102,241,0.25),transparent_70%)]" />
@@ -101,12 +102,14 @@ export default function ProfileHeader({ profile, compact = false }) {
   if (layout === 'cutout') {
     const sizeClasses = compact ? 'w-18 h-18' : 'w-24 h-24 sm:w-28 sm:h-28';
     return (
-      <div className={`flex flex-col items-center text-center ${compact ? 'gap-2 py-3' : 'gap-3 py-6'}`}>
+      <div className={`flex flex-col items-center text-center ${compact ? 'gap-1.5 py-2' : 'gap-2 py-4'}`}>
         <div className={`relative ${sizeClasses} flex items-center justify-center my-1`}>
           {avatarUrl ? (
-            <img
+            <Image
               src={avatarUrl}
               alt={displayName}
+              width={112}
+              height={112}
               className="w-full h-full object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.18)] transition-transform hover:scale-105 duration-200"
             />
           ) : (
@@ -125,7 +128,7 @@ export default function ProfileHeader({ profile, compact = false }) {
   if (layout === 'shape') {
     const sizeClasses = compact ? 'w-18 h-18' : 'w-24 h-24 sm:w-28 sm:h-28';
     return (
-      <div className={`flex flex-col items-center text-center ${compact ? 'gap-2 py-3' : 'gap-3 py-6'}`}>
+      <div className={`flex flex-col items-center text-center ${compact ? 'gap-1.5 py-2' : 'gap-2 py-4'}`}>
         <div className="relative inline-flex items-center justify-center my-1">
           {/* Organic blob mask container */}
           <div
@@ -135,9 +138,11 @@ export default function ProfileHeader({ profile, compact = false }) {
             }}
           >
             {avatarUrl ? (
-              <img
+              <Image
                 src={avatarUrl}
                 alt={displayName}
+                width={112}
+                height={112}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -157,7 +162,7 @@ export default function ProfileHeader({ profile, compact = false }) {
   const avatarSize = compact ? 64 : 92;
 
   return (
-    <div className={`flex flex-col items-center text-center ${compact ? 'gap-2 py-4' : 'gap-3 py-8'}`}>
+    <div className={`flex flex-col items-center text-center ${compact ? 'gap-1.5 py-2' : 'gap-2 py-4'}`}>
       <Avatar
         src={avatarUrl}
         alt={displayName}

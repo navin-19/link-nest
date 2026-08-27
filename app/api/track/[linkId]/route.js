@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabaseServer';
-import crypto from 'crypto';
+import { createClient } from '@/lib/supabaseServer';
+import { trackClick } from '@/lib/trackClick';
+
+function formatRedirectUrl(url) {
+  if (!url) return '/';
+  if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(url)) {
+    return url;
+  }
+  return `https://${url}`;
+}
 
 export async function GET(request, { params }) {
   try {
@@ -10,67 +18,30 @@ export async function GET(request, { params }) {
       return new Response('Missing linkId', { status: 400 });
     }
 
-    const supabase = createAdminClient();
-
-    // 1. Fetch link details
+    // Security: Use anon RLS-respecting server client to verify link URL & active status
+    const supabase = await createClient();
     const { data: link, error: fetchError } = await supabase
       .from('links')
       .select('url, is_active')
       .eq('id', linkId)
-      .single();
+      .maybeSingle();
 
-    if (fetchError || !link || !link.is_active) {
+    if (fetchError || !link || !link.is_active || !link.url) {
       return new Response('Link not found or inactive', { status: 404 });
     }
 
-    // 2. Extract details
-    const referrerHeader = request.headers.get('referer') || '';
-    
-    // Hash IP address for privacy
-    const forwarded = request.headers.get('x-forwarded-for');
-    const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1';
-    const ipHash = crypto.createHash('sha256').update(ip).digest('hex');
-
-    // Geo-location from Vercel header or null
-    const country = request.headers.get('x-vercel-ip-country') || null;
-
-    // 3. Log click asynchronously
+    // Fail-open analytics tracking: isolated in try/catch so tracking errors NEVER block the redirect
     try {
-      await supabase.from('link_clicks').insert({
-        link_id: linkId,
-        referrer: referrerHeader || null,
-        country: country,
-        ip_hash: ipHash,
-      });
-    } catch (insertErr) {
-      console.error('Failed to insert link click:', insertErr);
+      await trackClick(request, { targetId: linkId, isProduct: false });
+    } catch (trackErr) {
+      console.error('[track-link] Analytics tracking error (failing open):', trackErr);
     }
 
-    // 4. Increment click count
-    const { error: rpcError } = await supabase.rpc('increment_click_count', {
-      link_id: linkId,
-    });
-
-    if (rpcError) {
-      // Fallback increment
-      const { data: currentLink } = await supabase
-        .from('links')
-        .select('click_count')
-        .eq('id', linkId)
-        .single();
-
-      if (currentLink) {
-        await supabase
-          .from('links')
-          .update({ click_count: (currentLink.click_count || 0) + 1 })
-          .eq('id', linkId);
-      }
-    }
-
-    // 5. Redirect user to destination
-    return NextResponse.redirect(link.url, 302);
+    // Redirect user to target destination URL
+    const destinationUrl = formatRedirectUrl(link.url);
+    return NextResponse.redirect(destinationUrl, 302);
   } catch (err) {
-    console.error('Redirect tracker error:', err);
+    console.error('Redirect tracker fatal error:', err);
     return new Response('Internal error', { status: 500 });
   }
 }

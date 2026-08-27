@@ -18,30 +18,14 @@ import {
   EmailIcon,
 } from '@/components/ui/BrandIcons';
 
+// Quick-add platform shortcuts: WhatsApp, Facebook, Instagram, Twitter/X, Gmail, GitHub, LinkedIn, Website
+// Removed YouTube/TikTok per updated platform list — re-add here if that was unintended
 const QUICK_PLATFORMS = [
   {
-    id: 'instagram',
-    label: 'Instagram',
-    icon: InstagramIcon,
-    placeholder: 'https://instagram.com/yourhandle',
-  },
-  {
-    id: 'youtube',
-    label: 'YouTube',
-    icon: YouTubeIcon,
-    placeholder: 'https://youtube.com/@yourchannel',
-  },
-  {
-    id: 'tiktok',
-    label: 'TikTok',
-    icon: TikTokIcon,
-    placeholder: 'https://tiktok.com/@yourhandle',
-  },
-  {
-    id: 'twitter',
-    label: 'Twitter / X',
-    icon: TwitterXIcon,
-    placeholder: 'https://x.com/yourhandle',
+    id: 'whatsapp',
+    label: 'WhatsApp',
+    icon: WhatsAppIcon,
+    placeholder: 'https://wa.me/1234567890',
   },
   {
     id: 'facebook',
@@ -50,16 +34,22 @@ const QUICK_PLATFORMS = [
     placeholder: 'https://facebook.com/yourpage',
   },
   {
-    id: 'linkedin',
-    label: 'LinkedIn',
-    icon: LinkedInIcon,
-    placeholder: 'https://linkedin.com/in/yourprofile',
+    id: 'instagram',
+    label: 'Instagram',
+    icon: InstagramIcon,
+    placeholder: 'https://instagram.com/yourhandle',
   },
   {
-    id: 'whatsapp',
-    label: 'WhatsApp',
-    icon: WhatsAppIcon,
-    placeholder: 'https://wa.me/1234567890',
+    id: 'twitter',
+    label: 'Twitter / X',
+    icon: TwitterXIcon,
+    placeholder: 'https://x.com/yourhandle',
+  },
+  {
+    id: 'email',
+    label: 'Gmail',
+    icon: EmailIcon,
+    placeholder: 'mailto:you@example.com',
   },
   {
     id: 'github',
@@ -68,16 +58,16 @@ const QUICK_PLATFORMS = [
     placeholder: 'https://github.com/yourhandle',
   },
   {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    icon: LinkedInIcon,
+    placeholder: 'https://linkedin.com/in/yourprofile',
+  },
+  {
     id: 'website',
     label: 'Website',
     icon: WebsiteIcon,
     placeholder: 'https://yourwebsite.com',
-  },
-  {
-    id: 'email',
-    label: 'Email',
-    icon: EmailIcon,
-    placeholder: 'mailto:you@example.com',
   },
 ];
 
@@ -153,11 +143,8 @@ export default function AddLinkForm({ onAdd }) {
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Quick Add Links
           </span>
-          <span className="text-[10px] text-slate-400 dark:text-slate-500">
-            Click an icon to pre-fill
-          </span>
         </div>
-        <div className="flex items-center gap-3 overflow-x-auto pb-1.5 pt-0.5 px-0.5 scrollbar-none">
+        <div className="flex items-center justify-center gap-3 overflow-x-auto pb-1.5 pt-0.5 px-0.5 scrollbar-none w-full">
           {QUICK_PLATFORMS.map((platform) => {
             const Icon = platform.icon;
             return (
