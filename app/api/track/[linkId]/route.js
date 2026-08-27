@@ -32,7 +32,9 @@ export async function GET(request, { params }) {
 
     // Fail-open analytics tracking: isolated in try/catch so tracking errors NEVER block the redirect
     try {
-      await trackClick(request, { targetId: linkId, isProduct: false });
+      const { searchParams } = new URL(request.url);
+      const clickType = searchParams.get('click_type') || searchParams.get('type') || 'link';
+      await trackClick(request, { targetId: linkId, isProduct: false, clickType });
     } catch (trackErr) {
       console.error('[track-link] Analytics tracking error (failing open):', trackErr);
     }

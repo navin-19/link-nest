@@ -251,3 +251,44 @@ export function EmailIcon({ size = 28, className = '' }) {
     </svg>
   );
 }
+
+export function PhoneIcon({ size = 28, className = '' }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <rect width="48" height="48" rx="14" fill="#0284C7" />
+      <path
+        d="M17.5 13.5C17 13.5 16 14 15.5 15C14.5 16.5 14.5 18.5 16 21.5C17.5 24.5 20.5 28.5 24.5 31.5C27.5 33.5 29.5 33.5 31 32.5C32 32 32.5 31 32.5 30.5L30.5 25.5C30 25 29 25 28 25.5L26.5 27C23.5 25.5 22.5 24.5 21 21.5L22.5 20C23 19 23 18 22.5 17.5L17.5 13.5Z"
+        fill="#FFFFFF"
+        stroke="#FFFFFF"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function TelegramIcon({ size = 28, className = '' }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <rect width="48" height="48" rx="14" fill="#229ED9" />
+      <path
+        d="M35.6 13.5L10.5 23.2C8.8 23.9 8.8 24.8 10.2 25.3L16.6 27.3L31.5 17.9C32.2 17.5 32.8 17.7 32.3 18.2L20.2 29.1H20.1L20.2 29.2L19.8 35.8C20.4 35.8 20.7 35.5 21.1 35.1L24.3 32L31 36.9C32.2 37.6 33.1 37.2 33.5 35.8L37.9 15.1C38.3 13.3 37.1 12.4 35.6 13.5Z"
+        fill="#FFFFFF"
+      />
+    </svg>
+  );
+}

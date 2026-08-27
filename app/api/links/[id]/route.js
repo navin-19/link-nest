@@ -38,6 +38,10 @@ export async function PATCH(request, props) {
     updates.icon = body.icon;
   }
 
+  if (body.custom_style !== undefined) {
+    updates.custom_style = body.custom_style;
+  }
+
   const { data: link, error } = await supabase
     .from('links')
     .update(updates)

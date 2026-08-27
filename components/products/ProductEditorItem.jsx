@@ -18,6 +18,7 @@ import {
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Image from 'next/image';
+import { isValidProductImageUrl } from '@/utils/isAllowedImageUrl';
 
 export default function ProductEditorItem({ product, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false);
@@ -109,7 +110,7 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
 
       {/* Thumbnail */}
       <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center shrink-0 shadow-2xs">
-        {product.image_url ? (
+        {isValidProductImageUrl(product.image_url) ? (
           <Image
             src={product.image_url}
             alt={product.name || 'Product'}

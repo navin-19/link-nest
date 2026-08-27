@@ -6,9 +6,11 @@ import {
   FacebookIcon,
   LinkedInIcon,
   WhatsAppIcon,
+  TelegramIcon,
   GitHubIcon,
   WebsiteIcon,
   EmailIcon,
+  PhoneIcon,
 } from '@/components/ui/BrandIcons';
 import { Twitch } from 'lucide-react';
 
@@ -23,9 +25,14 @@ const ICON_MAP = {
   twitter:   { Icon: TwitterXIcon, label: 'Twitter / X' },
   x:         { Icon: TwitterXIcon, label: 'Twitter / X' },
   twitterx:  { Icon: TwitterXIcon, label: 'Twitter / X' },
-  email:     { Icon: EmailIcon, label: 'Gmail' },
+  telegram:  { Icon: TelegramIcon, label: 'Telegram' },
+  tg:        { Icon: TelegramIcon, label: 'Telegram' },
+  tme:       { Icon: TelegramIcon, label: 'Telegram' },
+  email:     { Icon: EmailIcon, label: 'Email' },
   gmail:     { Icon: EmailIcon, label: 'Gmail' },
   mail:      { Icon: EmailIcon, label: 'Email' },
+  phone:     { Icon: PhoneIcon, label: 'Phone' },
+  call:      { Icon: PhoneIcon, label: 'Phone' },
   github:    { Icon: GitHubIcon, label: 'GitHub' },
   linkedin:  { Icon: LinkedInIcon, label: 'LinkedIn' },
   youtube:   { Icon: YouTubeIcon, label: 'YouTube' },
@@ -44,9 +51,11 @@ const URL_PATTERNS = [
   { pattern: /facebook\.com|fb\.me|fb\.com/i,     Icon: FacebookIcon,  label: 'Facebook' },
   { pattern: /linkedin\.com/i,                    Icon: LinkedInIcon,  label: 'LinkedIn' },
   { pattern: /whatsapp\.com|wa\.me/i,             Icon: WhatsAppIcon,  label: 'WhatsApp' },
+  { pattern: /t\.me|telegram\.me|telegram\.org/i, Icon: TelegramIcon,  label: 'Telegram' },
   { pattern: /github\.com|github\.io/i,           Icon: GitHubIcon,    label: 'GitHub' },
   { pattern: /twitch\.tv/i,                       Icon: Twitch,        label: 'Twitch' },
   { pattern: /mailto:|gmail\.com/i,               Icon: EmailIcon,     label: 'Email' },
+  { pattern: /tel:|call:/i,                       Icon: PhoneIcon,     label: 'Phone' },
 ];
 
 const TITLE_PATTERNS = [
@@ -57,9 +66,11 @@ const TITLE_PATTERNS = [
   { pattern: /\b(facebook|fb)\b/i,                Icon: FacebookIcon,  label: 'Facebook' },
   { pattern: /\b(linkedin)\b/i,                   Icon: LinkedInIcon,  label: 'LinkedIn' },
   { pattern: /\b(whatsapp|wa)\b/i,                Icon: WhatsAppIcon,  label: 'WhatsApp' },
+  { pattern: /\b(telegram|tg)\b/i,                Icon: TelegramIcon,  label: 'Telegram' },
   { pattern: /\b(github)\b/i,                     Icon: GitHubIcon,    label: 'GitHub' },
   { pattern: /\b(twitch)\b/i,                     Icon: Twitch,        label: 'Twitch' },
   { pattern: /\b(gmail|email|mail)\b/i,           Icon: EmailIcon,     label: 'Email' },
+  { pattern: /\b(phone|call)\b/i,                 Icon: PhoneIcon,     label: 'Phone' },
 ];
 
 /**
@@ -71,8 +82,9 @@ export function resolveLinkIcon(linkOrUrl) {
 
   // If passed a plain URL string
   if (typeof linkOrUrl === 'string') {
+    const trimmed = linkOrUrl.trim();
     for (const { pattern, Icon, label } of URL_PATTERNS) {
-      if (pattern.test(linkOrUrl)) return { Icon, label };
+      if (pattern.test(trimmed)) return { Icon, label };
     }
     return { Icon: WebsiteIcon, label: 'Website' };
   }

@@ -27,11 +27,19 @@ export default function ProfileHeader({
   const username = profile.username;
   const bio = profile.bio;
 
+  // Background and theme detection
+  const effectiveTheme = theme || profile?.themes;
+  const bg = effectiveTheme?.background;
+  const isImageBg =
+    bg?.type === 'image' ||
+    (typeof bg === 'string' && (bg.startsWith('http') || bg.startsWith('/') || bg.startsWith('data:image')));
+
   // Determine contrast mode (light background -> dark text; dark background -> light text)
+  // For image backgrounds, always default to high-contrast white text with text shadow & scrim
   const effectiveContrastMode =
     contrastMode ||
-    getContrastMode(theme?.background || profile?.themes?.background);
-  const isDark = effectiveContrastMode === 'dark';
+    getContrastMode(bg);
+  const isDark = isImageBg || effectiveContrastMode === 'dark';
 
   // Title styling based on title_style with tightened tracking for modern aesthetics
   const titleStyle = profile.title_style || 'bold';
@@ -50,32 +58,53 @@ export default function ProfileHeader({
   }
 
   const usernameClass = isDark
-    ? 'font-bold tracking-tight text-white/80'
+    ? 'font-bold tracking-tight text-white/90'
     : 'font-bold tracking-tight text-slate-700';
 
   const bioClass = isDark
-    ? 'font-normal text-white/70 leading-relaxed max-w-xs'
+    ? 'font-normal text-white/80 leading-relaxed max-w-xs'
     : 'font-normal text-slate-500 leading-relaxed max-w-xs';
 
-  const titleAndBio = (
+  const textShadowStyle = isImageBg
+    ? { textShadow: '0 1px 3px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.5)' }
+    : undefined;
+
+  const titleAndBioInner = (
     <>
       <div className="space-y-0.5">
-        <h1 className={`${titleClasses} ${compact ? 'text-lg sm:text-xl' : 'text-2xl sm:text-3xl'}`}>
+        <h1
+          style={textShadowStyle}
+          className={`${titleClasses} ${compact ? 'text-lg sm:text-xl' : 'text-2xl sm:text-3xl'}`}
+        >
           {displayName}
         </h1>
         {username && (
-          <p className={`${usernameClass} ${compact ? 'text-sm sm:text-base' : 'text-base sm:text-lg'}`}>
+          <p
+            style={textShadowStyle}
+            className={`${usernameClass} ${compact ? 'text-sm sm:text-base' : 'text-base sm:text-lg'}`}
+          >
             @{username}
           </p>
         )}
       </div>
 
       {bio && (
-        <p className={`${bioClass} ${compact ? 'text-sm mt-1' : 'text-base mt-1.5'}`}>
+        <p
+          style={textShadowStyle}
+          className={`${bioClass} ${compact ? 'text-sm mt-1' : 'text-base mt-1.5'}`}
+        >
           {bio}
         </p>
       )}
     </>
+  );
+
+  const titleAndBio = isImageBg ? (
+    <div className="rounded-3xl bg-black/25 backdrop-blur-md px-5 py-3 inline-block shadow-soft my-1">
+      {titleAndBioInner}
+    </div>
+  ) : (
+    titleAndBioInner
   );
 
   // ── Layout: Hero (Larger avatar with gradient ring & colored ambient glow) ──

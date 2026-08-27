@@ -9,6 +9,7 @@ import Input from '@/components/ui/Input';
 import Avatar from '@/components/profile/Avatar';
 import { Upload, AtSign, User, FileText, CheckCircle2 } from 'lucide-react';
 import { validateUsername, normalizeUsername } from '@/utils/validators';
+import GoogleReviewsConfig from '@/components/products/GoogleReviewsConfig';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -281,9 +282,16 @@ export default function SettingsPage() {
               <Input
                 id="social-whatsapp"
                 label="WhatsApp"
-                placeholder="https://wa.me/1234567890"
+                placeholder="+1234567890 (or https://wa.me/...)"
                 value={socialLinks.whatsapp || ''}
                 onChange={(e) => handleSocialLinkChange('whatsapp', e.target.value)}
+              />
+              <Input
+                id="social-phone"
+                label="Phone / Call"
+                placeholder="+1234567890 (direct call link)"
+                value={socialLinks.phone || ''}
+                onChange={(e) => handleSocialLinkChange('phone', e.target.value)}
               />
               <Input
                 id="social-github"
@@ -298,6 +306,13 @@ export default function SettingsPage() {
                 placeholder="https://twitch.tv/username"
                 value={socialLinks.twitch || ''}
                 onChange={(e) => handleSocialLinkChange('twitch', e.target.value)}
+              />
+              <Input
+                id="social-telegram"
+                label="Telegram"
+                placeholder="https://t.me/username"
+                value={socialLinks.telegram || ''}
+                onChange={(e) => handleSocialLinkChange('telegram', e.target.value)}
               />
               <Input
                 id="social-email"
@@ -322,6 +337,9 @@ export default function SettingsPage() {
           </div>
         </form>
       </div>
+
+      {/* Google Business Reviews Configuration */}
+      <GoogleReviewsConfig profile={profile} />
     </div>
   );
 }

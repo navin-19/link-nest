@@ -32,7 +32,7 @@ export async function POST(request) {
   }
 
   const body = await request.json();
-  const { title, url, icon } = body;
+  const { title, url, icon, custom_style } = body;
 
   const titleVal = validateLinkTitle(title);
   if (!titleVal.valid) {
@@ -56,17 +56,23 @@ export async function POST(request) {
     ? existingLinks[0].position + 1
     : 0;
 
+  const insertPayload = {
+    user_id: user.id,
+    title: title.trim(),
+    url: url.trim(),
+    icon: icon || null,
+    position: nextPosition,
+    is_active: true,
+    click_count: 0,
+  };
+
+  if (custom_style !== undefined) {
+    insertPayload.custom_style = custom_style;
+  }
+
   const { data: link, error } = await supabase
     .from('links')
-    .insert({
-      user_id: user.id,
-      title: title.trim(),
-      url: url.trim(),
-      icon: icon || null,
-      position: nextPosition,
-      is_active: true,
-      click_count: 0,
-    })
+    .insert(insertPayload)
     .select()
     .single();
 

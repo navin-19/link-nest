@@ -13,25 +13,19 @@ import {
   FacebookIcon,
   LinkedInIcon,
   WhatsAppIcon,
+  TelegramIcon,
   GitHubIcon,
   WebsiteIcon,
   EmailIcon,
 } from '@/components/ui/BrandIcons';
 
-// Quick-add platform shortcuts: WhatsApp, Facebook, Instagram, Twitter/X, Gmail, GitHub, LinkedIn, Website
-// Removed YouTube/TikTok per updated platform list — re-add here if that was unintended
+// Quick-add platform shortcuts: YouTube, Instagram, TikTok, Twitter/X, Facebook, LinkedIn, WhatsApp, Telegram, GitHub, Email, Website
 const QUICK_PLATFORMS = [
   {
-    id: 'whatsapp',
-    label: 'WhatsApp',
-    icon: WhatsAppIcon,
-    placeholder: 'https://wa.me/1234567890',
-  },
-  {
-    id: 'facebook',
-    label: 'Facebook',
-    icon: FacebookIcon,
-    placeholder: 'https://facebook.com/yourpage',
+    id: 'youtube',
+    label: 'YouTube',
+    icon: YouTubeIcon,
+    placeholder: 'https://youtube.com/@yourchannel',
   },
   {
     id: 'instagram',
@@ -40,16 +34,40 @@ const QUICK_PLATFORMS = [
     placeholder: 'https://instagram.com/yourhandle',
   },
   {
+    id: 'tiktok',
+    label: 'TikTok',
+    icon: TikTokIcon,
+    placeholder: 'https://tiktok.com/@yourhandle',
+  },
+  {
     id: 'twitter',
     label: 'Twitter / X',
     icon: TwitterXIcon,
     placeholder: 'https://x.com/yourhandle',
   },
   {
-    id: 'email',
-    label: 'Gmail',
-    icon: EmailIcon,
-    placeholder: 'mailto:you@example.com',
+    id: 'facebook',
+    label: 'Facebook',
+    icon: FacebookIcon,
+    placeholder: 'https://facebook.com/yourpage',
+  },
+  {
+    id: 'linkedin',
+    label: 'LinkedIn',
+    icon: LinkedInIcon,
+    placeholder: 'https://linkedin.com/in/yourprofile',
+  },
+  {
+    id: 'whatsapp',
+    label: 'WhatsApp',
+    icon: WhatsAppIcon,
+    placeholder: 'https://wa.me/1234567890',
+  },
+  {
+    id: 'telegram',
+    label: 'Telegram',
+    icon: TelegramIcon,
+    placeholder: 'https://t.me/yourhandle',
   },
   {
     id: 'github',
@@ -58,10 +76,10 @@ const QUICK_PLATFORMS = [
     placeholder: 'https://github.com/yourhandle',
   },
   {
-    id: 'linkedin',
-    label: 'LinkedIn',
-    icon: LinkedInIcon,
-    placeholder: 'https://linkedin.com/in/yourprofile',
+    id: 'email',
+    label: 'Email',
+    icon: EmailIcon,
+    placeholder: 'mailto:you@example.com',
   },
   {
     id: 'website',

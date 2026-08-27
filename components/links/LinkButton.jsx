@@ -23,9 +23,10 @@ export default function LinkButton({
     }
   }
 
-  const buttonClass = buttonStyles[buttonStyle] ?? buttonStyles.rounded;
-  const isFilled = buttonStyle === 'filled';
-  const isBento = buttonStyle === 'bentogrid';
+  const effectiveStyle = link?.custom_style?.buttonStyle ?? buttonStyle;
+  const buttonClass = buttonStyles[effectiveStyle] ?? buttonStyles.rounded;
+  const isFilled = effectiveStyle === 'filled';
+  const isBento = effectiveStyle === 'bentogrid';
   const customFontStyle = font ? { fontFamily: font } : {};
 
   if (isBento) {

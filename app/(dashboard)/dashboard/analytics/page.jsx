@@ -11,6 +11,8 @@ import {
   Share2,
   AlertCircle,
   ExternalLink,
+  MessageCircle,
+  Phone,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -189,7 +191,7 @@ export default function AnalyticsDashboardPage() {
       ) : (
         <>
           {/* Summary Metric Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             <div className="p-5 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-2">
               <div className="flex items-center justify-between text-slate-500">
                 <span className="text-[11px] font-bold uppercase tracking-wider">All-Time Clicks</span>
@@ -198,7 +200,31 @@ export default function AnalyticsDashboardPage() {
                 </div>
               </div>
               <div className="text-3xl font-extrabold text-slate-900 font-mono">
-                {data.allTimeClicks}
+                {data.allTimeClicks ?? 0}
+              </div>
+            </div>
+
+            <div className="p-5 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-2">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-[11px] font-bold uppercase tracking-wider">WhatsApp Enquiries</span>
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-2xs">
+                  <MessageCircle size={15} />
+                </div>
+              </div>
+              <div className="text-3xl font-extrabold text-slate-900 font-mono">
+                {data.whatsappClicks ?? 0}
+              </div>
+            </div>
+
+            <div className="p-5 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-2">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-[11px] font-bold uppercase tracking-wider">Call Clicks</span>
+                <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center shadow-2xs">
+                  <Phone size={15} />
+                </div>
+              </div>
+              <div className="text-3xl font-extrabold text-slate-900 font-mono">
+                {data.callClicks ?? 0}
               </div>
             </div>
 
@@ -210,7 +236,7 @@ export default function AnalyticsDashboardPage() {
                 </div>
               </div>
               <div className="text-3xl font-extrabold text-slate-900 font-mono">
-                {data.clicks7Days}
+                {data.clicks7Days ?? 0}
               </div>
             </div>
 
@@ -222,7 +248,7 @@ export default function AnalyticsDashboardPage() {
                 </div>
               </div>
               <div className="text-3xl font-extrabold text-slate-900 font-mono">
-                {data.clicks30Days}
+                {data.clicks30Days ?? 0}
               </div>
             </div>
 

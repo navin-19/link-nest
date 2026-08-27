@@ -4,7 +4,6 @@ import ProfileHeader from '@/components/profile/ProfileHeader';
 import LinkList from '@/components/links/LinkList';
 import SocialIcons from '@/components/profile/SocialIcons';
 import ProductList from '@/components/products/ProductList';
-import GoogleReviewsSection from '@/components/products/GoogleReviewsSection';
 import SubscribeBar from '@/components/profile/SubscribeBar';
 import Link from 'next/link';
 import { getContrastMode } from '@/utils/getContrastMode';
@@ -84,7 +83,7 @@ export default function LinkBioRenderer({
             </div>
           </div>
         ) : (
-          <SubscribeBar username={effectiveUsername} />
+          <SubscribeBar username={effectiveUsername} profile={profile} />
         )}
 
         {/* Profile Header */}
@@ -105,34 +104,18 @@ export default function LinkBioRenderer({
           contrastMode={contrastMode}
         />
 
-        {/* Social Icons Bar (Directly below link cards from profile.social_links) */}
+        {/* Social Icons Bar (Unified dark-themed rounded square icon system) */}
         <SocialIcons
           profile={profile}
-          size={compact ? 14 : 18}
           preview={preview}
-          contrastMode={contrastMode}
-          theme={effectiveTheme}
         />
 
-        {/* Product Showcase */}
-        {products && products.length > 0 && (
-          <ProductList
-            products={products}
-            buttonStyle={buttonStyle}
-            font={font}
-            preview={preview}
-            contrastMode={contrastMode}
-          />
-        )}
-
-        {/* Google Reviews Section */}
-        {profile?.show_google_reviews && profile?.google_place_id && (
-          <GoogleReviewsSection
-            placeId={profile.google_place_id}
-            font={font}
-            contrastMode={contrastMode}
-          />
-        )}
+        {/* Products & Services Section (Heading + View Products button) */}
+        <ProductList
+          font={font}
+          preview={preview}
+          contrastMode={contrastMode}
+        />
       </div>
 
       {/* Footer */}

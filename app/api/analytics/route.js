@@ -76,19 +76,29 @@ export async function GET(request) {
     let productClicks = [];
     const queries = [];
 
+    // Query link_clicks for both link_id items and profile_user_id contact clicks
+    let linkClicksQuery = supabase
+      .from('link_clicks')
+      .select('id, link_id, profile_user_id, click_type, clicked_at, referrer, country')
+      .gte('clicked_at', boundsIso);
+
     if (linkIds.length > 0) {
-      queries.push(
-        supabase
-          .from('link_clicks')
-          .select('link_id, clicked_at, referrer, country')
-          .in('link_id', linkIds)
-          .gte('clicked_at', boundsIso)
-          .then(({ data, error }) => {
-            if (error) console.error('Error fetching link clicks:', error);
-            else linkClicks = data || [];
-          })
-      );
+      linkClicksQuery = linkClicksQuery.or(`link_id.in.(${linkIds.join(',')}),profile_user_id.eq.${user.id}`);
+    } else {
+      linkClicksQuery = linkClicksQuery.eq('profile_user_id', user.id);
     }
+
+    queries.push(
+      linkClicksQuery.then(({ data, error }) => {
+        if (error) {
+          if (error.code !== 'PGRST205' && error.code !== '42703') {
+            console.error('Error fetching link clicks:', error);
+          }
+        } else {
+          linkClicks = data || [];
+        }
+      })
+    );
 
     if (productIds.length > 0) {
       queries.push(
@@ -113,16 +123,25 @@ export async function GET(request) {
 
     // Merge and format clicks
     const allClicks = [
-      ...linkClicks.map((c) => ({
-        type: 'link',
-        id: c.link_id,
-        platform: linkIconMap[c.link_id] || 'other',
-        clickedAt: new Date(c.clicked_at),
-        referrer: c.referrer,
-        country: c.country,
-      })),
+      ...linkClicks.map((c) => {
+        const clickType = c.click_type || 'link';
+        let platform = linkIconMap[c.link_id] || 'other';
+        if (clickType === 'whatsapp') platform = 'whatsapp';
+        if (clickType === 'call') platform = 'call';
+
+        return {
+          type: clickType === 'link' ? 'link' : clickType,
+          clickType,
+          id: c.link_id || c.profile_user_id,
+          platform,
+          clickedAt: new Date(c.clicked_at),
+          referrer: c.referrer,
+          country: c.country,
+        };
+      }),
       ...productClicks.map((c) => ({
         type: 'product',
+        clickType: 'product',
         id: c.product_id,
         platform: 'product',
         clickedAt: new Date(c.clicked_at),
@@ -143,6 +162,12 @@ export async function GET(request) {
     const clicks7d = allClicks.filter((c) => c.clickedAt >= sevenDaysAgo);
     const clicks30d = allClicks.filter((c) => c.clickedAt >= thirtyDaysAgo);
     const clicks90d = allClicks;
+
+    // Aggregate counts by click_type
+    const whatsappClicks = allClicks.filter((c) => c.clickType === 'whatsapp' || c.platform === 'whatsapp').length;
+    const callClicks = allClicks.filter((c) => c.clickType === 'call' || c.platform === 'call').length;
+    const linkClicksCount = allClicks.filter((c) => c.clickType === 'link').length;
+    const productClicksCount = allClicks.filter((c) => c.clickType === 'product').length;
 
     // Helper for computing breakdown
     const getBreakdown = (clicksList) => {
@@ -185,7 +210,6 @@ export async function GET(request) {
     const breakdown90d = getBreakdown(clicks90d);
 
     // 3. Compute daily aggregates for 7d, 30d, 90d
-    // To construct a clean contiguous array, populate a helper
     const dailyStats = {};
     allClicks.forEach((c) => {
       const dateStr = c.clickedAt.toISOString().split('T')[0];
@@ -196,6 +220,7 @@ export async function GET(request) {
           instagram: 0,
           youtube: 0,
           whatsapp: 0,
+          call: 0,
           facebook: 0,
           other: 0,
           product: 0
@@ -204,9 +229,13 @@ export async function GET(request) {
       dailyStats[dateStr].clicks += 1;
       if (c.type === 'product') {
         dailyStats[dateStr].product += 1;
+      } else if (c.clickType === 'whatsapp' || c.platform === 'whatsapp') {
+        dailyStats[dateStr].whatsapp += 1;
+      } else if (c.clickType === 'call' || c.platform === 'call') {
+        dailyStats[dateStr].call += 1;
       } else {
         const plat = c.platform;
-        if (plat === 'instagram' || plat === 'youtube' || plat === 'whatsapp' || plat === 'facebook') {
+        if (plat === 'instagram' || plat === 'youtube' || plat === 'facebook') {
           dailyStats[dateStr][plat] += 1;
         } else {
           dailyStats[dateStr].other += 1;
@@ -227,11 +256,20 @@ export async function GET(request) {
       }))
       .sort((a, b) => b.clicks - a.clicks);
 
+    // Effective allTimeClicks including direct contact clicks
+    const profileContactClicksCount = linkClicks.filter((c) => !c.link_id && c.profile_user_id === user.id).length;
+    const computedAllTimeClicks = allTimeClicks + profileContactClicksCount;
+
     return NextResponse.json({
-      allTimeClicks,
+      allTimeClicks: computedAllTimeClicks,
+      totalClicks: computedAllTimeClicks,
       clicks7Days: clicks7d.length,
       clicks30Days: clicks30d.length,
       clicks90Days: clicks90d.length,
+      whatsappClicks,
+      callClicks,
+      linkClicks: linkClicksCount,
+      productClicks: productClicksCount,
       topPerformingLink,
       clicksOverTime,
       topLinks,

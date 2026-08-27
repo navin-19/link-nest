@@ -45,4 +45,23 @@ export const buttonStyles = {
     'rounded-3xl bg-linear-to-r from-fuchsia-500 via-purple-500 to-indigo-500 border-4 border-black text-white font-black uppercase tracking-tight shadow-[6px_6px_0_0_#000] hover:shadow-[8px_8px_0_0_#000] hover:-translate-y-0.5 transition-all',
 };
 
+export const BUTTON_STYLES = [
+  { id: 'rounded',       label: 'Soft Rounded',      desc: 'Sleek white card with gentle shadow' },
+  { id: 'filled',        label: 'Solid Charcoal',    desc: 'High-contrast bold solid fill' },
+  { id: 'outline',       label: 'Minimal Outline',   desc: 'Subtle clean border lines' },
+  { id: 'shadow',        label: 'Elevated Floating', desc: 'Deep floating drop shadow' },
+  { id: 'glassmorphism', label: 'Glassmorphism',     desc: 'Translucent frosted glass blur' },
+  { id: 'hardshadow',    label: 'Hard Shadow',       desc: 'Bold retro pop offset shadow' },
+  { id: 'neumorphism',   label: 'Neumorphism',       desc: 'Soft extruded plastic with dual shadows' },
+  { id: 'liquidglass',   label: 'Liquid Glass',      desc: 'Refractive frosted glass with dynamic light' },
+  { id: 'neobrutalism',  label: 'Neobrutalism',      desc: 'Bold flat color, thick borders, hard offset shadow' },
+  { id: 'claymorphism',  label: 'Claymorphism',      desc: 'Puffy 3D clay shapes with soft shadows' },
+  { id: 'bentogrid',     label: 'Bento Grid',        desc: 'Compact grid of square cards (changes layout)' },
+  { id: 'flat',          label: 'Flat Design',       desc: 'Pure solid color, zero shadows or gradients' },
+  { id: 'neondark',      label: 'Neon Dark',         desc: 'Dark background with glowing neon border' },
+  { id: 'minimal',       label: 'Minimalism',        desc: 'No card chrome — clean text link with underline' },
+  { id: 'skeuomorphism', label: 'Skeuomorphism',     desc: 'Brushed-metal button with realistic depth' },
+  { id: 'maximalism',    label: 'Maximalism',        desc: 'Vibrant gradient, heavy type, bold contrast border' },
+];
+
 export default buttonStyles;
