@@ -156,7 +156,7 @@ CREATE POLICY "links_owner_delete"
 DROP POLICY IF EXISTS "themes_public_select" ON public.themes;
 CREATE POLICY "themes_public_select"
   ON public.themes FOR SELECT
-  USING (user_id IS NULL OR auth.uid() = user_id);
+  USING (true);
 
 DROP POLICY IF EXISTS "themes_owner_insert" ON public.themes;
 CREATE POLICY "themes_owner_insert"

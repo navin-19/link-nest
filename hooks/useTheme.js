@@ -109,26 +109,22 @@ export function useTheme(profileThemeId) {
   const createTheme = useCallback(async (themeData) => {
     setError(null);
     try {
-      const supabase = createClient();
-      const { data: { user }, error: authErr } = await supabase.auth.getUser();
-      if (authErr || !user) {
-        throw new Error('You must be logged in to create a custom theme.');
+      const res = await fetch('/api/themes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(themeData),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || 'Failed to create custom theme');
       }
 
-      const { data, error: insertError } = await supabase
-        .from('themes')
-        .insert({ ...themeData, user_id: user.id })
-        .select()
-        .single();
-
-      if (insertError) {
-        console.error('[useTheme.createTheme error]', insertError);
-        throw new Error(`Failed to create theme: ${insertError.message}`);
-      }
-
-      setThemes((prev) => [...prev, data]);
+      const { theme, profile: updatedProfile } = await res.json();
+      setThemes((prev) => [...prev, theme]);
+      setActiveTheme(theme);
       router.refresh();
-      return data;
+      return theme;
     } catch (err) {
       console.error('[useTheme] Exception creating theme:', err);
       setError(err.message);
@@ -142,29 +138,22 @@ export function useTheme(profileThemeId) {
   const updateTheme = useCallback(async (themeId, themeData) => {
     setError(null);
     try {
-      const supabase = createClient();
-      const { data: { user }, error: authErr } = await supabase.auth.getUser();
-      if (authErr || !user) {
-        throw new Error('You must be logged in to update a custom theme.');
+      const res = await fetch(`/api/themes/${themeId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(themeData),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || 'Failed to update custom theme');
       }
 
-      const { data, error: updateError } = await supabase
-        .from('themes')
-        .update(themeData)
-        .eq('id', themeId)
-        .eq('user_id', user.id)
-        .select()
-        .single();
-
-      if (updateError) {
-        console.error('[useTheme.updateTheme error]', updateError);
-        throw new Error(`Failed to update theme: ${updateError.message}`);
-      }
-
-      setThemes((prev) => prev.map((t) => (t.id === themeId ? data : t)));
-      setActiveTheme(data);
+      const { theme } = await res.json();
+      setThemes((prev) => prev.map((t) => (t.id === themeId ? theme : t)));
+      setActiveTheme(theme);
       router.refresh();
-      return data;
+      return theme;
     } catch (err) {
       console.error('[useTheme] Exception updating theme:', err);
       setError(err.message);

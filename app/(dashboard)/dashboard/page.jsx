@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { useLinks } from '@/hooks/useLinks';
-import Avatar from '@/components/profile/Avatar';
+import LivePreview from '@/components/dashboard/LivePreview';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import BackgroundPicker from '@/components/theme/BackgroundPicker';
@@ -59,11 +59,6 @@ export default function MyLinkNestDashboard() {
 
   // 1. Decorative card backdrop style (only affects outer dashboard card)
   const cardBackdropStyle = getBackgroundStyle(cardBg, 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)');
-
-  // 2. Real theme background style (mirrors live public profile page inside the phone mockup)
-  const previewBgStyle = getBackgroundStyle(profile?.themes?.background, 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)');
-
-  const activeLinks = links.filter((l) => l.is_active);
 
   async function handleCopy(e) {
     e.stopPropagation();
@@ -163,63 +158,14 @@ export default function MyLinkNestDashboard() {
             <Palette size={14} />
           </button>
 
-          {/* Centered Phone Mockup with true ~9:19.5 aspect ratio */}
-          <div className="relative w-[190px] sm:w-[200px] h-[360px] rounded-[32px] border-[5px] border-slate-900 bg-slate-900 p-2 shadow-2xl z-10 group-hover:scale-[1.02] transition-transform duration-300 flex flex-col">
-            {/* Dynamic Notch */}
-            <div className="absolute top-3 left-1/2 -translate-x-1/2 w-14 h-3 bg-black rounded-full z-20" />
-
-            {/* Inner Screen matching real theme */}
-            <div
-              style={previewBgStyle}
-              className="w-full h-full rounded-[24px] py-4 px-2.5 flex flex-col items-center justify-between text-center shadow-inner overflow-hidden"
-            >
-              {/* Top: Avatar & Name */}
-              <div className="flex flex-col items-center space-y-1 pt-1.5">
-                <Avatar
-                  src={profile?.avatar_url}
-                  alt={displayName}
-                  size={42}
-                  className="border-2 border-white/30 shadow-md"
-                />
-                <div className="space-y-0.5">
-                  <h4 className="text-[11px] font-bold text-white tracking-tight truncate max-w-[150px] drop-shadow-sm">
-                    {displayName}
-                  </h4>
-                  <p className="text-[9px] font-mono text-white/80 drop-shadow-xs">
-                    @{username}
-                  </p>
-                </div>
-              </div>
-
-              {/* Middle: Active Link Pills */}
-              <div className="w-full space-y-1 my-2 px-0.5">
-                {activeLinks.slice(0, 2).map((link) => (
-                  <div
-                    key={link.id}
-                    className="w-full py-1 px-2 rounded-lg bg-white/90 backdrop-blur-sm text-[9px] font-semibold text-slate-900 truncate shadow-2xs text-center"
-                  >
-                    {link.title}
-                  </div>
-                ))}
-                {activeLinks.length > 2 && (
-                  <div className="text-[8px] text-white/80 font-medium pt-0.5">
-                    +{activeLinks.length - 2} more links
-                  </div>
-                )}
-                {activeLinks.length === 0 && (
-                  <div className="text-[9px] text-white/70 italic py-0.5">
-                    No active links yet
-                  </div>
-                )}
-              </div>
-
-              {/* Bottom: Join on LinkNest Pill */}
-              <div className="w-full pt-0.5">
-                <div className="w-full py-1 px-2 rounded-full bg-black/40 backdrop-blur-md text-[8px] font-bold text-white border border-white/20 tracking-tight truncate">
-                  Join @{username} on LinkNest
-                </div>
-              </div>
-            </div>
+          {/* Real Live Device Preview (identical rendering to /dashboard/links and /[username]) */}
+          <div className="relative z-10 group-hover:scale-[1.01] transition-transform duration-300">
+            <LivePreview
+              profile={profile}
+              links={links}
+              theme={profile?.themes}
+              showHeader={false}
+            />
           </div>
         </div>
 

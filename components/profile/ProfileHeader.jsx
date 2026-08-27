@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Avatar from './Avatar';
 import { User } from 'lucide-react';
+import { getContrastMode } from '@/utils/getContrastMode';
 
 /**
  * ProfileHeader renders the user's avatar according to the selected avatar_layout:
@@ -10,9 +11,14 @@ import { User } from 'lucide-react';
  *   - 'cutout': Frameless transparent cutout style where the subject floats without a contained box/circle
  *   - 'shape': Distinct organic geometric blob shape
  *
- * NOTE: The Profile Title font is kept fixed & clean, independent of link card fonts.
+ * Automatically adapts title, username, and bio contrast to the background theme.
  */
-export default function ProfileHeader({ profile, compact = false }) {
+export default function ProfileHeader({
+  profile,
+  compact = false,
+  contrastMode,
+  theme,
+}) {
   if (!profile) return null;
 
   const layout = profile.avatar_layout || 'classic';
@@ -21,11 +27,35 @@ export default function ProfileHeader({ profile, compact = false }) {
   const username = profile.username;
   const bio = profile.bio;
 
+  // Determine contrast mode (light background -> dark text; dark background -> light text)
+  const effectiveContrastMode =
+    contrastMode ||
+    getContrastMode(theme?.background || profile?.themes?.background);
+  const isDark = effectiveContrastMode === 'dark';
+
   // Title styling based on title_style with tightened tracking for modern aesthetics
   const titleStyle = profile.title_style || 'bold';
-  let titleClasses = 'font-extrabold text-slate-900 leading-tight tracking-tight';
-  if (titleStyle === 'classic') titleClasses = 'font-serif font-bold text-slate-900 leading-tight';
-  if (titleStyle === 'soft') titleClasses = 'font-medium text-slate-800 leading-tight tracking-tight';
+  let titleClasses = isDark
+    ? 'font-extrabold text-white leading-tight tracking-tight'
+    : 'font-extrabold text-slate-900 leading-tight tracking-tight';
+
+  if (titleStyle === 'classic') {
+    titleClasses = isDark
+      ? 'font-serif font-bold text-white leading-tight'
+      : 'font-serif font-bold text-slate-900 leading-tight';
+  } else if (titleStyle === 'soft') {
+    titleClasses = isDark
+      ? 'font-medium text-white/95 leading-tight tracking-tight'
+      : 'font-medium text-slate-800 leading-tight tracking-tight';
+  }
+
+  const usernameClass = isDark
+    ? 'font-bold tracking-tight text-white/80'
+    : 'font-bold tracking-tight text-slate-700';
+
+  const bioClass = isDark
+    ? 'font-normal text-white/70 leading-relaxed max-w-xs'
+    : 'font-normal text-slate-500 leading-relaxed max-w-xs';
 
   const titleAndBio = (
     <>
@@ -34,14 +64,14 @@ export default function ProfileHeader({ profile, compact = false }) {
           {displayName}
         </h1>
         {username && (
-          <p className={`font-bold tracking-tight text-slate-700 ${compact ? 'text-sm sm:text-base' : 'text-base sm:text-lg'}`}>
+          <p className={`${usernameClass} ${compact ? 'text-sm sm:text-base' : 'text-base sm:text-lg'}`}>
             @{username}
           </p>
         )}
       </div>
 
       {bio && (
-        <p className={`font-normal text-slate-500 leading-relaxed max-w-xs ${compact ? 'text-sm mt-1' : 'text-base mt-1.5'}`}>
+        <p className={`${bioClass} ${compact ? 'text-sm mt-1' : 'text-base mt-1.5'}`}>
           {bio}
         </p>
       )}
@@ -113,7 +143,7 @@ export default function ProfileHeader({ profile, compact = false }) {
               className="w-full h-full object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.18)] transition-transform hover:scale-105 duration-200"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-slate-800 drop-shadow-md">
+            <div className={`w-full h-full flex items-center justify-center drop-shadow-md ${isDark ? 'text-white/80' : 'text-slate-800'}`}>
               <User size={compact ? 48 : 64} strokeWidth={1.5} />
             </div>
           )}

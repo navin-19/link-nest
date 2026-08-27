@@ -6,12 +6,21 @@
 
 /**
  * Returns the public profile URL for a given username.
+ * Automatically resolves runtime browser origin when NEXT_PUBLIC_APP_URL is not set.
+ * 
  * @param {string} username
- * @param {string} [baseUrl] - Defaults to window.location.origin in browser
+ * @param {string} [baseUrl]
  * @returns {string}
  */
 export function getProfileUrl(username, baseUrl) {
-  const base = (baseUrl || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '');
+  if (!username) return '';
+  const envUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const runtimeOrigin =
+    typeof window !== 'undefined' && window.location?.origin
+      ? window.location.origin
+      : null;
+
+  const base = (baseUrl || envUrl || runtimeOrigin || 'http://localhost:3000').replace(/\/$/, '');
   return `${base}/${username}`;
 }
 

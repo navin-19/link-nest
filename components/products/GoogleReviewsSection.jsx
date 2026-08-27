@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { Star, ExternalLink, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { Star, ExternalLink } from 'lucide-react';
 
-export default function GoogleReviewsSection({ placeId, font }) {
+export default function GoogleReviewsSection({ placeId, font, contrastMode = 'light' }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -42,13 +42,15 @@ export default function GoogleReviewsSection({ placeId, font }) {
   const reviews = data?.reviews || [];
   const customFontStyle = font ? { fontFamily: font } : {};
 
+  const isDark = contrastMode === 'dark';
+
   return (
     <section style={customFontStyle} className="w-full space-y-3 pt-4 text-slate-900">
       {/* Section Header */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-1.5">
           <Star size={15} className="text-amber-500 fill-amber-500" />
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+          <h2 className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-white/80' : 'text-slate-500'}`}>
             Customer Reviews
           </h2>
         </div>
@@ -57,7 +59,9 @@ export default function GoogleReviewsSection({ placeId, font }) {
             href={data.googleMapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[11px] font-semibold text-slate-500 hover:text-slate-800 flex items-center gap-1"
+            className={`text-[11px] font-semibold flex items-center gap-1 transition-colors ${
+              isDark ? 'text-white/80 hover:text-white' : 'text-slate-500 hover:text-slate-800'
+            }`}
           >
             <span>Google Profile</span>
             <ExternalLink size={10} />

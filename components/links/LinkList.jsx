@@ -1,68 +1,90 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import LinkButton from './LinkButton';
 
 /**
- * AnimatedLinkCard: Adds iOS-style soft settling scale/opacity scroll dynamics
- * as the link card enters/nears the viewport boundaries.
+ * LinkList: The single unified component for rendering link cards across both
+ * the dashboard LivePreview and the public [username] profile page.
  */
-function AnimatedLinkCard({ link, buttonStyle, font, username }) {
-  const cardRef = useRef(null);
-
-  const { scrollYProgress } = useScroll({
-    target: cardRef,
-    offset: ['start end', 'end start'],
-  });
-
-  const scale = useTransform(scrollYProgress, [0, 0.12, 0.9, 1], [0.94, 1, 1, 0.96]);
-  const opacity = useTransform(scrollYProgress, [0, 0.1, 0.95, 1], [0.75, 1, 1, 0.85]);
-
-  return (
-    <motion.div
-      ref={cardRef}
-      style={{ scale, opacity }}
-      className="w-full origin-bottom"
-    >
-      <LinkButton
-        link={link}
-        buttonStyle={buttonStyle}
-        font={font}
-        username={username}
-        preview={false}
-      />
-    </motion.div>
-  );
-}
-
-/**
- * LinkList renders the list of active links on the public profile page.
- * When buttonStyle === 'bentogrid', it automatically formats into a responsive 2-column grid.
- */
-export default function LinkList({ links = [], buttonStyle = 'rounded', font, username }) {
-  const activeLinks = links.filter((l) => l.is_active);
+export default function LinkList({
+  links = [],
+  buttonStyle = 'rounded',
+  font,
+  username,
+  preview = false,
+  contrastMode = 'light',
+}) {
+  const activeLinks = (links || []).filter((l) => l.is_active !== false);
 
   if (activeLinks.length === 0) {
-    return (
-      <p className="text-center text-slate-400 text-sm py-8">
-        No links added yet.
-      </p>
-    );
+    if (preview) {
+      return (
+        <div
+          className={`text-center py-5 px-3 rounded-2xl border-2 border-dashed shadow-2xs space-y-1 my-1 w-full backdrop-blur-xs transition-colors ${
+            contrastMode === 'dark'
+              ? 'border-slate-700/80 bg-slate-900/60 text-slate-300'
+              : 'border-slate-300/80 bg-white/60 text-slate-600'
+          }`}
+        >
+          <p className={`text-xs font-semibold ${contrastMode === 'dark' ? 'text-slate-200' : 'text-slate-800'}`}>
+            Your links will appear here
+          </p>
+          <p className={`text-[10px] ${contrastMode === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+            Add your first link to get started
+          </p>
+        </div>
+      );
+    }
+
+    return null;
   }
 
   const isBento = buttonStyle === 'bentogrid';
+  const containerClass = isBento
+    ? 'grid grid-cols-2 gap-2.5 w-full'
+    : 'flex flex-col gap-2.5 w-full';
+
+  if (preview) {
+    return (
+      <div className={containerClass}>
+        <AnimatePresence mode="popLayout">
+          {activeLinks.map((link) => (
+            <motion.div
+              key={link.id}
+              layout
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
+              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+              className="w-full"
+            >
+              <LinkButton
+                link={link}
+                buttonStyle={buttonStyle}
+                font={font}
+                username={username}
+                preview={true}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    );
+  }
 
   return (
-    <div className={isBento ? 'grid grid-cols-2 gap-3 w-full px-4' : 'flex flex-col gap-3 w-full px-4'}>
+    <div className={containerClass}>
       {activeLinks.map((link) => (
-        <AnimatedLinkCard
-          key={link.id}
-          link={link}
-          buttonStyle={buttonStyle}
-          font={font}
-          username={username}
-        />
+        <div key={link.id} className="w-full">
+          <LinkButton
+            link={link}
+            buttonStyle={buttonStyle}
+            font={font}
+            username={username}
+            preview={false}
+          />
+        </div>
       ))}
     </div>
   );

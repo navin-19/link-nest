@@ -8,17 +8,26 @@ export default function ProductList({
   buttonStyle = 'rounded',
   font,
   preview = false,
+  contrastMode = 'light',
 }) {
   const activeProducts = products.filter((p) => p.is_active);
 
   if (activeProducts.length === 0) return null;
 
+  const headerClass =
+    contrastMode === 'dark'
+      ? 'text-xs font-bold uppercase tracking-wider text-white/80'
+      : 'text-xs font-bold uppercase tracking-wider text-slate-500';
+
+  const iconClass =
+    contrastMode === 'dark' ? 'text-white/80' : 'text-slate-500';
+
   return (
     <section className="w-full space-y-3 pt-2">
       {/* Section Header */}
       <div className="flex items-center gap-2 px-1">
-        <Package size={15} className="text-slate-500" />
-        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+        <Package size={15} className={iconClass} />
+        <h2 className={headerClass}>
           Products & Services
         </h2>
       </div>

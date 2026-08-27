@@ -5,8 +5,8 @@ import PublicProfileClient from '@/components/profile/PublicProfileClient';
 import Link from 'next/link';
 import { Link2 } from 'lucide-react';
 
-// Task 2: ISR revalidation window (60s) to cache public profile pages while keeping content fresh
-export const revalidate = 60;
+// Always render dynamic data on public profile pages so edits appear immediately
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
   const { username: rawUsername } = await params;

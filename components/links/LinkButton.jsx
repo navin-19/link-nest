@@ -73,7 +73,7 @@ export default function LinkButton({
       ].join(' ')}
     >
       {/* Icon */}
-      <span className="flex items-center justify-center w-7 h-7 shrink-0 transition-transform group-hover:scale-105 self-end">
+      <span className="flex items-center justify-center w-7 h-7 shrink-0 transition-transform group-hover:scale-105">
         <Icon size={28} className="shrink-0 drop-shadow-2xs" />
       </span>
 

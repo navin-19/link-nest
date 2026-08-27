@@ -96,10 +96,8 @@ export default function CustomThemeDesigner({
     setError(null);
 
     try {
-      // Check if currentTheme is user-owned custom theme
-      const isCustomUserTheme = Boolean(
-        currentTheme?.id && currentTheme?.user_id && profile?.id && currentTheme.user_id === profile.id
-      );
+      // If currentTheme has a user_id, it is an editable custom theme
+      const isCustomUserTheme = Boolean(currentTheme?.id && currentTheme?.user_id);
 
       if (isCustomUserTheme && onUpdateCustomTheme) {
         const updated = await onUpdateCustomTheme(currentTheme.id, {
@@ -130,7 +128,7 @@ export default function CustomThemeDesigner({
       setAutoSaveStatus(null);
       setError(err.message || 'Failed to auto-save theme changes');
     }
-  }, [currentTheme, profile, onUpdateCustomTheme, onCreateCustomTheme, onSelectTheme, setPreviewTheme]);
+  }, [currentTheme, onUpdateCustomTheme, onCreateCustomTheme, onSelectTheme, setPreviewTheme]);
 
   const scheduleAutoSave = useCallback((bg, btnStyle, font) => {
     setAutoSaveStatus('saving');
@@ -190,9 +188,7 @@ export default function CustomThemeDesigner({
     setError(null);
     setSuccess(null);
     try {
-      const isCustomUserTheme = Boolean(
-        currentTheme?.id && currentTheme?.user_id && profile?.id && currentTheme.user_id === profile.id
-      );
+      const isCustomUserTheme = Boolean(currentTheme?.id && currentTheme?.user_id);
 
       if (isCustomUserTheme && onUpdateCustomTheme) {
         const updated = await onUpdateCustomTheme(currentTheme.id, {
