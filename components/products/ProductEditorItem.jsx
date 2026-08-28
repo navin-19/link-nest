@@ -239,16 +239,18 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
           </>
         ) : (
           <>
-            <a
-              href={product.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
-              aria-label="Open product link"
-              title="View product"
-            >
-              <ExternalLink size={15} />
-            </a>
+            {product.url && (
+              <a
+                href={product.url.startsWith('http://') || product.url.startsWith('https://') ? product.url : `https://${product.url}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                aria-label="Open product link"
+                title="View product"
+              >
+                <ExternalLink size={15} />
+              </a>
+            )}
             <Button
               size="icon"
               variant="ghost"

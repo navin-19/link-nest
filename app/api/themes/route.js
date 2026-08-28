@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabaseServer';
 
 export async function GET() {
@@ -53,6 +54,14 @@ export async function POST(request) {
 
   if (profileErr) {
     console.warn('[API /api/themes POST profile attach warning]', profileErr);
+  }
+
+  if (updatedProfile?.username) {
+    try {
+      revalidatePath(`/${updatedProfile.username}`);
+    } catch (revalErr) {
+      console.warn('[API /api/themes POST revalidatePath warning]', revalErr);
+    }
   }
 
   return NextResponse.json({ theme, profile: updatedProfile }, { status: 201 });

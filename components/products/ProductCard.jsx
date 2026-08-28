@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Package } from 'lucide-react';
+import { Package, ExternalLink } from 'lucide-react';
 import { isValidProductImageUrl } from '@/utils/isAllowedImageUrl';
 
 export default function ProductCard({
@@ -17,6 +17,7 @@ export default function ProductCard({
     }
   }
 
+  const isDark = contrastMode === 'dark';
   const customFontStyle = font ? { fontFamily: font } : {};
   const hasUrl = Boolean(product.url && product.url.trim());
   const hasValidImage = isValidProductImageUrl(product.image_url);
@@ -57,8 +58,8 @@ export default function ProductCard({
         )}
       </div>
 
-      {/* Product Info (Name, Badges, & Description) */}
-      <div className="p-4 sm:p-5 space-y-2 text-left">
+      {/* Product Info (Name, Badges, Description, & View Product Button) */}
+      <div className="p-4 sm:p-5 space-y-2.5 text-left">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-1.5 flex-wrap">
             {product.category && (
@@ -74,13 +75,31 @@ export default function ProductCard({
           </div>
         </div>
 
-        <h3 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-          {product.name}
-        </h3>
-        {product.description && (
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">
-            {product.description}
-          </p>
+        <div>
+          <h3 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+            {product.name}
+          </h3>
+          {product.description && (
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2 mt-1">
+              {product.description}
+            </p>
+          )}
+        </div>
+
+        {/* View Product CTA Button */}
+        {hasUrl && (
+          <div className="pt-2">
+            <div
+              className={`w-full py-2.5 px-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-xs sm:text-sm transition-all duration-150 shadow-btn select-none ${
+                isDark
+                  ? 'bg-purple-600 group-hover:bg-purple-500 text-white'
+                  : 'bg-slate-900 group-hover:bg-slate-800 text-white'
+              }`}
+            >
+              <span>View Product</span>
+              <ExternalLink size={14} />
+            </div>
+          </div>
         )}
       </div>
     </CardWrapper>

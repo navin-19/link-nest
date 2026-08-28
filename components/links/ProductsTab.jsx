@@ -33,7 +33,7 @@ export default function ProductsTab({
   onReorder,
 }) {
   const [showProducts, setShowProducts] = useState(profile?.show_products !== false);
-  const [toggling, setToggling] = useState(false);
+  const [toggleError, setToggleError] = useState(null);
 
   useEffect(() => {
     if (profile && profile.show_products !== undefined) {
@@ -42,15 +42,17 @@ export default function ProductsTab({
   }, [profile?.show_products]);
 
   async function handleToggleShowProducts(val) {
+    const previous = showProducts;
+    // Optimistic UI update: change visual state instantly
     setShowProducts(val);
+    setToggleError(null);
     if (onLocalProfileChange) {
       onLocalProfileChange({ show_products: val });
     }
 
-    setToggling(true);
     try {
       const res = await fetch('/api/profile', {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ show_products: val }),
       });
@@ -60,12 +62,12 @@ export default function ProductsTab({
     } catch (err) {
       console.error('[ProductsTab toggle error]', err);
       // Revert on error
-      setShowProducts(!val);
+      setShowProducts(previous);
       if (onLocalProfileChange) {
-        onLocalProfileChange({ show_products: !val });
+        onLocalProfileChange({ show_products: previous });
       }
-    } finally {
-      setToggling(false);
+      setToggleError('Failed to update product visibility. Setting reverted.');
+      setTimeout(() => setToggleError(null), 4000);
     }
   }
 
@@ -114,7 +116,6 @@ export default function ProductsTab({
               type="button"
               role="switch"
               aria-checked={showProducts}
-              disabled={toggling}
               onClick={() => handleToggleShowProducts(!showProducts)}
               className={`relative w-10 h-6 rounded-full transition-colors cursor-pointer ${
                 showProducts ? 'bg-emerald-500' : 'bg-slate-300'
@@ -128,6 +129,14 @@ export default function ProductsTab({
             </button>
           </label>
         </div>
+
+        {/* Toggle Error Alert */}
+        {toggleError && (
+          <div className="p-3 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2 animate-in fade-in">
+            <AlertCircle size={15} className="shrink-0" />
+            <span>{toggleError}</span>
+          </div>
+        )}
 
         {/* Error Alert */}
         {error && (

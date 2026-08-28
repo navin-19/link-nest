@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabaseServer';
 import Sidebar from '@/components/dashboard/Sidebar';
 import UserNavDropdown from '@/components/dashboard/UserNavDropdown';
 import Link from 'next/link';
-import { Link2 } from 'lucide-react';
+import { Link2, ShieldAlert } from 'lucide-react';
 
 export default async function DashboardLayout({ children }) {
   const supabase = await createClient();
@@ -21,6 +21,27 @@ export default async function DashboardLayout({ children }) {
     .select('*, themes!profiles_theme_id_fkey(*)')
     .eq('id', user.id)
     .single();
+
+  // Enforce account suspension block
+  if (profile?.is_suspended) {
+    return (
+      <div className="min-h-screen bg-[#fafaf9] text-slate-900 flex flex-col items-center justify-center p-6 text-center font-sans">
+        <div className="w-16 h-16 rounded-3xl bg-red-50 text-red-600 flex items-center justify-center shadow-soft mb-4 border border-red-100">
+          <ShieldAlert size={32} />
+        </div>
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">Account Suspended</h1>
+        <p className="text-sm text-slate-600 max-w-md mb-6 leading-relaxed">
+          Your account has been suspended by an administrator. You currently do not have access to the dashboard. Please contact support if you believe this is an error.
+        </p>
+        <a
+          href="/api/auth/signout"
+          className="px-6 py-2.5 rounded-full bg-slate-900 text-white text-xs font-semibold shadow-btn hover:shadow-btn-hover transition-all"
+        >
+          Sign Out
+        </a>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen overflow-hidden bg-[#fafaf9] text-slate-900 flex flex-col font-sans">

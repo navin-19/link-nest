@@ -265,6 +265,22 @@ export default function UserNavDropdown({ user, profile }) {
 
           {/* Quick Navigation Links */}
           <div className="space-y-0.5 py-0.5">
+            {profile?.is_super_admin && (
+              <Link
+                href="/admin"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100/80 border border-purple-200/70 transition-colors mb-1 shadow-2xs"
+              >
+                <span className="flex items-center gap-2">
+                  <Sparkles size={14} className="text-purple-600" />
+                  Super Admin Panel
+                </span>
+                <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md bg-purple-600 text-white">
+                  Admin
+                </span>
+              </Link>
+            )}
+
             {username && (
               <a
                 href={`/${username}`}

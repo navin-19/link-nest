@@ -32,7 +32,23 @@ function getBackgroundStyle(bg, defaultGradient = 'linear-gradient(135deg, #0f17
       backgroundPosition: 'center',
       backgroundSize: 'cover',
       backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'scroll',
     };
+  }
+  if (typeof bg === 'string') {
+    if (bg.startsWith('linear-gradient') || bg.startsWith('radial-gradient')) {
+      return { background: bg };
+    }
+    if (bg.startsWith('http') || bg.startsWith('/')) {
+      return {
+        backgroundImage: `url(${bg})`,
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'scroll',
+      };
+    }
+    return { backgroundColor: bg };
   }
   return { background: defaultGradient };
 }

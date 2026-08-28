@@ -316,10 +316,16 @@ export default function BackgroundPicker({ value, onChange }) {
             placeholder="https://images.unsplash.com/photo-..."
             value={imageUrl}
             onChange={(e) => {
-              setImageUrl(e.target.value);
-              onChange({ type: 'image', value: e.target.value });
+              const val = e.target.value;
+              setImageUrl(val);
+              onChange({ type: 'image', value: val });
             }}
           />
+          {imageUrl && !imageUrl.startsWith('https://') && !imageUrl.startsWith('/') && !imageUrl.startsWith('data:') && (
+            <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-xl p-2.5">
+              ⚠️ <strong>Secure URL required:</strong> Images starting with <code className="font-mono">http://</code> are blocked by modern browsers for security. Please use a direct <code className="font-mono">https://</code> link.
+            </p>
+          )}
           {imageUrl && (
             <div
               className="h-28 rounded-2xl border border-slate-200 bg-cover bg-center shadow-xs"

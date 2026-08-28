@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabaseServer';
 import { validateUrl, validateLinkTitle } from '@/utils/validators';
 
@@ -78,6 +79,21 @@ export async function POST(request) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // Revalidate profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('username')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (profile?.username) {
+    try {
+      revalidatePath(`/${profile.username}`);
+    } catch (revalErr) {
+      console.warn('[API /api/links POST revalidatePath warning]', revalErr);
+    }
   }
 
   return NextResponse.json({ link }, { status: 201 });

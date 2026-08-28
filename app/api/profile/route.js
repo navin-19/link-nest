@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabaseServer';
 import { validateUsername, normalizeUsername } from '@/utils/validators';
 
@@ -141,6 +142,15 @@ async function handleProfileUpdate(request) {
         { error: updateError.message || 'Database error updating profile' },
         { status: 500 }
       );
+    }
+
+    // On-demand ISR revalidation so public page reflects changes instantly
+    if (profile?.username) {
+      try {
+        revalidatePath(`/${profile.username}`);
+      } catch (revalErr) {
+        console.warn('[API /api/profile revalidatePath warning]:', revalErr);
+      }
     }
 
     return NextResponse.json({ profile });

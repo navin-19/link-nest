@@ -38,7 +38,7 @@ export default function LinkBioRenderer({
       backgroundPosition: 'center',
       backgroundSize: 'cover',
       backgroundRepeat: 'no-repeat',
-      backgroundAttachment: preview ? 'scroll' : 'fixed',
+      backgroundAttachment: 'scroll',
     };
   } else if (typeof bg === 'string') {
     if (bg.startsWith('linear-gradient') || bg.startsWith('radial-gradient')) {
@@ -49,7 +49,7 @@ export default function LinkBioRenderer({
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
-        backgroundAttachment: preview ? 'scroll' : 'fixed',
+        backgroundAttachment: 'scroll',
       };
     } else {
       bgStyle = { backgroundColor: bg };

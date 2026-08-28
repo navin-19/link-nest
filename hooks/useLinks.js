@@ -63,15 +63,29 @@ export function useLinks(userId, initialData = null) {
   }, []);
 
   const updateLink = useCallback(async (id, updates) => {
-    const res = await fetch(`/api/links/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updates),
+    // Optimistic UI update: apply changes immediately
+    let previousLinks;
+    setLinks((prev) => {
+      previousLinks = prev;
+      return prev.map((l) => (l.id === id ? { ...l, ...updates } : l));
     });
-    if (!res.ok) throw new Error((await res.json()).error || 'Failed to update link');
-    const { link } = await res.json();
-    setLinks((prev) => prev.map((l) => (l.id === id ? link : l)));
-    return link;
+
+    try {
+      const res = await fetch(`/api/links/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to update link');
+      const { link } = await res.json();
+      setLinks((prev) => prev.map((l) => (l.id === id ? link : l)));
+      return link;
+    } catch (err) {
+      if (previousLinks) {
+        setLinks(previousLinks);
+      }
+      throw err;
+    }
   }, []);
 
   const deleteLink = useCallback(async (id) => {

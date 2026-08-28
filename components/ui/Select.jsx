@@ -24,7 +24,7 @@ const Select = forwardRef(function Select(
       {label && (
         <label
           htmlFor={id}
-          className="text-xs font-semibold text-slate-700 dark:text-slate-300"
+          className="text-xs font-semibold text-slate-700"
         >
           {label}
         </label>
@@ -41,13 +41,13 @@ const Select = forwardRef(function Select(
           value={value}
           onChange={onChange}
           className={[
-            'w-full rounded-xl border bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs appearance-none',
+            'w-full rounded-xl border bg-white text-slate-900 placeholder:text-slate-400 shadow-xs appearance-none',
             'px-4 py-2.5 text-sm pr-10',
             'transition-all duration-150 cursor-pointer',
-            'focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-white/20 focus:border-slate-900 dark:focus:border-white',
+            'focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900',
             error
               ? 'border-red-400 focus:ring-red-100 focus:border-red-500 bg-red-50/20'
-              : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600',
+              : 'border-slate-200 hover:border-slate-300',
             LeadingIcon ? 'pl-10' : '',
             className,
           ]

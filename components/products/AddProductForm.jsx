@@ -139,10 +139,10 @@ export default function AddProductForm({ userId, onAdd }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-4 shadow-card animate-slide-down text-slate-900 dark:text-slate-100"
+      className="p-6 rounded-3xl border border-slate-200/90 bg-white space-y-4 shadow-card animate-slide-down text-slate-900"
     >
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-        <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm flex items-center gap-2">
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
           <Package size={16} className="text-indigo-600" /> Add New Product
         </h3>
         <button
@@ -151,43 +151,43 @@ export default function AddProductForm({ userId, onAdd }) {
             setIsOpen(false);
             setErrors({});
           }}
-          className="text-xs font-semibold text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+          className="text-xs font-semibold text-slate-400 hover:text-slate-700 transition-colors"
         >
           Cancel
         </button>
       </div>
 
       {errors.form && (
-        <div className="p-3 text-xs text-red-600 bg-red-50 border border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-900/60 rounded-xl">
+        <div className="p-3 text-xs text-red-600 bg-red-50 border border-red-200 rounded-xl">
           {errors.form}
         </div>
       )}
 
       {/* Image Upload Row */}
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
+        <label className="text-xs font-semibold text-slate-700 block">
           Product Image
         </label>
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center relative shrink-0 shadow-2xs">
+          <div className="w-20 h-20 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center relative shrink-0 shadow-2xs">
             {imageUrl ? (
               /* Using <img> for local blob/data preview URLs that cannot be pre-optimized by next/image */
               <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
             ) : (
-              <ImageIcon size={22} className="text-slate-400" />
+              <ImageIcon size={26} className="text-slate-400" />
             )}
             {imageUrl && (
               <button
                 type="button"
                 onClick={() => setImageUrl('')}
-                className="absolute top-1 right-1 p-0.5 rounded-full bg-slate-900/80 text-white hover:bg-slate-900"
+                className="absolute top-1.5 right-1.5 p-1 rounded-full bg-slate-900/80 text-white hover:bg-slate-900 transition-colors"
               >
-                <X size={10} />
+                <X size={12} />
               </button>
             )}
           </div>
 
-          <div className="space-y-1 flex-1">
+          <div className="space-y-2 flex-1">
             <input
               type="file"
               ref={fileInputRef}
@@ -195,7 +195,7 @@ export default function AddProductForm({ userId, onAdd }) {
               accept="image/*"
               className="hidden"
             />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <Button
                 type="button"
                 variant="secondary"
@@ -204,13 +204,13 @@ export default function AddProductForm({ userId, onAdd }) {
                 loading={uploading}
                 className="text-xs shadow-2xs shrink-0"
               >
-                <Upload size={13} /> {imageUrl ? 'Change Image' : 'Upload Image'}
+                <Upload size={14} /> {imageUrl ? 'Change Image' : 'Upload Image'}
               </Button>
-              <span className="text-[10px] text-slate-400">PNG, JPG or WebP (max 3MB)</span>
+              <span className="text-[11px] text-slate-400">PNG, JPG or WebP (max 3MB)</span>
             </div>
             
             {/* Direct image URL input fallback */}
-            <div className="pt-1.5">
+            <div>
               <Input
                 id="product-image-url"
                 placeholder="Or paste an image URL (https://...)"
@@ -219,7 +219,7 @@ export default function AddProductForm({ userId, onAdd }) {
                   setImageUrl(e.target.value);
                   if (errors.image) setErrors((prev) => ({ ...prev, image: null }));
                 }}
-                className="text-xs py-1.5"
+                className="text-xs py-2"
               />
             </div>
           </div>
@@ -289,7 +289,7 @@ export default function AddProductForm({ userId, onAdd }) {
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="product-desc" className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+        <label htmlFor="product-desc" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
           <FileText size={14} /> Short Description (Optional)
         </label>
         <textarea
@@ -298,7 +298,7 @@ export default function AddProductForm({ userId, onAdd }) {
           placeholder="A quick 1-2 sentence overview of what makes this product great..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 p-3 text-xs focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-white/20 shadow-xs"
+          className="w-full rounded-2xl border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 p-3 text-xs focus:outline-none focus:ring-2 focus:ring-slate-900/10 shadow-xs"
         />
       </div>
 

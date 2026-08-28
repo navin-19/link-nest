@@ -16,9 +16,21 @@ import {
   Wrench,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import Modal from '@/components/ui/Modal';
-import { QRCodeSVG } from 'qrcode.react';
 import { getProfileUrl } from '@/utils/qrGenerator';
+
+const QRCodeSVG = dynamic(
+  () => import('qrcode.react').then((mod) => mod.QRCodeSVG),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-[180px] h-[180px] flex items-center justify-center bg-slate-50 rounded-xl">
+        <div className="w-6 h-6 rounded-full border-2 border-slate-900 border-t-transparent animate-spin" />
+      </div>
+    ),
+  }
+);
 
 // ── Top-level Navigation (Flat, unboxed items) ─────────────────────────────────
 

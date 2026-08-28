@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabaseServer';
 import { validateUrl } from '@/utils/validators';
 
@@ -51,6 +52,21 @@ export async function PATCH(request, { params }) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  // Revalidate profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('username')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (profile?.username) {
+    try {
+      revalidatePath(`/${profile.username}`);
+    } catch (revalErr) {
+      console.warn('[API /api/products/[id] PATCH revalidatePath warning]', revalErr);
+    }
+  }
+
   return NextResponse.json({ product });
 }
 
@@ -74,6 +90,21 @@ export async function DELETE(request, { params }) {
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // Revalidate profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('username')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (profile?.username) {
+    try {
+      revalidatePath(`/${profile.username}`);
+    } catch (revalErr) {
+      console.warn('[API /api/products/[id] DELETE revalidatePath warning]', revalErr);
+    }
   }
 
   return NextResponse.json({ success: true });

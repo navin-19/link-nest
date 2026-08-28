@@ -35,8 +35,8 @@ export async function proxy(request) {
 
   const { pathname } = request.nextUrl;
 
-  // Protect all /dashboard/* routes - unauthenticated users MUST go to /login
-  if (pathname.startsWith('/dashboard')) {
+  // Protect all /dashboard/* and /admin/* routes - unauthenticated users MUST go to /login
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) {
     if (!user) {
       const redirectUrl = request.nextUrl.clone();
       redirectUrl.pathname = '/login';
@@ -58,10 +58,12 @@ export async function proxy(request) {
 export const config = {
   matcher: [
     '/dashboard/:path*',
+    '/admin/:path*',
     '/login',
     '/signup',
     '/api/profile',
     '/api/links/:path*',
     '/api/products/:path*',
+    '/api/admin/:path*',
   ],
 };

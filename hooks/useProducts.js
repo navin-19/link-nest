@@ -78,15 +78,29 @@ export function useProducts(userId, initialData = null) {
   }, []);
 
   const updateProduct = useCallback(async (id, updates) => {
-    const res = await fetch(`/api/products/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updates),
+    // Optimistic UI update: apply changes immediately
+    let previousProducts;
+    setProducts((prev) => {
+      previousProducts = prev;
+      return prev.map((p) => (p.id === id ? { ...p, ...updates } : p));
     });
-    if (!res.ok) throw new Error((await res.json()).error || 'Failed to update product');
-    const { product } = await res.json();
-    setProducts((prev) => prev.map((p) => (p.id === id ? product : p)));
-    return product;
+
+    try {
+      const res = await fetch(`/api/products/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to update product');
+      const { product } = await res.json();
+      setProducts((prev) => prev.map((p) => (p.id === id ? product : p)));
+      return product;
+    } catch (err) {
+      if (previousProducts) {
+        setProducts(previousProducts);
+      }
+      throw err;
+    }
   }, []);
 
   const deleteProduct = useCallback(async (id) => {

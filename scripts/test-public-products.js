@@ -50,9 +50,9 @@ function renderProductListMock(products) {
       name: p.name,
       description: p.description,
       hasImage: Boolean(p.image_url),
-      // Fields that must NOT exist on the public display card:
-      hasPriceDisplay: false,
-      hasViewButton: false,
+      // Fields that exist on the public display card:
+      hasPriceDisplay: Boolean(p.price),
+      hasViewButton: Boolean(p.url),
       hasAddToCartButton: false,
       hasAddProductButton: false,
     })),
@@ -74,15 +74,15 @@ const test1_pass =
 console.log(`Rendered ${rendered?.cards.length} active products (Expected: 3): ${test1_pass ? '✅' : '❌'}`);
 if (!test1_pass) allPassed = false;
 
-// Test 2: Verify No Price / No View Button / No Add Product Button
-console.log('\n--- Test 2: Card Purity (No Price, No View Button, No Add Product Button) ---');
+// Test 2: Verify View Button and Price Display
+console.log('\n--- Test 2: Card Interactive Elements (View Product Button & Price) ---');
 let test2_pass = true;
 for (const card of rendered.cards) {
-  if (card.hasPriceDisplay || card.hasViewButton || card.hasAddToCartButton || card.hasAddProductButton) {
+  if (!card.hasViewButton || !card.hasPriceDisplay) {
     test2_pass = false;
   }
 }
-console.log(`Public product cards have NO Price and NO View/CTA buttons: ${test2_pass ? '✅' : '❌'}`);
+console.log(`Public product cards have View Product CTA button and Price display: ${test2_pass ? '✅' : '❌'}`);
 if (!test2_pass) allPassed = false;
 
 // Test 3: Empty Product State (Should hide section, no Add Product button)

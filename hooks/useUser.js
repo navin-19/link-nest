@@ -19,6 +19,22 @@ import { createClient } from '@/lib/supabaseClient';
  *   4. Any error anywhere → user: null, loading: false (signed-out is always
  *      the safe default; never leave loading stuck at true).
  */
+async function getUserWithRetry(supabase, attempt = 1, maxAttempts = 2) {
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Auth check timed out')), 6000)
+  );
+
+  try {
+    return await Promise.race([supabase.auth.getUser(), timeoutPromise]);
+  } catch (err) {
+    if (attempt < maxAttempts) {
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+      return getUserWithRetry(supabase, attempt + 1, maxAttempts);
+    }
+    throw err;
+  }
+}
+
 export function useUser() {
   const [user, setUser]       = useState(null);
   const [profile, setProfile] = useState(null);
@@ -32,10 +48,10 @@ export function useUser() {
       try {
         const supabase = createClient();
 
-        // ── Step 1: Server-validated user check ──────────────────────────
-        // getUser() makes a network request to Supabase's auth server.
-        // It cannot be spoofed by a stale or forged local cookie.
-        const { data: { user: authUser }, error } = await supabase.auth.getUser();
+        // ── Step 1: Server-validated user check with bounded auto-retry ──
+        // Attempts getUser() with a 6-second timeout per attempt, retrying
+        // once upon transient network stalls before falling back to signed-out.
+        const { data: { user: authUser }, error } = await getUserWithRetry(supabase);
 
         if (!isMounted) return;
 

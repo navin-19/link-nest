@@ -5,8 +5,8 @@ import PublicProfileClient from '@/components/profile/PublicProfileClient';
 import Link from 'next/link';
 import { Link2 } from 'lucide-react';
 
-// Always render dynamic data on public profile pages so edits appear immediately
-export const dynamic = 'force-dynamic';
+// Performance: Enable ISR edge caching with 60s background revalidation + on-demand revalidatePath
+export const revalidate = 60;
 
 export async function generateMetadata({ params }) {
   const { username: rawUsername } = await params;
@@ -63,6 +63,27 @@ export default async function PublicProfilePage({ params }) {
           className="px-6 py-3 rounded-full bg-slate-900 text-white text-sm font-semibold shadow-btn hover:shadow-btn-hover transition-all"
         >
           Claim @{username} on LinkNest
+        </Link>
+      </div>
+    );
+  }
+
+  // Check if profile has been suspended
+  if (profile.is_suspended) {
+    return (
+      <div className="min-h-screen bg-[#fafaf9] text-slate-900 flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-14 h-14 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center shadow-card mb-4">
+          <Link2 size={24} strokeWidth={2.5} />
+        </div>
+        <h1 className="text-2xl font-bold mb-2 text-slate-900">This page is currently unavailable</h1>
+        <p className="text-sm text-slate-500 mb-6 max-w-sm">
+          The LinkNest page you are trying to visit is not accessible at this time.
+        </p>
+        <Link
+          href="/"
+          className="px-6 py-2.5 rounded-full bg-slate-900 text-white text-xs font-semibold shadow-btn hover:shadow-btn-hover transition-all"
+        >
+          Create your own LinkNest
         </Link>
       </div>
     );

@@ -1,9 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Link2 } from 'lucide-react';
-import SubscribeFormClient from '@/components/profile/SubscribeFormClient';
+
+const SubscribeFormClient = dynamic(
+  () => import('@/components/profile/SubscribeFormClient'),
+  { ssr: false }
+);
 
 /**
  * SubscribeBar: Top header bar on public profiles displaying brand logo and Subscribe button.

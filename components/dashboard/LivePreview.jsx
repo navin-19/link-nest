@@ -43,7 +43,22 @@ export default function LivePreview({
       backgroundPosition: 'center',
       backgroundSize: 'cover',
       backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'scroll',
     };
+  } else if (typeof bg === 'string') {
+    if (bg.startsWith('linear-gradient') || bg.startsWith('radial-gradient')) {
+      bgStyle = { background: bg };
+    } else if (bg.startsWith('http') || bg.startsWith('/')) {
+      bgStyle = {
+        backgroundImage: `url(${bg})`,
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'scroll',
+      };
+    } else {
+      bgStyle = { backgroundColor: bg };
+    }
   }
 
   return (
