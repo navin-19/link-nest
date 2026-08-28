@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import {
   DndContext,
   closestCenter,
@@ -17,20 +18,26 @@ import {
 } from '@dnd-kit/sortable';
 import { useUser } from '@/hooks/useUser';
 import { useLinks } from '@/hooks/useLinks';
-import { useTheme } from '@/hooks/useTheme';
+import { useProducts } from '@/hooks/useProducts';
 import AddLinkForm from '@/components/links/AddLinkForm';
 import LinkEditorItem from '@/components/links/LinkEditorItem';
+import SocialLinksEditor from '@/components/links/SocialLinksEditor';
+import ProductsTab from '@/components/links/ProductsTab';
 import LivePreview from '@/components/dashboard/LivePreview';
-import CustomThemeDesigner from '@/components/theme/CustomThemeDesigner';
-import { Palette, AlertCircle, Sparkles, Link2 } from 'lucide-react';
+import { Link2, Share2, Package, Sparkles, AlertCircle } from 'lucide-react';
 
-// ── 2 Main Tabs: Links and Theme (4 Sections) ─────────────────────────────────
+// ── 3 Main Tabs: Links Management, Social Links, Products ────────────────────
 const TABS = [
-  { id: 'links', label: 'Links', icon: Link2 },
-  { id: 'theme', label: 'Theme', icon: Palette },
+  { id: 'links',    label: 'Links Management', icon: Link2   },
+  { id: 'social',   label: 'Social Links',     icon: Share2  },
+  { id: 'products', label: 'Products',         icon: Package },
 ];
 
-export default function LinksPage() {
+function LinksContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabQuery = searchParams.get('tab');
+
   const { user, profile, loading: userLoading } = useUser();
   const {
     links,
@@ -43,25 +50,30 @@ export default function LinksPage() {
   } = useLinks(user?.id);
 
   const {
-    themes,
-    activeTheme,
-    applyTheme,
-    createTheme,
-    updateTheme,
-  } = useTheme(profile?.theme_id);
+    products,
+    loading: productsLoading,
+    error: productsError,
+    addProduct,
+    updateProduct,
+    deleteProduct,
+    reorderProducts,
+  } = useProducts(user?.id);
 
-  // Tab State — "links" is default on load
-  const [activeTab, setActiveTab] = useState('links');
-
-  // Live preview state
-  const [previewTheme, setPreviewTheme] = useState(null);
+  // Tab State initialized from query param if valid, or default to 'links'
+  const initialTab = TABS.some((t) => t.id === tabQuery) ? tabQuery : 'links';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [localProfileEdits, setLocalProfileEdits] = useState({});
 
   useEffect(() => {
-    if (activeTheme) {
-      setPreviewTheme(activeTheme);
+    if (tabQuery && TABS.some((t) => t.id === tabQuery)) {
+      setActiveTab(tabQuery);
     }
-  }, [activeTheme]);
+  }, [tabQuery]);
+
+  function handleTabChange(tabId) {
+    setActiveTab(tabId);
+    router.replace(`/dashboard/links?tab=${tabId}`, { scroll: false });
+  }
 
   // Combined profile for real-time live preview responsiveness
   const effectiveProfile = {
@@ -99,17 +111,17 @@ export default function LinksPage() {
 
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start text-slate-900">
-      {/* Left Column: Link & Theme Editor */}
+      {/* Left Column: Link / Social / Products Editor */}
       <div className="lg:col-span-7 space-y-6">
         {/* Page Title & Description */}
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Link Editor</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Link & Content Editor</h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            Manage your links and customize your page theme.
+            Manage your custom links, social platforms, and digital products in one place.
           </p>
         </div>
 
-        {/* 2-Tab Navigation Bar */}
+        {/* 3-Tab Navigation Bar */}
         <div className="flex items-center gap-1.5 p-1.5 bg-slate-100/90 border border-slate-200/90 rounded-2xl shadow-2xs">
           {TABS.map((tab) => {
             const Icon = tab.icon;
@@ -118,7 +130,7 @@ export default function LinksPage() {
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   isActive
                     ? 'bg-slate-900 text-white shadow-btn'
@@ -135,7 +147,6 @@ export default function LinksPage() {
         {/* ── TAB 1: Links Management ────────────────────────────────────────── */}
         {activeTab === 'links' && (
           <div className="space-y-6 animate-in fade-in duration-150">
-            {/* Links Management Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -204,19 +215,26 @@ export default function LinksPage() {
           </div>
         )}
 
-        {/* ── TAB 2: Theme (4 Structured Sections) ────────────────────────── */}
-        {activeTab === 'theme' && (
-          <CustomThemeDesigner
-            currentTheme={previewTheme || profile?.themes}
-            themes={themes}
-            activeThemeId={previewTheme?.id || profile?.theme_id}
-            userPlan={profile?.plan || 'free'}
+        {/* ── TAB 2: Social Links ────────────────────────────────────────────── */}
+        {activeTab === 'social' && (
+          <SocialLinksEditor
             profile={effectiveProfile}
-            onCreateCustomTheme={createTheme}
-            onUpdateCustomTheme={updateTheme}
-            onSelectTheme={applyTheme}
-            setPreviewTheme={setPreviewTheme}
             onLocalProfileChange={handleLocalProfileChange}
+          />
+        )}
+
+        {/* ── TAB 3: Products ────────────────────────────────────────────────── */}
+        {activeTab === 'products' && (
+          <ProductsTab
+            userId={user?.id}
+            products={products}
+            loading={productsLoading}
+            error={productsError}
+            userLoading={userLoading}
+            onAdd={addProduct}
+            onUpdate={updateProduct}
+            onDelete={deleteProduct}
+            onReorder={reorderProducts}
           />
         )}
       </div>
@@ -227,10 +245,25 @@ export default function LinksPage() {
           <LivePreview
             profile={effectiveProfile}
             links={links}
-            theme={previewTheme || profile?.themes}
+            products={products}
+            theme={profile?.themes}
           />
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LinksPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center h-64">
+          <div className="w-8 h-8 rounded-full border-2 border-slate-900 border-t-transparent animate-spin" />
+        </div>
+      }
+    >
+      <LinksContent />
+    </Suspense>
   );
 }

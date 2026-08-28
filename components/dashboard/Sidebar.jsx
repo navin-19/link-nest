@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Link2,
-  Package,
+  Palette,
   BarChart3,
   Users,
   Settings,
@@ -22,19 +22,19 @@ import { getProfileUrl } from '@/utils/qrGenerator';
 // ── Top-level Navigation (Flat, unboxed items) ─────────────────────────────────
 
 const MAIN_NAV = [
-  { label: 'My LinkNest',       href: '/dashboard',           icon: LayoutDashboard },
-  { label: 'Link',              href: '/dashboard/links',     icon: Link2           },
-  { label: 'Product',           href: '/dashboard/product',   icon: Package         },
-  { label: 'Analytics',         href: '/dashboard/analytics', icon: BarChart3       },
-  { label: 'Leads',             href: '/dashboard/leads',     icon: Users           },
-  { label: 'Profile Settings',  href: '/dashboard/settings',  icon: Settings        },
+  { label: 'My LinkNest',      href: '/dashboard',          icon: LayoutDashboard },
+  { label: 'Link',             href: '/dashboard/links',    icon: Link2           },
+  { label: 'Theme',            href: '/dashboard/theme',    icon: Palette         },
+  { label: 'Leads',            href: '/dashboard/leads',    icon: Users           },
+  { label: 'Profile Settings', href: '/dashboard/settings', icon: Settings        },
 ];
 
 // ── Tools Collapsible Group ───────────────────────────────────────────────────
 
 const TOOLS_NAV = [
-  { label: 'QR Code',        href: '/dashboard/card',          icon: QrCode   },
-  { label: 'Link Shortener', href: '/dashboard/link-shortener', icon: Scissors },
+  { label: 'QR Code',             href: '/dashboard/card',           icon: QrCode   },
+  { label: 'Link Shortener',      href: '/dashboard/link-shortener', icon: Scissors },
+  { label: 'Analytics Dashboard', href: '/dashboard/analytics',      icon: BarChart3 },
 ];
 
 // ── Collapsible Group Component (Used exclusively for Tools) ─────────────────
@@ -179,8 +179,8 @@ export default function Sidebar({ profile }) {
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-2 py-2 flex items-center justify-around shadow-lg">
         {[
           { label: 'Home',      href: '/dashboard',           icon: LayoutDashboard },
-          { label: 'Links',     href: '/dashboard/links',     icon: Link2           },
-          { label: 'Analytics', href: '/dashboard/analytics', icon: BarChart3       },
+          { label: 'Link',      href: '/dashboard/links',     icon: Link2           },
+          { label: 'Theme',     href: '/dashboard/theme',     icon: Palette         },
           { label: 'QR Code',   href: '/dashboard/card',      icon: QrCode          },
           { label: 'Profile Settings', href: '/dashboard/settings', icon: Settings  },
         ].map((item) => {

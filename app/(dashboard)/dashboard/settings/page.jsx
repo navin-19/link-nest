@@ -20,7 +20,6 @@ export default function SettingsPage() {
   const [username, setUsername] = useState(profile?.username || '');
   const [bio, setBio] = useState(profile?.bio || '');
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || '');
-  const [socialLinks, setSocialLinks] = useState(profile?.social_links || {});
 
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -33,16 +32,8 @@ export default function SettingsPage() {
       setUsername(profile.username || '');
       setBio(profile.bio || '');
       setAvatarUrl(profile.avatar_url || '');
-      setSocialLinks(profile.social_links || {});
     }
   }, [profile]);
-
-  function handleSocialLinkChange(platform, val) {
-    setSocialLinks((prev) => ({
-      ...prev,
-      [platform]: val,
-    }));
-  }
 
   async function handleAvatarUpload(e) {
     const file = e.target.files?.[0];
@@ -121,7 +112,6 @@ export default function SettingsPage() {
           username: cleanUsername,
           bio: bio.trim(),
           avatar_url: avatarUrl,
-          social_links: socialLinks,
         }),
       });
 
@@ -142,7 +132,7 @@ export default function SettingsPage() {
       <div>
         <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Profile Settings</h1>
         <p className="text-sm text-slate-500 mt-0.5">
-          Update your public profile, bio, avatar, username, and social accounts.
+          Update your public profile, bio, avatar, username, and business details.
         </p>
       </div>
 
@@ -225,103 +215,6 @@ export default function SettingsPage() {
               className="w-full rounded-2xl border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 p-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 shadow-xs"
             />
             <p className="text-xs text-slate-400">Max 160 characters</p>
-          </div>
-
-          {/* Social Links Section */}
-          <div className="pt-6 border-t border-slate-100 space-y-4">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">Social Links</h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Add your social media URLs or handles to display minimalist icons on your profile.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              <Input
-                id="social-instagram"
-                label="Instagram"
-                placeholder="https://instagram.com/username"
-                value={socialLinks.instagram || ''}
-                onChange={(e) => handleSocialLinkChange('instagram', e.target.value)}
-              />
-              <Input
-                id="social-youtube"
-                label="YouTube"
-                placeholder="https://youtube.com/@channel"
-                value={socialLinks.youtube || ''}
-                onChange={(e) => handleSocialLinkChange('youtube', e.target.value)}
-              />
-              <Input
-                id="social-tiktok"
-                label="TikTok"
-                placeholder="https://tiktok.com/@username"
-                value={socialLinks.tiktok || ''}
-                onChange={(e) => handleSocialLinkChange('tiktok', e.target.value)}
-              />
-              <Input
-                id="social-twitter"
-                label="Twitter / X"
-                placeholder="https://x.com/username"
-                value={socialLinks.twitter || ''}
-                onChange={(e) => handleSocialLinkChange('twitter', e.target.value)}
-              />
-              <Input
-                id="social-facebook"
-                label="Facebook"
-                placeholder="https://facebook.com/page"
-                value={socialLinks.facebook || ''}
-                onChange={(e) => handleSocialLinkChange('facebook', e.target.value)}
-              />
-              <Input
-                id="social-linkedin"
-                label="LinkedIn"
-                placeholder="https://linkedin.com/in/profile"
-                value={socialLinks.linkedin || ''}
-                onChange={(e) => handleSocialLinkChange('linkedin', e.target.value)}
-              />
-              <Input
-                id="social-whatsapp"
-                label="WhatsApp"
-                placeholder="+1234567890 (or https://wa.me/...)"
-                value={socialLinks.whatsapp || ''}
-                onChange={(e) => handleSocialLinkChange('whatsapp', e.target.value)}
-              />
-              <Input
-                id="social-phone"
-                label="Phone / Call"
-                placeholder="+1234567890 (direct call link)"
-                value={socialLinks.phone || ''}
-                onChange={(e) => handleSocialLinkChange('phone', e.target.value)}
-              />
-              <Input
-                id="social-github"
-                label="GitHub"
-                placeholder="https://github.com/username"
-                value={socialLinks.github || ''}
-                onChange={(e) => handleSocialLinkChange('github', e.target.value)}
-              />
-              <Input
-                id="social-twitch"
-                label="Twitch"
-                placeholder="https://twitch.tv/username"
-                value={socialLinks.twitch || ''}
-                onChange={(e) => handleSocialLinkChange('twitch', e.target.value)}
-              />
-              <Input
-                id="social-telegram"
-                label="Telegram"
-                placeholder="https://t.me/username"
-                value={socialLinks.telegram || ''}
-                onChange={(e) => handleSocialLinkChange('telegram', e.target.value)}
-              />
-              <Input
-                id="social-email"
-                label="Email"
-                placeholder="mailto:you@example.com"
-                value={socialLinks.email || ''}
-                onChange={(e) => handleSocialLinkChange('email', e.target.value)}
-              />
-            </div>
           </div>
 
           <div className="flex justify-end pt-4">

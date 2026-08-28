@@ -27,7 +27,7 @@ export default function ProductList({
 
       {/* View Products Button */}
       <Link
-        href="/dashboard/product"
+        href="/dashboard/links?tab=products"
         className="group w-full min-h-[54px] sm:min-h-[58px] px-5 py-3.5 rounded-2xl bg-slate-950/90 hover:bg-slate-900 border-2 border-purple-500/85 hover:border-purple-400 shadow-sm hover:shadow-purple-500/15 backdrop-blur-xs flex items-center justify-between transition-all duration-150 ease-out hover:scale-[1.01] active:scale-[0.99] cursor-pointer select-none"
       >
         {/* Left: Purple Grid Icon + Title */}
