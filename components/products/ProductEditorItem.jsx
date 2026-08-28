@@ -17,8 +17,20 @@ import {
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Select from '@/components/ui/Select';
 import Image from 'next/image';
 import { isValidProductImageUrl } from '@/utils/isAllowedImageUrl';
+
+const CATEGORY_OPTIONS = [
+  'Electronics',
+  'Fashion',
+  'Beauty',
+  'Food & Drink',
+  'Toys',
+  'Services',
+  'Digital',
+  'Other',
+];
 
 export default function ProductEditorItem({ product, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false);
@@ -26,6 +38,8 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
   const [url, setUrl] = useState(product.url);
   const [price, setPrice] = useState(product.price || '');
   const [description, setDescription] = useState(product.description || '');
+  const [category, setCategory] = useState(product.category || '');
+  const [customCategory, setCustomCategory] = useState('');
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -49,11 +63,13 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
     if (!name.trim() || !url.trim()) return;
     setSaving(true);
     try {
+      const finalCategory = category === 'Other' ? customCategory.trim() : category.trim();
       await onUpdate(product.id, {
         name: name.trim(),
         url: url.trim(),
         price: price.trim() || null,
         description: description.trim() || null,
+        category: finalCategory || null,
       });
       setEditing(false);
     } catch (e) {
@@ -82,6 +98,8 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
     setUrl(product.url);
     setPrice(product.price || '');
     setDescription(product.description || '');
+    setCategory(product.category || '');
+    setCustomCategory('');
     setEditing(false);
   }
 
@@ -145,13 +163,34 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
                 />
               </div>
             </div>
-            <Input
-              id={`product-url-${product.id}`}
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://..."
-              type="url"
-            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <Input
+                id={`product-url-${product.id}`}
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://..."
+                type="url"
+              />
+              <div className="space-y-1">
+                <Select
+                  id={`product-category-${product.id}`}
+                  placeholder="Select Category..."
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  options={CATEGORY_OPTIONS}
+                />
+                {category === 'Other' && (
+                  <Input
+                    id={`product-custom-category-${product.id}`}
+                    placeholder="Custom category name..."
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    className="text-xs"
+                    autoFocus
+                  />
+                )}
+              </div>
+            </div>
             <textarea
               rows={2}
               value={description}
@@ -166,6 +205,11 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
               <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
                 {product.name}
               </p>
+              {product.category && (
+                <span className="inline-flex items-center text-[10px] font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full">
+                  {product.category}
+                </span>
+              )}
               {product.price && (
                 <span className="inline-flex items-center text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900 px-1.5 py-0.5 rounded-md">
                   {product.price}

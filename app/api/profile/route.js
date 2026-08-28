@@ -63,6 +63,10 @@ async function handleProfileUpdate(request) {
       updates.show_google_reviews = Boolean(body.show_google_reviews);
     }
 
+    if (body.show_products !== undefined) {
+      updates.show_products = Boolean(body.show_products);
+    }
+
     if (body.social_links !== undefined) {
       updates.social_links = typeof body.social_links === 'object' && body.social_links !== null ? body.social_links : {};
     }
@@ -116,6 +120,7 @@ async function handleProfileUpdate(request) {
       if (updates.bio !== undefined) coreUpdates.bio = updates.bio;
       if (updates.username !== undefined) coreUpdates.username = updates.username;
       if (updates.theme_id !== undefined) coreUpdates.theme_id = updates.theme_id;
+      if (updates.show_products !== undefined) coreUpdates.show_products = updates.show_products;
       if (updates.social_links !== undefined) coreUpdates.social_links = updates.social_links;
       if (updates.dashboard_card_background !== undefined) coreUpdates.dashboard_card_background = updates.dashboard_card_background;
 

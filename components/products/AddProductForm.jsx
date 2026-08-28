@@ -1,11 +1,23 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Plus, Package, Link2, DollarSign, FileText, Image as ImageIcon, Upload, X } from 'lucide-react';
+import { Plus, Package, Link2, DollarSign, FileText, Image as ImageIcon, Upload, X, Tag } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Select from '@/components/ui/Select';
 import { validateUrl } from '@/utils/validators';
 import { createClient } from '@/lib/supabaseClient';
+
+const CATEGORY_OPTIONS = [
+  'Electronics',
+  'Fashion',
+  'Beauty',
+  'Food & Drink',
+  'Toys',
+  'Services',
+  'Digital',
+  'Other',
+];
 
 export default function AddProductForm({ userId, onAdd }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +25,8 @@ export default function AddProductForm({ userId, onAdd }) {
   const [url, setUrl] = useState('');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [customCategory, setCustomCategory] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -81,12 +95,14 @@ export default function AddProductForm({ userId, onAdd }) {
 
     setLoading(true);
     try {
+      const finalCategory = category === 'Other' ? customCategory.trim() : category.trim();
       await onAdd({
         name: name.trim(),
         url: url.trim(),
         price: price.trim() || null,
         description: description.trim() || null,
         image_url: imageUrl || null,
+        category: finalCategory || null,
       });
 
       // Reset form
@@ -94,6 +110,8 @@ export default function AddProductForm({ userId, onAdd }) {
       setUrl('');
       setPrice('');
       setDescription('');
+      setCategory('');
+      setCustomCategory('');
       setImageUrl('');
       setIsOpen(false);
     } catch (err) {
@@ -234,17 +252,41 @@ export default function AddProductForm({ userId, onAdd }) {
         </div>
       </div>
 
-      <Input
-        id="product-url"
-        label="Buy / View Link URL"
-        placeholder="https://yourstore.com/item"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        error={errors.url}
-        leadingIcon={Link2}
-        type="url"
-        required
-      />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Input
+          id="product-url"
+          label="Buy / View Link URL"
+          placeholder="https://yourstore.com/item"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          error={errors.url}
+          leadingIcon={Link2}
+          type="url"
+          required
+        />
+
+        <div className="space-y-2">
+          <Select
+            id="product-category"
+            label="Category (Optional)"
+            placeholder="Select a category..."
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            options={CATEGORY_OPTIONS}
+            leadingIcon={Tag}
+          />
+          {category === 'Other' && (
+            <Input
+              id="product-custom-category"
+              placeholder="Enter custom category name..."
+              value={customCategory}
+              onChange={(e) => setCustomCategory(e.target.value)}
+              className="text-xs"
+              autoFocus
+            />
+          )}
+        </div>
+      </div>
 
       <div className="space-y-1.5">
         <label htmlFor="product-desc" className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">

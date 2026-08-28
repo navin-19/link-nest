@@ -227,6 +227,8 @@ function LinksContent() {
         {activeTab === 'products' && (
           <ProductsTab
             userId={user?.id}
+            profile={effectiveProfile}
+            onLocalProfileChange={handleLocalProfileChange}
             products={products}
             loading={productsLoading}
             error={productsError}

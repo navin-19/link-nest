@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -20,6 +21,8 @@ import { Package, ShoppingBag, AlertCircle } from 'lucide-react';
 
 export default function ProductsTab({
   userId,
+  profile,
+  onLocalProfileChange,
   products = [],
   loading = false,
   error = null,
@@ -29,6 +32,43 @@ export default function ProductsTab({
   onDelete,
   onReorder,
 }) {
+  const [showProducts, setShowProducts] = useState(profile?.show_products !== false);
+  const [toggling, setToggling] = useState(false);
+
+  useEffect(() => {
+    if (profile && profile.show_products !== undefined) {
+      setShowProducts(profile.show_products !== false);
+    }
+  }, [profile?.show_products]);
+
+  async function handleToggleShowProducts(val) {
+    setShowProducts(val);
+    if (onLocalProfileChange) {
+      onLocalProfileChange({ show_products: val });
+    }
+
+    setToggling(true);
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ show_products: val }),
+      });
+      if (!res.ok) {
+        throw new Error('Failed to update product visibility');
+      }
+    } catch (err) {
+      console.error('[ProductsTab toggle error]', err);
+      // Revert on error
+      setShowProducts(!val);
+      if (onLocalProfileChange) {
+        onLocalProfileChange({ show_products: !val });
+      }
+    } finally {
+      setToggling(false);
+    }
+  }
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -56,7 +96,7 @@ export default function ProductsTab({
   return (
     <div className="space-y-6 animate-in fade-in duration-150">
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Package size={18} className="text-indigo-600" /> Products & Store
@@ -65,6 +105,28 @@ export default function ProductsTab({
               Showcase your digital products, merch, courses, or services directly on your LinkNest.
             </p>
           </div>
+
+          <label className="flex items-center gap-2.5 cursor-pointer select-none bg-slate-100/90 border border-slate-200/90 px-3 py-1.5 rounded-2xl shrink-0 self-start sm:self-auto shadow-2xs">
+            <span className="text-xs font-semibold text-slate-700">
+              {showProducts ? 'Visible on page' : 'Hidden from page'}
+            </span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={showProducts}
+              disabled={toggling}
+              onClick={() => handleToggleShowProducts(!showProducts)}
+              className={`relative w-10 h-6 rounded-full transition-colors cursor-pointer ${
+                showProducts ? 'bg-emerald-500' : 'bg-slate-300'
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform ${
+                  showProducts ? 'translate-x-4' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </label>
         </div>
 
         {/* Error Alert */}

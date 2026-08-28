@@ -41,7 +41,7 @@ export async function POST(request) {
   }
 
   const body = await request.json();
-  const { name, url, image_url, price, description } = body;
+  const { name, url, image_url, price, description, category } = body;
 
   if (!name || !name.trim()) {
     return NextResponse.json({ error: 'Product name is required' }, { status: 400 });
@@ -71,6 +71,7 @@ export async function POST(request) {
       image_url: image_url || null,
       price: price ? price.trim() : null,
       description: description ? description.trim() : null,
+      category: category ? category.trim() : null,
       position: nextPosition,
       is_active: true,
       click_count: 0,

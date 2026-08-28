@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { useLinks } from '@/hooks/useLinks';
+import { useProducts } from '@/hooks/useProducts';
 import LivePreview from '@/components/dashboard/LivePreview';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
@@ -40,6 +41,7 @@ export default function MyLinkNestDashboard() {
   const router = useRouter();
   const { user, profile, loading: userLoading } = useUser();
   const { links } = useLinks(user?.id);
+  const { products } = useProducts(user?.id);
   const [copied, setCopied] = useState(false);
   const [urlCopied, setUrlCopied] = useState(false);
 
@@ -163,6 +165,7 @@ export default function MyLinkNestDashboard() {
             <LivePreview
               profile={profile}
               links={links}
+              products={products}
               theme={profile?.themes}
               showHeader={false}
             />

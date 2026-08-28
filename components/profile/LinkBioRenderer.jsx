@@ -110,12 +110,15 @@ export default function LinkBioRenderer({
           preview={preview}
         />
 
-        {/* Products & Services Section (Heading + View Products button) */}
-        <ProductList
-          font={font}
-          preview={preview}
-          contrastMode={contrastMode}
-        />
+        {/* Products & Services Section (Category filters + Products list) */}
+        {profile?.show_products !== false && (
+          <ProductList
+            products={products}
+            font={font}
+            preview={preview}
+            contrastMode={contrastMode}
+          />
+        )}
       </div>
 
       {/* Footer */}

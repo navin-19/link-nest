@@ -35,6 +35,7 @@ export async function PATCH(request, { params }) {
   if (body.image_url !== undefined) updates.image_url = body.image_url;
   if (body.price !== undefined) updates.price = body.price ? body.price.trim() : null;
   if (body.description !== undefined) updates.description = body.description ? body.description.trim() : null;
+  if (body.category !== undefined) updates.category = body.category ? body.category.trim() : null;
   if (body.is_active !== undefined) updates.is_active = Boolean(body.is_active);
   if (body.position !== undefined) updates.position = Number(body.position);
 

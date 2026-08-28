@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@/hooks/useUser';
 import { useLinks } from '@/hooks/useLinks';
+import { useProducts } from '@/hooks/useProducts';
 import { useTheme } from '@/hooks/useTheme';
 import CustomThemeDesigner from '@/components/theme/CustomThemeDesigner';
 import LivePreview from '@/components/dashboard/LivePreview';
@@ -10,6 +11,7 @@ import LivePreview from '@/components/dashboard/LivePreview';
 export default function ThemePage() {
   const { user, profile } = useUser();
   const { links } = useLinks(user?.id);
+  const { products } = useProducts(user?.id);
   const {
     themes,
     activeTheme,
@@ -79,6 +81,7 @@ export default function ThemePage() {
           <LivePreview
             profile={effectiveProfile}
             links={links}
+            products={products}
             theme={previewTheme || profile?.themes}
           />
         </div>

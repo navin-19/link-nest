@@ -13,6 +13,7 @@ import {
   QrCode,
   ChevronDown,
   Scissors,
+  Wrench,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Modal from '@/components/ui/Modal';
@@ -22,11 +23,11 @@ import { getProfileUrl } from '@/utils/qrGenerator';
 // ── Top-level Navigation (Flat, unboxed items) ─────────────────────────────────
 
 const MAIN_NAV = [
-  { label: 'My LinkNest',      href: '/dashboard',          icon: LayoutDashboard },
-  { label: 'Link',             href: '/dashboard/links',    icon: Link2           },
-  { label: 'Theme',            href: '/dashboard/theme',    icon: Palette         },
-  { label: 'Leads',            href: '/dashboard/leads',    icon: Users           },
-  { label: 'Profile Settings', href: '/dashboard/settings', icon: Settings        },
+  { label: 'My LinkNest',      shortLabel: 'Home',     href: '/dashboard',          icon: LayoutDashboard },
+  { label: 'Link',             shortLabel: 'Links',    href: '/dashboard/links',    icon: Link2           },
+  { label: 'Theme',            shortLabel: 'Theme',    href: '/dashboard/theme',    icon: Palette         },
+  { label: 'Leads',            shortLabel: 'Leads',    href: '/dashboard/leads',    icon: Users           },
+  { label: 'Profile Settings', shortLabel: 'Settings', href: '/dashboard/settings', icon: Settings        },
 ];
 
 // ── Tools Collapsible Group ───────────────────────────────────────────────────
@@ -36,6 +37,16 @@ const TOOLS_NAV = [
   { label: 'Link Shortener',      href: '/dashboard/link-shortener', icon: Scissors },
   { label: 'Analytics Dashboard', href: '/dashboard/analytics',      icon: BarChart3 },
 ];
+
+// ── Mobile Bottom Navigation Bar Derived Items ────────────────────────────────
+
+const MOBILE_NAV = [
+  MAIN_NAV.find((i) => i.href === '/dashboard'),
+  MAIN_NAV.find((i) => i.href === '/dashboard/links'),
+  MAIN_NAV.find((i) => i.href === '/dashboard/theme'),
+  { label: 'Tools', shortLabel: 'Tools', href: '/dashboard/tools', icon: Wrench },
+  MAIN_NAV.find((i) => i.href === '/dashboard/settings'),
+].filter(Boolean);
 
 // ── Collapsible Group Component (Used exclusively for Tools) ─────────────────
 
@@ -176,28 +187,25 @@ export default function Sidebar({ profile }) {
       </aside>
 
       {/* Mobile Bottom Navigation Bar (visible on mobile < md) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-2 py-2 flex items-center justify-around shadow-lg">
-        {[
-          { label: 'Home',      href: '/dashboard',           icon: LayoutDashboard },
-          { label: 'Link',      href: '/dashboard/links',     icon: Link2           },
-          { label: 'Theme',     href: '/dashboard/theme',     icon: Palette         },
-          { label: 'QR Code',   href: '/dashboard/card',      icon: QrCode          },
-          { label: 'Profile Settings', href: '/dashboard/settings', icon: Settings  },
-        ].map((item) => {
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-1 py-1.5 flex items-center justify-around shadow-lg">
+        {MOBILE_NAV.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive =
+            item.href === '/dashboard/tools'
+              ? pathname === '/dashboard/tools' || TOOLS_NAV.some((t) => pathname === t.href)
+              : pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-1 px-2 py-1.5 rounded-xl text-[10px] font-semibold transition-all ${
+              className={`flex-1 flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-xl text-[9px] sm:text-[10px] font-semibold transition-all ${
                 isActive
                   ? 'text-slate-950 bg-slate-100 font-bold'
                   : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               <Icon size={17} className={isActive ? 'text-slate-900' : 'text-slate-400'} />
-              <span className="truncate max-w-[50px]">{item.label}</span>
+              <span className="text-center leading-tight whitespace-nowrap">{item.shortLabel || item.label}</span>
             </Link>
           );
         })}
