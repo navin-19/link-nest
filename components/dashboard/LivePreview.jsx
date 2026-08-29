@@ -2,10 +2,9 @@
 
 import { useRef, useEffect } from 'react';
 import LinkBioRenderer from '@/components/profile/LinkBioRenderer';
-import { Smartphone } from 'lucide-react';
 
 /**
- * Live phone-mockup preview with smooth auto-scroll, using the shared LinkBioRenderer.
+ * Live phone-mockup preview with realistic bezel, notch, and smooth auto-scroll.
  */
 export default function LivePreview({
   profile,
@@ -62,25 +61,30 @@ export default function LivePreview({
   }
 
   return (
-    <div className={`flex flex-col items-center justify-center ${showHeader ? 'p-4' : 'p-0'} ${className}`}>
-      {/* Header pill */}
+    <div className={`flex flex-col items-center justify-center ${showHeader ? 'p-2 sm:p-4' : 'p-0'} ${className}`}>
+      {/* Header with pulsing green dot */}
       {showHeader && (
-        <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-slate-500">
-          <Smartphone size={14} />
+        <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
           <span>Live Device Preview</span>
         </div>
       )}
 
-      {/* Phone Mockup Frame */}
-      <div className="relative w-[300px] sm:w-[310px] h-[600px] sm:h-[620px] rounded-[48px] border-[10px] border-slate-900 bg-slate-900 p-2.5 shadow-2xl ring-1 ring-slate-200">
+      {/* Realistic Phone Mockup Frame */}
+      <div className="relative w-[295px] sm:w-[315px] h-[590px] sm:h-[620px] rounded-[48px] border-[10px] border-slate-900 bg-slate-900 p-2 shadow-2xl ring-1 ring-slate-800/40">
         {/* Dynamic Island / Notch */}
-        <div className="absolute top-5 left-1/2 -translate-x-1/2 w-24 h-4 bg-black rounded-full z-20" />
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-24 h-4 bg-black rounded-full z-30 shadow-inner flex items-center justify-end px-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-[#111] ring-1 ring-slate-800/50" />
+        </div>
 
         {/* Screen Container with smooth scrollable overflow */}
         <div
           ref={scrollContainerRef}
           style={bgStyle}
-          className="w-full h-full rounded-[36px] overflow-y-auto overflow-x-hidden p-4 pt-8 scroll-smooth scrollbar-none transition-all duration-300 shadow-inner"
+          className="relative w-full h-full rounded-[38px] overflow-y-auto overflow-x-hidden p-3.5 pt-7 pb-6 scroll-smooth scrollbar-none transition-all duration-300 shadow-inner"
         >
           <LinkBioRenderer
             profile={profile}
@@ -92,6 +96,9 @@ export default function LivePreview({
             username={profile?.username}
           />
         </div>
+
+        {/* Bottom Home Indicator Bar */}
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-28 h-1 bg-white/40 rounded-full z-30 pointer-events-none" />
       </div>
     </div>
   );

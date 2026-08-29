@@ -1,11 +1,11 @@
 'use client';
 
-import { ExternalLink } from 'lucide-react';
 import { resolveLinkIcon } from '@/components/links/resolveLinkIcon';
 import { buttonStyles } from '@/components/links/buttonStyles';
 
 /**
  * LinkButton applies the custom Theme Font and selected button style preset to the link item.
+ * Features centered icon and label text, with no trailing chevron symbol.
  */
 export default function LinkButton({
   link,
@@ -25,15 +25,18 @@ export default function LinkButton({
 
   const effectiveStyle = link?.custom_style?.buttonStyle ?? buttonStyle;
   const buttonClass = buttonStyles[effectiveStyle] ?? buttonStyles.rounded;
-  const isFilled = effectiveStyle === 'filled';
   const isBento = effectiveStyle === 'bentogrid';
   const customFontStyle = font ? { fontFamily: font } : {};
+
+  const href = preview ? '#' : (link.url || `/api/track/${link.id}`);
+  const isDirectAction = link.url?.startsWith('mailto:') || link.url?.startsWith('tel:');
+  const target = preview || isDirectAction ? '_self' : '_blank';
 
   if (isBento) {
     return (
       <a
-        href={preview ? '#' : `/api/track/${link.id}`}
-        target={preview ? '_self' : '_blank'}
+        href={href}
+        target={target}
         rel="noopener noreferrer"
         onClick={handleClick}
         style={customFontStyle}
@@ -59,37 +62,27 @@ export default function LinkButton({
 
   return (
     <a
-      href={preview ? '#' : `/api/track/${link.id}`}
-      target={preview ? '_self' : '_blank'}
+      href={href}
+      target={target}
       rel="noopener noreferrer"
       onClick={handleClick}
       style={customFontStyle}
       className={[
-        'group flex items-center gap-2.5 w-full px-5 py-2.5',
-        'font-semibold text-sm',
+        'group flex items-center justify-center gap-3 w-full px-4 py-3 sm:px-5 sm:py-3.5',
+        'font-semibold text-sm text-center',
         'transition-all duration-150 ease-out',
         'hover:scale-[1.01] active:scale-[0.98]',
         buttonClass,
         preview ? 'cursor-default select-none' : 'cursor-pointer',
       ].join(' ')}
     >
-      {/* Icon */}
-      <span className="flex items-center justify-center w-7 h-7 shrink-0 transition-transform group-hover:scale-105">
-        <Icon size={28} className="shrink-0 drop-shadow-2xs" />
+      {/* Centered Brand Icon */}
+      <span className="flex items-center justify-center w-6 h-6 shrink-0 transition-transform group-hover:scale-110">
+        <Icon size={22} className="shrink-0 drop-shadow-2xs" />
       </span>
 
-      {/* Title */}
-      <span className="flex-1 text-center truncate">{link.title}</span>
-
-      {/* External link indicator */}
-      {!preview && (
-        <ExternalLink
-          size={14}
-          className={`${
-            isFilled ? 'text-white/50 group-hover:text-white' : 'text-slate-400 group-hover:text-slate-600'
-          } transition-colors shrink-0`}
-        />
-      )}
+      {/* Centered Title */}
+      <span className="font-semibold text-sm truncate">{link.title}</span>
     </a>
   );
 }

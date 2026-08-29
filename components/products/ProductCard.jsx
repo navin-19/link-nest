@@ -3,10 +3,12 @@
 import Image from 'next/image';
 import { Package, ExternalLink } from 'lucide-react';
 import { isValidProductImageUrl } from '@/utils/isAllowedImageUrl';
+import { buttonStyles } from '@/components/links/buttonStyles';
 
 export default function ProductCard({
   product,
   font,
+  buttonStyle = 'rounded',
   preview = false,
   contrastMode = 'light',
 }) {
@@ -36,12 +38,12 @@ export default function ProductCard({
     <CardWrapper
       {...wrapperProps}
       style={customFontStyle}
-      className={`group block w-full rounded-3xl overflow-hidden bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-soft hover:shadow-card transition-all duration-200 text-slate-900 dark:text-slate-100 ${
+      className={`group block w-full rounded-2xl overflow-hidden bg-white/95 dark:bg-slate-900/95 border border-slate-200/90 dark:border-slate-800 shadow-soft hover:shadow-card transition-all duration-200 text-slate-900 dark:text-slate-100 ${
         hasUrl ? 'cursor-pointer hover:scale-[1.01] active:scale-[0.99]' : ''
       }`}
     >
       {/* Product Image Banner */}
-      <div className="w-full h-44 sm:h-52 bg-slate-100 dark:bg-slate-800/80 overflow-hidden relative flex items-center justify-center border-b border-slate-100 dark:border-slate-800">
+      <div className="w-full h-40 sm:h-44 bg-slate-100 dark:bg-slate-800/80 overflow-hidden relative flex items-center justify-center border-b border-slate-100 dark:border-slate-800">
         {hasValidImage ? (
           <Image
             src={product.image_url}
@@ -52,14 +54,14 @@ export default function ProductCard({
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 text-slate-400 dark:text-slate-500 bg-linear-to-b from-slate-50 to-slate-100 dark:from-slate-800/40 dark:to-slate-800/90">
-            <Package size={36} strokeWidth={1.5} />
+            <Package size={32} strokeWidth={1.5} />
             <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">Product Image</span>
           </div>
         )}
       </div>
 
-      {/* Product Info (Name, Badges, Description, & View Product Button) */}
-      <div className="p-4 sm:p-5 space-y-2.5 text-left">
+      {/* Product Info */}
+      <div className="p-3.5 sm:p-4 space-y-2 text-left">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-1.5 flex-wrap">
             {product.category && (
@@ -76,11 +78,11 @@ export default function ProductCard({
         </div>
 
         <div>
-          <h3 className="font-bold text-base sm:text-lg text-slate-900 dark:text-white leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+          <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
             {product.name}
           </h3>
           {product.description && (
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2 mt-1">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2 mt-0.5">
               {product.description}
             </p>
           )}
@@ -88,16 +90,10 @@ export default function ProductCard({
 
         {/* View Product CTA Button */}
         {hasUrl && (
-          <div className="pt-2">
-            <div
-              className={`w-full py-2.5 px-4 rounded-2xl flex items-center justify-center gap-2 font-bold text-xs sm:text-sm transition-all duration-150 shadow-btn select-none ${
-                isDark
-                  ? 'bg-purple-600 group-hover:bg-purple-500 text-white'
-                  : 'bg-slate-900 group-hover:bg-slate-800 text-white'
-              }`}
-            >
+          <div className="pt-1">
+            <div className="w-full py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 font-bold text-xs bg-slate-900 dark:bg-emerald-500 group-hover:bg-slate-800 dark:group-hover:bg-emerald-600 text-white transition-all shadow-btn select-none">
               <span>View Product</span>
-              <ExternalLink size={14} />
+              <ExternalLink size={12} />
             </div>
           </div>
         )}

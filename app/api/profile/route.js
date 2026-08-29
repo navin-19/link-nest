@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabaseServer';
 import { validateUsername, normalizeUsername } from '@/utils/validators';
+import { OFFICIAL_PRESET_THEMES, getPresetThemeById } from '@/utils/presetThemes';
 
 async function handleProfileUpdate(request) {
   try {
@@ -54,6 +55,24 @@ async function handleProfileUpdate(request) {
 
     if (body.theme_id !== undefined) {
       updates.theme_id = body.theme_id || null;
+
+      // If theme_id is an official preset, guarantee it exists in themes table to avoid FK error
+      if (updates.theme_id) {
+        const preset = OFFICIAL_PRESET_THEMES.find((p) => p.id === updates.theme_id);
+        if (preset) {
+          await supabase
+            .from('themes')
+            .upsert({
+              id: preset.id,
+              user_id: null,
+              name: preset.name,
+              background: preset.background,
+              button_style: preset.button_style,
+              font: preset.font,
+            }, { onConflict: 'id' })
+            .select();
+        }
+      }
     }
 
     if (body.google_place_id !== undefined) {
@@ -72,8 +91,16 @@ async function handleProfileUpdate(request) {
       updates.social_links = typeof body.social_links === 'object' && body.social_links !== null ? body.social_links : {};
     }
 
+    if (body.reach_out !== undefined) {
+      updates.reach_out = typeof body.reach_out === 'object' && body.reach_out !== null ? body.reach_out : null;
+    }
+
     if (body.dashboard_card_background !== undefined) {
       updates.dashboard_card_background = body.dashboard_card_background || null;
+    }
+
+    if (body.customer_form_config !== undefined) {
+      updates.customer_form_config = typeof body.customer_form_config === 'object' && body.customer_form_config !== null ? body.customer_form_config : null;
     }
 
     if (body.username !== undefined) {
@@ -112,28 +139,29 @@ async function handleProfileUpdate(request) {
       .select('*, themes!profiles_theme_id_fkey(*)')
       .single();
 
-    // If an optional column like title_style or avatar_layout doesn't exist in remote schema cache,
-    // fallback to core columns only
-    if (updateError && updateError.code === 'PGRST204') {
-      const coreUpdates = {};
-      if (updates.display_name !== undefined) coreUpdates.display_name = updates.display_name;
-      if (updates.avatar_url !== undefined) coreUpdates.avatar_url = updates.avatar_url;
-      if (updates.bio !== undefined) coreUpdates.bio = updates.bio;
-      if (updates.username !== undefined) coreUpdates.username = updates.username;
-      if (updates.theme_id !== undefined) coreUpdates.theme_id = updates.theme_id;
-      if (updates.show_products !== undefined) coreUpdates.show_products = updates.show_products;
-      if (updates.social_links !== undefined) coreUpdates.social_links = updates.social_links;
-      if (updates.dashboard_card_background !== undefined) coreUpdates.dashboard_card_background = updates.dashboard_card_background;
+    // If theme foreign key error occurred, attempt auto-recovery
+    if (updateError && updateError.message?.includes('profiles_theme_id_fkey') && updates.theme_id) {
+      const preset = OFFICIAL_PRESET_THEMES.find((p) => p.id === updates.theme_id) || OFFICIAL_PRESET_THEMES[0];
+      await supabase
+        .from('themes')
+        .upsert({
+          id: preset.id,
+          user_id: null,
+          name: preset.name,
+          background: preset.background,
+          button_style: preset.button_style,
+          font: preset.font,
+        }, { onConflict: 'id' });
 
-      const fallbackRes = await supabase
+      const retryRes = await supabase
         .from('profiles')
-        .update(coreUpdates)
+        .update(updates)
         .eq('id', user.id)
         .select('*, themes!profiles_theme_id_fkey(*)')
         .single();
 
-      profile = fallbackRes.data;
-      updateError = fallbackRes.error;
+      profile = retryRes.data;
+      updateError = retryRes.error;
     }
 
     if (updateError) {
@@ -142,6 +170,11 @@ async function handleProfileUpdate(request) {
         { error: updateError.message || 'Database error updating profile' },
         { status: 500 }
       );
+    }
+
+    // Attach resolved theme if null
+    if (profile && !profile.themes && profile.theme_id) {
+      profile.themes = getPresetThemeById(profile.theme_id);
     }
 
     // On-demand ISR revalidation so public page reflects changes instantly

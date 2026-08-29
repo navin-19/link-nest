@@ -2,39 +2,92 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
 import {
   Share2,
   CheckCircle2,
   AlertCircle,
-  Instagram,
-  Youtube,
-  Twitter,
-  Facebook,
-  Linkedin,
+  Info,
+  Save,
   Phone,
-  MessageCircle,
-  Github,
-  Tv,
-  Send,
   Mail,
+  Globe,
 } from 'lucide-react';
+import {
+  InstagramIcon,
+  YouTubeIcon,
+  TwitterXIcon,
+  FacebookIcon,
+  LinkedInIcon,
+  WhatsAppIcon,
+  TelegramIcon,
+} from '@/components/ui/BrandIcons';
+import { SOCIAL_FIELDS } from './socialLinksHelper';
 
-const SOCIAL_PLATFORMS = [
-  { id: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/username', icon: Instagram },
-  { id: 'youtube', label: 'YouTube', placeholder: 'https://youtube.com/@channel', icon: Youtube },
-  { id: 'tiktok', label: 'TikTok', placeholder: 'https://tiktok.com/@username', icon: Share2 },
-  { id: 'twitter', label: 'Twitter / X', placeholder: 'https://x.com/username', icon: Twitter },
-  { id: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/page', icon: Facebook },
-  { id: 'linkedin', label: 'LinkedIn', placeholder: 'https://linkedin.com/in/profile', icon: Linkedin },
-  { id: 'whatsapp', label: 'WhatsApp', placeholder: '+1234567890 (or https://wa.me/...)', icon: MessageCircle },
-  { id: 'phone', label: 'Phone / Direct Call', placeholder: '+1234567890 (direct phone call)', icon: Phone },
-  { id: 'github', label: 'GitHub', placeholder: 'https://github.com/username', icon: Github },
-  { id: 'twitch', label: 'Twitch', placeholder: 'https://twitch.tv/username', icon: Tv },
-  { id: 'telegram', label: 'Telegram', placeholder: 'https://t.me/username', icon: Send },
-  { id: 'email', label: 'Email Address', placeholder: 'mailto:you@example.com', icon: Mail },
-];
+function BrandSwatch({ platformId }) {
+  switch (platformId) {
+    case 'whatsapp':
+      return (
+        <div className="w-8 h-8 rounded-lg bg-[#25D366] flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <WhatsAppIcon size={20} />
+        </div>
+      );
+    case 'instagram':
+      return (
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0 shadow-2xs overflow-hidden">
+          <InstagramIcon size={20} />
+        </div>
+      );
+    case 'facebook':
+      return (
+        <div className="w-8 h-8 rounded-lg bg-[#1877F2] flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <FacebookIcon size={20} />
+        </div>
+      );
+    case 'youtube':
+      return (
+        <div className="w-8 h-8 rounded-lg bg-[#FF0000] flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <YouTubeIcon size={20} />
+        </div>
+      );
+    case 'twitter':
+      return (
+        <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <TwitterXIcon size={20} />
+        </div>
+      );
+    case 'linkedin':
+      return (
+        <div className="w-8 h-8 rounded-lg bg-[#0A66C2] flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <LinkedInIcon size={20} />
+        </div>
+      );
+    case 'telegram':
+      return (
+        <div className="w-8 h-8 rounded-lg bg-[#229ED9] flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <TelegramIcon size={20} />
+        </div>
+      );
+    case 'phone':
+      return (
+        <div className="w-8 h-8 rounded-lg bg-slate-700 dark:bg-slate-800 flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <Phone size={15} />
+        </div>
+      );
+    case 'email':
+      return (
+        <div className="w-8 h-8 rounded-lg bg-slate-700 dark:bg-slate-800 flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <Mail size={15} />
+        </div>
+      );
+    case 'website':
+    default:
+      return (
+        <div className="w-8 h-8 rounded-lg bg-slate-700 dark:bg-slate-800 flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <Globe size={15} />
+        </div>
+      );
+  }
+}
 
 export default function SocialLinksEditor({ profile, onLocalProfileChange }) {
   const router = useRouter();
@@ -93,64 +146,83 @@ export default function SocialLinksEditor({ profile, onLocalProfileChange }) {
   return (
     <div className="space-y-6 animate-in fade-in duration-150">
       {/* Header card */}
-      <div className="p-6 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-6">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+      <div className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-6 transition-colors">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800/80">
           <div>
-            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Share2 size={18} className="text-indigo-600" /> Social Links
+            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                <Share2 size={13} />
+              </div>
+              Social Links
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Add your social media URLs and contact links to display minimal branded icon buttons on your profile.
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Add your social media channels, contact methods, and website. Only filled fields appear on your profile.
             </p>
           </div>
         </div>
 
         {/* Notifications */}
         {message && (
-          <div className="p-3.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-2 font-medium animate-fade-in">
+          <div className="p-3.5 text-xs text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-2xl flex items-center gap-2 font-medium animate-fade-in">
             <CheckCircle2 size={16} className="shrink-0" /> {message}
           </div>
         )}
 
         {error && (
-          <div className="p-3.5 text-xs text-red-600 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-2 font-medium animate-slide-down">
+          <div className="p-3.5 text-xs text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-2xl flex items-center gap-2 font-medium animate-slide-down">
             <AlertCircle size={16} className="shrink-0" /> {error}
           </div>
         )}
 
         {/* Form Inputs Grid */}
-        <form onSubmit={handleSave} className="space-y-5">
+        <form onSubmit={handleSave} className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {SOCIAL_PLATFORMS.map((platform) => {
-              const Icon = platform.icon;
-              return (
-                <div key={platform.id} className="space-y-1.5">
-                  <Input
+            {SOCIAL_FIELDS.map((platform) => (
+              <div key={platform.id} className="space-y-1.5 text-left">
+                <label
+                  htmlFor={`social-${platform.id}`}
+                  className="text-xs font-semibold text-slate-700 dark:text-slate-300"
+                >
+                  {platform.label}
+                </label>
+
+                <div className="relative flex items-center rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/15 transition-all p-1.5 gap-2.5">
+                  {/* Left edge branded swatch */}
+                  <BrandSwatch platformId={platform.id} />
+
+                  {/* Input field */}
+                  <input
                     id={`social-${platform.id}`}
-                    label={platform.label}
+                    type="text"
                     placeholder={platform.placeholder}
                     value={socialLinks[platform.id] || ''}
                     onChange={(e) => handleChange(platform.id, e.target.value)}
-                    leadingIcon={Icon}
+                    className="w-full bg-transparent text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none pr-2"
                   />
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-            <p className="text-xs text-slate-400">
-              Icons automatically appear on your live preview and public page.
-            </p>
-            <Button
+          {/* Helper Note + Right-Aligned Save Button */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+              <Info size={14} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span>Changes reflect in your live preview immediately.</span>
+            </div>
+
+            <button
               type="submit"
-              variant="primary"
-              size="md"
-              loading={saving}
-              className="shadow-btn hover:shadow-btn-hover text-xs font-bold px-6 py-2.5"
+              disabled={saving}
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-btn hover:shadow-btn-hover transition-all active:scale-[0.98] cursor-pointer self-end"
             >
-              Save Social Links
-            </Button>
+              {saving ? (
+                <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+              ) : (
+                <Save size={14} />
+              )}
+              <span>Save Changes</span>
+            </button>
           </div>
         </form>
       </div>

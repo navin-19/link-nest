@@ -2,35 +2,57 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
 import { useUser } from '@/hooks/useUser';
-import { useLinks } from '@/hooks/useLinks';
 import { useProducts } from '@/hooks/useProducts';
-import AddLinkForm from '@/components/links/AddLinkForm';
-import LinkEditorItem from '@/components/links/LinkEditorItem';
 import SocialLinksEditor from '@/components/links/SocialLinksEditor';
 import ProductsTab from '@/components/links/ProductsTab';
+import GoogleReviewsConfig from '@/components/products/GoogleReviewsConfig';
+import ReachOutConfig from '@/components/settings/ReachOutConfig';
 import LivePreview from '@/components/dashboard/LivePreview';
-import { Link2, Share2, Package, Sparkles, AlertCircle } from 'lucide-react';
+import {
+  Link2,
+  Package,
+  Store,
+  Smartphone,
+  CheckCircle2,
+  ShieldCheck,
+  Zap,
+  Sparkles,
+} from 'lucide-react';
 
-// ── 3 Main Tabs: Links Management, Social Links, Products ────────────────────
+// ── 3 Main Tabs: Quick Links (Default), Products, Business Details ───────────
 const TABS = [
-  { id: 'links',    label: 'Links Management', icon: Link2   },
-  { id: 'social',   label: 'Social Links',     icon: Share2  },
+  { id: 'links',    label: 'Social Links',     icon: Link2   },
   { id: 'products', label: 'Products',         icon: Package },
+  { id: 'business', label: 'Business Details', icon: Store   },
+];
+
+const FEATURE_STRIP = [
+  {
+    icon: Smartphone,
+    title: 'Live Preview',
+    caption: 'Instant real-time sync',
+  },
+  {
+    icon: Zap,
+    title: 'Mobile Responsive',
+    caption: 'Optimized for all screens',
+  },
+  {
+    icon: Sparkles,
+    title: 'Easy to Use',
+    caption: 'Intuitive interface',
+  },
+  {
+    icon: CheckCircle2,
+    title: 'Auto Saved',
+    caption: 'Changes save as you type',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Secure & Private',
+    caption: 'Full SSL & RLS encryption',
+  },
 ];
 
 function LinksContent() {
@@ -38,16 +60,7 @@ function LinksContent() {
   const searchParams = useSearchParams();
   const tabQuery = searchParams.get('tab');
 
-  const { user, profile, loading: userLoading } = useUser();
-  const {
-    links,
-    loading: linksLoading,
-    error: linksError,
-    addLink,
-    updateLink,
-    deleteLink,
-    reorderLinks,
-  } = useLinks(user?.id);
+  const { user, profile } = useUser();
 
   const {
     products,
@@ -60,13 +73,15 @@ function LinksContent() {
   } = useProducts(user?.id);
 
   // Tab State initialized from query param if valid, or default to 'links'
-  const initialTab = TABS.some((t) => t.id === tabQuery) ? tabQuery : 'links';
+  const normalizedQuery = tabQuery === 'social' ? 'links' : tabQuery;
+  const initialTab = TABS.some((t) => t.id === normalizedQuery) ? normalizedQuery : 'links';
   const [activeTab, setActiveTab] = useState(initialTab);
   const [localProfileEdits, setLocalProfileEdits] = useState({});
 
   useEffect(() => {
-    if (tabQuery && TABS.some((t) => t.id === tabQuery)) {
-      setActiveTab(tabQuery);
+    const normalized = tabQuery === 'social' ? 'links' : tabQuery;
+    if (normalized && TABS.some((t) => t.id === normalized)) {
+      setActiveTab(normalized);
     }
   }, [tabQuery]);
 
@@ -81,175 +96,124 @@ function LinksContent() {
     ...localProfileEdits,
   };
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  function handleDragEnd(event) {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = links.findIndex((item) => item.id === active.id);
-    const newIndex = links.findIndex((item) => item.id === over.id);
-
-    if (oldIndex !== -1 && newIndex !== -1) {
-      const reordered = arrayMove(links, oldIndex, newIndex);
-      reorderLinks(reordered);
-    }
-  }
-
   function handleLocalProfileChange(updates) {
     setLocalProfileEdits((prev) => ({ ...prev, ...updates }));
   }
 
   return (
-    <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start text-slate-900">
-      {/* Left Column: Link / Social / Products Editor */}
-      <div className="lg:col-span-7 space-y-6">
-        {/* Page Title & Description */}
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Link & Content Editor</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Manage your custom links, social platforms, and digital products in one place.
-          </p>
+    <div className="max-w-6xl mx-auto space-y-10 text-slate-900 dark:text-slate-100">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left Column: Editor Tabs & Form Cards */}
+        <div className="lg:col-span-7 space-y-6">
+          {/* Page Title & Description */}
+          <div>
+            <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+              Link & Content Editor
+            </h1>
+            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+              Manage your social links, contact methods, and digital products in one place.
+            </p>
+          </div>
+
+          {/* Tab Switcher Pills */}
+          <div className="flex items-center gap-2 p-1.5 bg-slate-200/60 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 rounded-2xl shadow-2xs">
+            {TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => handleTabChange(tab.id)}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/40'
+                  }`}
+                >
+                  <Icon size={15} className={isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'} />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* ── TAB 1: Social Links (Default) ─────────────────────────────────── */}
+          {activeTab === 'links' && (
+            <SocialLinksEditor
+              profile={effectiveProfile}
+              onLocalProfileChange={handleLocalProfileChange}
+            />
+          )}
+
+          {/* ── TAB 2: Products ────────────────────────────────────────────────── */}
+          {activeTab === 'products' && (
+            <ProductsTab
+              userId={user?.id}
+              profile={effectiveProfile}
+              onLocalProfileChange={handleLocalProfileChange}
+              products={products}
+              loading={productsLoading}
+              error={productsError}
+              userLoading={false}
+              onAdd={addProduct}
+              onUpdate={updateProduct}
+              onDelete={deleteProduct}
+              onReorder={reorderProducts}
+            />
+          )}
+
+          {/* ── TAB 3: Business Details (Google Reviews + Reach Out) ────────────── */}
+          {activeTab === 'business' && (
+            <div className="space-y-6 animate-in fade-in duration-150">
+              <GoogleReviewsConfig
+                profile={effectiveProfile}
+                onLocalProfileChange={handleLocalProfileChange}
+              />
+              <ReachOutConfig
+                profile={effectiveProfile}
+                onLocalProfileChange={handleLocalProfileChange}
+              />
+            </div>
+          )}
         </div>
 
-        {/* 3-Tab Navigation Bar */}
-        <div className="flex items-center gap-1.5 p-1.5 bg-slate-100/90 border border-slate-200/90 rounded-2xl shadow-2xs">
-          {TABS.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
+        {/* Right Column: Live Phone Mockup Preview (Fixed / Sticky in viewport) */}
+        <div className="lg:col-span-5 sticky top-4 hidden lg:block self-start">
+          <div className="bg-white dark:bg-[#0c0f1e] rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 shadow-card">
+            <LivePreview
+              profile={effectiveProfile}
+              products={products}
+              theme={profile?.themes}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Bottom Feature Strip ────────────────────────────────────────────── */}
+      <div className="pt-6 border-t border-slate-200/80 dark:border-slate-800/80">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          {FEATURE_STRIP.map((item) => {
+            const Icon = item.icon;
             return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => handleTabChange(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-slate-900 text-white shadow-btn'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
-                }`}
+              <div
+                key={item.title}
+                className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/70 dark:bg-[#0c0f1d]/70 border border-slate-200/80 dark:border-slate-800/80 shadow-2xs"
               >
-                <Icon size={15} className={isActive ? 'text-white' : 'text-slate-500'} />
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* ── TAB 1: Links Management ────────────────────────────────────────── */}
-        {activeTab === 'links' && (
-          <div className="space-y-6 animate-in fade-in duration-150">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <Link2 size={18} className="text-indigo-600" /> Links Management
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Add, edit, toggle visibility, and drag to reorder your profile links.
+                <div className="w-9 h-9 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                  <Icon size={17} />
+                </div>
+                <div className="min-w-0">
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                    {item.title}
+                  </h4>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                    {item.caption}
                   </p>
                 </div>
               </div>
-
-              {/* Error Alert if any */}
-              {linksError && (
-                <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
-                  <AlertCircle size={16} className="shrink-0" />
-                  <span>{linksError}</span>
-                </div>
-              )}
-
-              {/* Add Link Form with Quick-Add Social Bar */}
-              <AddLinkForm onAdd={addLink} />
-
-              {/* Links List with DnD */}
-              <div className="space-y-3 min-h-[160px]">
-                {userLoading || (linksLoading && links.length === 0) ? (
-                  <div className="p-12 text-center border border-slate-200 rounded-3xl bg-white shadow-soft flex flex-col items-center justify-center gap-3">
-                    <div className="w-7 h-7 rounded-full border-2 border-slate-900 border-t-transparent animate-spin" />
-                    <span className="text-xs font-medium text-slate-500">Loading your links...</span>
-                  </div>
-                ) : links.length === 0 ? (
-                  <div className="p-10 text-center border border-dashed border-slate-300 rounded-3xl bg-white shadow-soft space-y-3">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-700 mx-auto flex items-center justify-center shadow-xs">
-                      <Sparkles size={22} />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-slate-900">You don&apos;t have any links yet</p>
-                      <p className="text-xs text-slate-500 mt-1">Click &ldquo;Add Custom Link&rdquo; or pick a quick-add social button above to create your first link!</p>
-                    </div>
-                  </div>
-                ) : (
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <SortableContext
-                      items={links.map((l) => l.id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      <div className="space-y-3">
-                        {links.map((link) => (
-                          <LinkEditorItem
-                            key={link.id}
-                            link={link}
-                            onUpdate={updateLink}
-                            onDelete={deleteLink}
-                          />
-                        ))}
-                      </div>
-                    </SortableContext>
-                  </DndContext>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── TAB 2: Social Links ────────────────────────────────────────────── */}
-        {activeTab === 'social' && (
-          <SocialLinksEditor
-            profile={effectiveProfile}
-            onLocalProfileChange={handleLocalProfileChange}
-          />
-        )}
-
-        {/* ── TAB 3: Products ────────────────────────────────────────────────── */}
-        {activeTab === 'products' && (
-          <ProductsTab
-            userId={user?.id}
-            profile={effectiveProfile}
-            onLocalProfileChange={handleLocalProfileChange}
-            products={products}
-            loading={productsLoading}
-            error={productsError}
-            userLoading={userLoading}
-            onAdd={addProduct}
-            onUpdate={updateProduct}
-            onDelete={deleteProduct}
-            onReorder={reorderProducts}
-          />
-        )}
-      </div>
-
-      {/* Right Column: Live Phone Mockup Preview (Fixed / Sticky in viewport) */}
-      <div className="lg:col-span-5 sticky top-0 hidden lg:block self-start">
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-4 shadow-card">
-          <LivePreview
-            profile={effectiveProfile}
-            links={links}
-            products={products}
-            theme={profile?.themes}
-          />
+            );
+          })}
         </div>
       </div>
     </div>
@@ -261,7 +225,7 @@ export default function LinksPage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 rounded-full border-2 border-slate-900 border-t-transparent animate-spin" />
+          <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
         </div>
       }
     >

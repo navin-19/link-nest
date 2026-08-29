@@ -18,8 +18,9 @@ function getPublicClient() {
   return publicClient;
 }
 
-// Performance: Enable ISR edge caching with 60s background revalidation + on-demand revalidatePath
-export const revalidate = 60;
+// Force dynamic execution so public profile immediately reflects saved customizations and theme changes
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function generateMetadata({ params }) {
   const { username: rawUsername } = await params;

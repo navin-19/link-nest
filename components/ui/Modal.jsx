@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 import Button from './Button';
 
 /**
- * Accessible modal dialog with light theme styling and elevated drop shadow.
+ * Accessible modal dialog with light and dark theme styling.
  */
 export default function Modal({
   isOpen,
@@ -19,10 +19,10 @@ export default function Modal({
   const dialogRef = useRef(null);
 
   const sizes = {
-    sm:  'max-w-sm',
-    md:  'max-w-md',
-    lg:  'max-w-lg',
-    xl:  'max-w-xl',
+    sm: 'max-w-sm',
+    md: 'max-w-md',
+    lg: 'max-w-lg',
+    xl: 'max-w-xl',
     '2xl': 'max-w-2xl',
   };
 
@@ -31,9 +31,13 @@ export default function Modal({
     if (!dialog) return;
 
     if (isOpen) {
-      dialog.showModal();
+      if (!dialog.open) {
+        dialog.showModal();
+      }
     } else {
-      dialog.close();
+      if (dialog.open) {
+        dialog.close();
+      }
     }
   }, [isOpen]);
 
@@ -52,22 +56,22 @@ export default function Modal({
       onCancel={handleCancel}
       onClick={handleBackdropClick}
       className={[
-        'w-full m-auto rounded-3xl border border-slate-200/90',
-        'bg-white text-slate-900',
+        'w-full m-auto rounded-3xl border border-slate-200/90 dark:border-slate-800',
+        'bg-white dark:bg-[#0d1020] text-slate-900 dark:text-slate-100',
         'shadow-2xl p-0 outline-none',
         'open:animate-scale-in',
-        'backdrop:bg-slate-900/40 backdrop:backdrop-blur-xs',
+        'backdrop:bg-slate-900/40 dark:backdrop:bg-black/60 backdrop:backdrop-blur-xs',
         sizes[size] ?? sizes.md,
       ].join(' ')}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-slate-100">
+      <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
         <div>
-          {title && <h2 className="text-base font-bold text-slate-900">{title}</h2>}
-          {description && <p className="text-xs text-slate-500 mt-0.5">{description}</p>}
+          {title && <h2 className="text-base font-bold text-slate-900 dark:text-white">{title}</h2>}
+          {description && <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{description}</p>}
         </div>
         <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close modal">
-          <X size={18} className="text-slate-500" />
+          <X size={18} className="text-slate-500 dark:text-slate-400" />
         </Button>
       </div>
 
@@ -76,7 +80,7 @@ export default function Modal({
 
       {/* Footer */}
       {footer && (
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50 rounded-b-3xl">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 rounded-b-3xl">
           {footer}
         </div>
       )}

@@ -1,16 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { Package, ChevronUp } from 'lucide-react';
+import { ShoppingBag, ChevronRight, ChevronUp } from 'lucide-react';
+import { buttonStyles } from '@/components/links/buttonStyles';
 import ProductCard from './ProductCard';
 
 /**
  * Public Profile Products & Services Section
- * Collapses products behind a "View Products (N)" button by default.
+ * Features the "PRODUCTS & STORE" category heading with ShoppingBag icon.
+ * Collapsed state displays a unified pill row ("View Our Products", chevron) matching LinkButton style.
  * Expands to show category filters and product cards when clicked.
  */
 export default function ProductList({
   products = [],
+  buttonStyle = 'rounded',
   font,
   preview = false,
   contrastMode = 'light',
@@ -20,6 +23,7 @@ export default function ProductList({
 
   const isDark = contrastMode === 'dark';
   const customFontStyle = font ? { fontFamily: font } : {};
+  const buttonClass = buttonStyles[buttonStyle] ?? buttonStyles.rounded;
 
   const visibleProducts = (products || []).filter((p) => p.is_active !== false);
 
@@ -40,21 +44,21 @@ export default function ProductList({
       : visibleProducts.filter((p) => p.category?.trim() === selectedCategory);
 
   return (
-    <section style={customFontStyle} className="w-full space-y-3 pt-3">
+    <section style={customFontStyle} className="w-full space-y-2.5 pt-2">
       {/* Section Header (Always visible) */}
-      <div className="flex items-center justify-between px-1">
+      <div className="flex items-center justify-between px-1 mb-1">
         <div className="flex items-center gap-2">
-          <Package
-            size={16}
-            className={isDark ? 'text-purple-400' : 'text-indigo-600'}
-            strokeWidth={2.2}
+          <ShoppingBag
+            size={14}
+            className={isDark ? 'text-white/80' : 'text-slate-700'}
+            strokeWidth={2.5}
           />
           <h2
-            className={`text-xs font-bold uppercase tracking-wider ${
-              isDark ? 'text-white' : 'text-slate-900'
+            className={`text-xs font-bold uppercase tracking-wide ${
+              isDark ? 'text-white/90' : 'text-slate-800'
             }`}
           >
-            Products & Store
+            PRODUCTS & STORE
           </h2>
         </div>
 
@@ -74,22 +78,34 @@ export default function ProductList({
         )}
       </div>
 
-      {/* Collapsed State: Single 'View Products' Button */}
+      {/* Collapsed State: Unified Pill Row Entry Point */}
       {!expanded ? (
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className={`w-full min-h-[48px] px-4 py-3 rounded-2xl flex items-center justify-center gap-2 font-bold text-sm transition-all duration-150 cursor-pointer select-none active:scale-[0.99] ${
-            isDark
-              ? 'bg-slate-900/90 hover:bg-slate-800 text-white border border-slate-700 shadow-soft hover:shadow-md'
-              : 'bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 shadow-soft hover:shadow-md hover:border-slate-300'
-          }`}
+          style={customFontStyle}
+          className={[
+            'group flex items-center justify-between gap-3 w-full px-4 py-3 sm:px-5 sm:py-3.5',
+            'font-semibold text-sm',
+            'transition-all duration-150 ease-out',
+            'hover:scale-[1.01] active:scale-[0.98]',
+            buttonClass,
+            'cursor-pointer select-none',
+          ].join(' ')}
         >
-          <Package
-            size={16}
-            className={isDark ? 'text-purple-400' : 'text-indigo-600'}
+          {/* Left: ShoppingBag Icon */}
+          <span className="flex items-center justify-center w-6 h-6 shrink-0 transition-transform group-hover:scale-110">
+            <ShoppingBag size={22} className="shrink-0 drop-shadow-2xs text-current" />
+          </span>
+
+          {/* Center/Left: Label */}
+          <span className="flex-1 text-left truncate">View Our Products</span>
+
+          {/* Right: Trailing Chevron */}
+          <ChevronRight
+            size={18}
+            className="shrink-0 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-current"
           />
-          <span>View Products ({visibleProducts.length})</span>
         </button>
       ) : (
         /* Expanded State: Category Tabs + Products Grid + Collapse Footer */

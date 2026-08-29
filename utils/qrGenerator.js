@@ -6,7 +6,7 @@
 
 /**
  * Returns the public profile URL for a given username.
- * Automatically resolves runtime browser origin when NEXT_PUBLIC_APP_URL is not set.
+ * Uses a deterministic base URL to prevent SSR / client hydration mismatches.
  * 
  * @param {string} username
  * @param {string} [baseUrl]
@@ -15,12 +15,7 @@
 export function getProfileUrl(username, baseUrl) {
   if (!username) return '';
   const envUrl = process.env.NEXT_PUBLIC_APP_URL;
-  const runtimeOrigin =
-    typeof window !== 'undefined' && window.location?.origin
-      ? window.location.origin
-      : null;
-
-  const base = (baseUrl || envUrl || runtimeOrigin || 'http://localhost:3000').replace(/\/$/, '');
+  const base = (baseUrl || envUrl || 'https://linknest.app').replace(/\/$/, '');
   return `${base}/${username}`;
 }
 

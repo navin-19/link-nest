@@ -1,17 +1,30 @@
 import Image from 'next/image';
 import Avatar from './Avatar';
-import { User } from 'lucide-react';
+import { User, Check } from 'lucide-react';
 import { getContrastMode } from '@/utils/getContrastMode';
 
 /**
+ * VerifiedSeal: Orange seal badge with white checkmark
+ */
+function VerifiedSeal({ size = 16 }) {
+  return (
+    <div
+      className="inline-flex items-center justify-center rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-white shadow-xs shrink-0"
+      style={{ width: size, height: size }}
+      title="Verified Profile"
+    >
+      <Check size={size * 0.65} strokeWidth={3.5} />
+    </div>
+  );
+}
+
+/**
  * ProfileHeader renders the user's avatar according to the selected avatar_layout:
- *   - 'classic': Centered circular avatar with clean border
+ *   - 'classic': Centered circular avatar with glowing warm border
  *   - 'hero': Larger circular avatar with vibrant gradient glow & colored aura bleeding behind
  *   - 'banner': Wide banner backdrop color band directly framing the overlapping circular avatar
- *   - 'cutout': Frameless transparent cutout style where the subject floats without a contained box/circle
+ *   - 'cutout': Frameless transparent cutout style
  *   - 'shape': Distinct organic geometric blob shape
- *
- * Automatically adapts title, username, and bio contrast to the background theme.
  */
 export default function ProfileHeader({
   profile,
@@ -35,13 +48,10 @@ export default function ProfileHeader({
     (typeof bg === 'string' && (bg.startsWith('http') || bg.startsWith('/') || bg.startsWith('data:image')));
 
   // Determine contrast mode (light background -> dark text; dark background -> light text)
-  // For image backgrounds, always default to high-contrast white text with text shadow & scrim
-  const effectiveContrastMode =
-    contrastMode ||
-    getContrastMode(bg);
+  const effectiveContrastMode = contrastMode || getContrastMode(bg);
   const isDark = isImageBg || effectiveContrastMode === 'dark';
 
-  // Title styling based on title_style with tightened tracking for modern aesthetics
+  // Title styling based on title_style
   const titleStyle = profile.title_style || 'bold';
   let titleClasses = isDark
     ? 'font-extrabold text-white leading-tight tracking-tight'
@@ -58,66 +68,59 @@ export default function ProfileHeader({
   }
 
   const usernameClass = isDark
-    ? 'font-bold tracking-tight text-white/90'
-    : 'font-bold tracking-tight text-slate-700';
+    ? 'font-semibold tracking-tight text-white/85'
+    : 'font-semibold tracking-tight text-slate-700';
 
   const bioClass = isDark
-    ? 'font-normal text-white/80 leading-relaxed max-w-xs'
-    : 'font-normal text-slate-500 leading-relaxed max-w-xs';
+    ? 'font-normal text-white/80 leading-relaxed max-w-sm'
+    : 'font-normal text-slate-600 leading-relaxed max-w-sm';
 
+  const textColor = effectiveTheme?.text_color;
   const textShadowStyle = isImageBg
-    ? { textShadow: '0 1px 3px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.5)' }
-    : undefined;
+    ? { textShadow: '0 1px 3px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.5)', ...(textColor ? { color: textColor } : {}) }
+    : (textColor ? { color: textColor } : undefined);
 
-  const titleAndBioInner = (
-    <>
-      <div className="space-y-0.5">
-        <h1
-          style={textShadowStyle}
-          className={`${titleClasses} ${compact ? 'text-lg sm:text-xl' : 'text-2xl sm:text-3xl'}`}
-        >
-          {displayName}
-        </h1>
-        {username && (
+  // Pure transparent title and bio without heavy container box
+  const titleAndBio = (
+    <div className="space-y-1 my-1">
+      <h1
+        style={textShadowStyle}
+        className={`${titleClasses} ${compact ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl'}`}
+      >
+        {displayName}
+      </h1>
+
+      {username && (
+        <div className="flex items-center justify-center gap-1.5 pt-0.5">
           <p
             style={textShadowStyle}
-            className={`${usernameClass} ${compact ? 'text-sm sm:text-base' : 'text-base sm:text-lg'}`}
+            className={`${usernameClass} ${compact ? 'text-xs sm:text-sm' : 'text-sm sm:text-base'}`}
           >
             @{username}
           </p>
-        )}
-      </div>
+          <VerifiedSeal size={compact ? 15 : 17} />
+        </div>
+      )}
 
       {bio && (
         <p
           style={textShadowStyle}
-          className={`${bioClass} ${compact ? 'text-sm mt-1' : 'text-base mt-1.5'}`}
+          className={`${bioClass} ${compact ? 'text-xs mt-1.5' : 'text-sm mt-2'} mx-auto`}
         >
           {bio}
         </p>
       )}
-    </>
-  );
-
-  const titleAndBio = isImageBg ? (
-    <div className="rounded-3xl bg-black/25 backdrop-blur-md px-5 py-3 inline-block shadow-soft my-1">
-      {titleAndBioInner}
     </div>
-  ) : (
-    titleAndBioInner
   );
 
-  // ── Layout: Hero (Larger avatar with gradient ring & colored ambient glow) ──
+  // ── Layout: Hero ───────────────────────────────────────────────────────────
   if (layout === 'hero') {
     const avatarSize = compact ? 76 : 100;
     return (
-      <div className={`flex flex-col items-center text-center ${compact ? 'gap-2 py-2' : 'gap-2.5 py-4'}`}>
+      <div className={`flex flex-col items-center text-center ${compact ? 'gap-2 py-2' : 'gap-3 py-4'}`}>
         <div className="relative inline-flex items-center justify-center my-1">
-          {/* Soft colored gradient glow aura bleeding behind the circular image */}
-          <div className="absolute -inset-3 rounded-full bg-linear-to-tr from-indigo-500/40 via-purple-500/40 to-pink-500/40 blur-xl opacity-90 animate-pulse pointer-events-none" />
-          
-          {/* Outer gradient border ring */}
-          <div className="relative p-1 rounded-full bg-linear-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-xl">
+          <div className="absolute -inset-3 rounded-full bg-gradient-to-tr from-amber-500/40 via-orange-500/40 to-yellow-500/30 blur-xl opacity-90 animate-pulse pointer-events-none" />
+          <div className="relative p-1 rounded-full bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-400 shadow-xl">
             <Avatar
               src={avatarUrl}
               alt={displayName}
@@ -126,38 +129,33 @@ export default function ProfileHeader({
             />
           </div>
         </div>
-
         {titleAndBio}
       </div>
     );
   }
 
-  // ── Layout: Banner (Wide rectangular banner strip framing behind overlapping avatar) ──
+  // ── Layout: Banner ─────────────────────────────────────────────────────────
   if (layout === 'banner') {
     const avatarSize = compact ? 64 : 84;
     return (
       <div className={`flex flex-col items-center text-center w-full ${compact ? 'pb-2' : 'pb-4'}`}>
-        {/* Banner background block */}
-        <div className="w-full h-20 sm:h-24 rounded-2xl bg-linear-to-r from-slate-900 via-indigo-950 to-slate-900 shadow-md relative overflow-hidden flex items-center justify-center border border-slate-800/60">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(99,102,241,0.25),transparent_70%)]" />
+        <div className="w-full h-20 sm:h-24 rounded-2xl bg-gradient-to-r from-slate-900 via-orange-950/40 to-slate-900 shadow-md relative overflow-hidden flex items-center justify-center border border-orange-500/20">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(249,115,22,0.25),transparent_70%)]" />
         </div>
-
-        {/* Overlapping circular avatar */}
         <div className="-mt-10 sm:-mt-11 mb-2 z-10">
           <Avatar
             src={avatarUrl}
             alt={displayName}
             size={avatarSize}
-            className="shadow-xl ring-4 ring-white"
+            className="shadow-xl ring-4 ring-orange-500/50"
           />
         </div>
-
         {titleAndBio}
       </div>
     );
   }
 
-  // ── Layout: Cutout (Transparent floating image silhouette without background/border containment) ──
+  // ── Layout: Cutout ─────────────────────────────────────────────────────────
   if (layout === 'cutout') {
     const sizeClasses = compact ? 'w-18 h-18' : 'w-24 h-24 sm:w-28 sm:h-28';
     return (
@@ -169,7 +167,7 @@ export default function ProfileHeader({
               alt={displayName}
               width={112}
               height={112}
-              className="w-full h-full object-contain drop-shadow-[0_12px_20px_rgba(0,0,0,0.18)] transition-transform hover:scale-105 duration-200"
+              className="w-full h-full object-contain drop-shadow-[0_12px_25px_rgba(249,115,22,0.3)] transition-transform hover:scale-105 duration-200"
             />
           ) : (
             <div className={`w-full h-full flex items-center justify-center drop-shadow-md ${isDark ? 'text-white/80' : 'text-slate-800'}`}>
@@ -177,21 +175,19 @@ export default function ProfileHeader({
             </div>
           )}
         </div>
-
         {titleAndBio}
       </div>
     );
   }
 
-  // ── Layout: Shape (Distinct organic blob shape mask) ─────────────────────
+  // ── Layout: Shape ──────────────────────────────────────────────────────────
   if (layout === 'shape') {
     const sizeClasses = compact ? 'w-18 h-18' : 'w-24 h-24 sm:w-28 sm:h-28';
     return (
       <div className={`flex flex-col items-center text-center ${compact ? 'gap-1.5 py-2' : 'gap-2 py-4'}`}>
         <div className="relative inline-flex items-center justify-center my-1">
-          {/* Organic blob mask container */}
           <div
-            className={`${sizeClasses} overflow-hidden shadow-card border-2 border-slate-900 bg-slate-900 transition-transform hover:rotate-3 duration-300`}
+            className={`${sizeClasses} overflow-hidden shadow-card border-2 border-orange-500/80 bg-slate-900 transition-transform hover:rotate-3 duration-300 shadow-[0_0_20px_rgba(249,115,22,0.35)]`}
             style={{
               borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%',
             }}
@@ -211,23 +207,26 @@ export default function ProfileHeader({
             )}
           </div>
         </div>
-
         {titleAndBio}
       </div>
     );
   }
 
-  // ── Default / Classic: Centered circular avatar ────────────────────────
-  const avatarSize = compact ? 64 : 92;
+  // ── Default / Classic: Large circular avatar with warm glowing ring ────────
+  const avatarSize = compact ? 72 : 96;
 
   return (
-    <div className={`flex flex-col items-center text-center ${compact ? 'gap-1.5 py-2' : 'gap-2 py-4'}`}>
-      <Avatar
-        src={avatarUrl}
-        alt={displayName}
-        size={avatarSize}
-        className="shadow-card ring-2 ring-white/80"
-      />
+    <div className={`flex flex-col items-center text-center ${compact ? 'gap-2 py-2' : 'gap-3 py-4'}`}>
+      <div className="relative inline-flex items-center justify-center">
+        {/* Warm orange glowing ambient aura behind avatar */}
+        <div className="absolute -inset-2 rounded-full bg-orange-500/30 blur-md pointer-events-none" />
+        <Avatar
+          src={avatarUrl}
+          alt={displayName}
+          size={avatarSize}
+          className="relative shadow-2xl ring-[3px] ring-orange-500/90 shadow-[0_0_25px_rgba(249,115,22,0.4)]"
+        />
+      </div>
 
       {titleAndBio}
     </div>

@@ -93,34 +93,34 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] flex flex-col justify-center items-center p-4 relative overflow-hidden text-slate-900">
+    <div className="min-h-screen bg-[#fafaf9] dark:bg-[#0a0b0f] flex flex-col justify-center items-center p-4 relative overflow-hidden text-slate-900 dark:text-slate-100 transition-colors duration-150">
       {/* Subtle ambient lighting */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-50/60 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Brand Header */}
       <div className="text-center mb-8 relative z-10">
         <Link href="/" className="inline-flex items-center gap-2.5 mb-4">
-          <div className="w-9 h-9 rounded-full bg-slate-900 flex items-center justify-center text-white shadow-soft">
+          <div className="w-9 h-9 rounded-full bg-slate-900 dark:bg-emerald-500 flex items-center justify-center text-white shadow-soft">
             <Link2 size={18} strokeWidth={2.5} />
           </div>
-          <span className="text-2xl font-bold text-slate-900 tracking-tight">
+          <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
             LinkNest
           </span>
         </Link>
-        <h1 className="text-2xl font-bold text-slate-900">Welcome back</h1>
-        <p className="text-xs text-slate-500 mt-1">Sign in to manage your link-in-bio page</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Welcome back</h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Sign in to manage your link-in-bio page</p>
       </div>
 
       {/* Card */}
-      <div className="w-full max-w-md p-8 rounded-3xl border border-slate-200/80 bg-white shadow-card relative z-10 space-y-6">
+      <div className="w-full max-w-md p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card relative z-10 space-y-6">
         {infoMessage && (
-          <div className="p-3 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-2">
+          <div className="p-3 text-xs text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl flex items-center gap-2">
             <CheckCircle2 size={16} /> {infoMessage}
           </div>
         )}
 
         {error && (
-          <div className="p-3 text-xs text-red-600 bg-red-50 border border-red-200 rounded-2xl">
+          <div className="p-3 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 rounded-2xl">
             {error}
           </div>
         )}
@@ -151,7 +151,7 @@ function LoginForm() {
           <div className="flex items-center justify-end">
             <Link
               href="/reset-password"
-              className="text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors"
+              className="text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
             >
               Forgot password?
             </Link>
@@ -166,13 +166,13 @@ function LoginForm() {
             disabled={loading || oauthLoading}
             className="shadow-btn hover:shadow-btn-hover"
           >
-            {loading ? 'Signing in...' : <>Sign In <ArrowRight size={16} /></>}
+            {loading ? 'Logging in...' : <>Log in <ArrowRight size={16} /></>}
           </Button>
         </form>
 
         <div className="relative flex items-center justify-center">
-          <div className="border-t border-slate-200 w-full" />
-          <span className="bg-white px-3 text-[11px] text-slate-400 uppercase tracking-wider absolute font-medium">
+          <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
+          <span className="bg-white dark:bg-[#0c0f1d] px-3 text-[11px] text-slate-400 dark:text-slate-500 uppercase tracking-wider absolute font-medium">
             or continue with
           </span>
         </div>
@@ -189,29 +189,29 @@ function LoginForm() {
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
             <path
-              fill="#EA4335"
-              d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
-            />
-            <path
               fill="#4285F4"
-              d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"
-            />
-            <path
-              fill="#FBBC05"
-              d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.8s.2-2.1.4-2.8L1.9 6.3C.7 8.7 0 10.3 0 12s.7 3.3 1.9 5.7l3.7-2.9z"
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
             />
             <path
               fill="#34A853"
-              d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.1 7.5 23 12 23z"
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
             />
           </svg>
           Google
         </Button>
 
-        <p className="text-center text-xs text-slate-500">
+        <p className="text-center text-xs text-slate-500 dark:text-slate-400">
           Don&apos;t have an account yet?{' '}
-          <Link href="/signup" className="text-slate-900 font-semibold hover:underline">
-            Create account
+          <Link href="/signup" className="text-slate-900 dark:text-emerald-400 font-semibold hover:underline">
+            Sign up free
           </Link>
         </p>
       </div>
@@ -221,7 +221,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#fafaf9]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#fafaf9] dark:bg-[#0a0b0f]" />}>
       <LoginForm />
     </Suspense>
   );

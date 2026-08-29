@@ -13,8 +13,8 @@ export default function ProductRedirectPage() {
   return (
     <div className="flex items-center justify-center h-64">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 rounded-full border-2 border-slate-900 border-t-transparent animate-spin" />
-        <p className="text-xs text-slate-500 font-medium">Redirecting to Products & Store...</p>
+        <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
+        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Redirecting to Products & Store...</p>
       </div>
     </div>
   );

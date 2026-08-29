@@ -8,14 +8,45 @@
   --background-end-rgb: 248, 250, 252;
 }
 
+.dark {
+  --foreground-rgb: 248, 250, 252;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: #fafaf9;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom light scrollbars */
+.dark body {
+  background: #080a14;
+  color: #f8fafc;
+}
+
+/* ── Universal High-Contrast Placeholder Visibility ── */
+::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder,
+.dark select::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+/* ── Custom Sleek Scrollbars ── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -25,13 +56,17 @@ body {
   background: rgba(0, 0, 0, 0.02);
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(148, 163, 184, 0.3);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(148, 163, 184, 0.5);
 }
 
 .scrollbar-none {
@@ -42,4 +77,3 @@ body {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
-

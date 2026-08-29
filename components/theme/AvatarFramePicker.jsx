@@ -1,10 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Circle, Flame, Layout, Sparkles, Shapes, Zap, User, AlertCircle, CheckCircle2 } from 'lucide-react';
-import Button from '@/components/ui/Button';
+import { useState, useEffect } from 'react';
+import { Circle, Flame, Layout, Sparkles, Shapes, Zap, AlertCircle, CheckCircle2 } from 'lucide-react';
 
-// ── Feature Flag: Set to true once billing/subscriptions are live ─────────────
 const AVATAR_STYLES_PRO_GATED = false;
 
 const AVATAR_FRAMES = [
@@ -25,6 +23,10 @@ export default function AvatarFramePicker({
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (currentLayout) setSelectedLayout(currentLayout);
+  }, [currentLayout]);
 
   async function handlePick(layoutId, isProRequired) {
     if (AVATAR_STYLES_PRO_GATED && isProRequired && !isPro) {
@@ -64,26 +66,15 @@ export default function AvatarFramePicker({
   }
 
   return (
-    <div className="p-6 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-4 text-slate-900 animate-in fade-in duration-150">
-      <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-        <div>
-          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <User size={18} className="text-indigo-600" /> 1. Profile Avatar (Style / Frame)
-          </h3>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Choose how your avatar photo is framed and presented at the top of your page.
-          </p>
-        </div>
-      </div>
-
+    <div className="space-y-3 text-slate-900 dark:text-slate-100 animate-in fade-in duration-150">
       {message && (
-        <div className="p-3 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-2 font-medium">
+        <div className="p-3 text-xs text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl flex items-center gap-2 font-medium">
           <CheckCircle2 size={15} className="shrink-0" /> {message}
         </div>
       )}
 
       {error && (
-        <div className="p-3 text-xs text-red-600 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-2 font-medium">
+        <div className="p-3 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 rounded-2xl flex items-center gap-2 font-medium">
           <AlertCircle size={15} className="shrink-0" /> {error}
         </div>
       )}
@@ -99,20 +90,20 @@ export default function AvatarFramePicker({
               onClick={() => handlePick(opt.id, opt.isPro)}
               className={`relative flex flex-col items-center p-3.5 rounded-2xl border text-center transition-all cursor-pointer ${
                 isSelected
-                  ? 'border-slate-900 bg-slate-50 ring-2 ring-slate-900/10 shadow-soft'
-                  : 'border-slate-200 bg-white hover:border-slate-300 shadow-xs'
+                  ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 ring-2 ring-emerald-500/20 shadow-soft'
+                  : 'border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-[#0d1020] hover:border-slate-300 dark:hover:border-slate-700 shadow-xs'
               }`}
             >
               {AVATAR_STYLES_PRO_GATED && opt.isPro && (
-                <span className="absolute top-1.5 right-1.5 text-[9px] font-bold text-amber-700 bg-amber-100 px-1 rounded flex items-center gap-0.5">
+                <span className="absolute top-1.5 right-1.5 text-[9px] font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 px-1 rounded flex items-center gap-0.5">
                   <Zap size={8} className="fill-amber-600 text-amber-600" /> Pro
                 </span>
               )}
-              <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 mb-1.5 shadow-2xs">
+              <div className="w-9 h-9 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 mb-1.5 shadow-2xs">
                 <Icon size={18} />
               </div>
-              <span className="text-xs font-bold text-slate-900">{opt.label}</span>
-              <span className="text-[10px] text-slate-400 mt-0.5">{opt.desc}</span>
+              <span className="text-xs font-bold text-slate-900 dark:text-white">{opt.label}</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{opt.desc}</span>
             </button>
           );
         })}

@@ -1,5 +1,6 @@
 import './globals.css';
 import { Inter, Outfit, Roboto } from 'next/font/google';
+import { ThemeModeProvider } from '@/components/providers/ThemeModeProvider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -37,11 +38,12 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`light ${inter.variable} ${outfit.variable} ${roboto.variable}`}
-      suppressHydrationWarning
+      className={`${inter.variable} ${outfit.variable} ${roboto.variable}`}
     >
-      <body className={`${inter.className} bg-[#fafaf9] text-slate-900 min-h-screen antialiased selection:bg-slate-900 selection:text-white`}>
-        {children}
+      <body className={`${inter.className} bg-[#fafaf9] dark:bg-[#0a0b0f] text-slate-900 dark:text-slate-100 min-h-screen antialiased selection:bg-slate-900 selection:text-white transition-colors duration-150`}>
+        <ThemeModeProvider>
+          {children}
+        </ThemeModeProvider>
       </body>
     </html>
   );

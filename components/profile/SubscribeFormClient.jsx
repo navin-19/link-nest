@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Avatar from '@/components/profile/Avatar';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import { resolveCustomerFormConfig } from '@/utils/customerFormConfig';
 import {
   User,
   Mail,
@@ -17,6 +18,9 @@ import {
   ShieldCheck,
   Sparkles,
   X,
+  Building2,
+  Calendar,
+  Globe,
 } from 'lucide-react';
 
 const COUNTRY_CODES = [
@@ -58,12 +62,11 @@ export default function SubscribeFormClient({
   isModal = false,
   onClose,
 }) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const config = resolveCustomerFormConfig(profile?.customer_form_config);
+
+  // Dynamic form state values
+  const [formData, setFormData] = useState({});
   const [countryCode, setCountryCode] = useState('+1');
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [place, setPlace] = useState('');
-  const [address, setAddress] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -115,6 +118,10 @@ export default function SubscribeFormClient({
     });
   }
 
+  function handleFieldChange(key, value) {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
@@ -127,17 +134,21 @@ export default function SubscribeFormClient({
         captchaToken = await getRecaptchaToken();
       }
 
-      // 2. Prepare payload
+      // 2. Prepare payload matching standard fields and custom data
       const payload = {
-        name: name.trim(),
-        email: email.trim().toLowerCase(),
-        country_code: countryCode,
-        mobile_number: mobileNumber.trim(),
-        place: place.trim(),
-        address: address.trim() || undefined,
         username,
         captchaToken,
+        countryCode,
+        country_code: countryCode,
+        ...formData,
       };
+
+      // Ensure key standard field aliases are populated
+      if (formData.name) payload.name = formData.name.trim();
+      if (formData.email) payload.email = formData.email.trim().toLowerCase();
+      if (formData.mobile_number) payload.mobileNumber = formData.mobile_number.trim();
+      if (formData.place) payload.place = formData.place.trim();
+      if (formData.address) payload.address = formData.address.trim();
 
       const res = await fetch('/api/subscribers', {
         method: 'POST',
@@ -157,6 +168,19 @@ export default function SubscribeFormClient({
     } finally {
       setLoading(false);
     }
+  }
+
+  const enabledFields = config.fields.filter((f) => f.enabled);
+
+  function getFieldIcon(type, key) {
+    if (key === 'email' || type === 'email') return Mail;
+    if (key === 'mobile_number' || type === 'phone') return Phone;
+    if (key === 'place' || key === 'address') return MapPin;
+    if (key === 'company') return Building2;
+    if (key === 'dob' || type === 'date') return Calendar;
+    if (key === 'website') return Globe;
+    if (type === 'textarea') return FileText;
+    return User;
   }
 
   const formCardContent = (
@@ -190,7 +214,12 @@ export default function SubscribeFormClient({
               You&apos;re Subscribed!
             </h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-              Thank you, <span className="font-semibold text-slate-900">{name}</span>! Your contact details have been shared with <span className="font-semibold text-slate-900">@{username}</span>. You&apos;ll be notified of new updates, links, and exclusive announcements.
+              {config.successMessage || (
+                <>
+                  Thank you! Your contact details have been shared with{' '}
+                  <span className="font-semibold text-slate-900">@{username}</span>. You&apos;ll be notified of new updates and exclusive announcements.
+                </>
+              )}
             </p>
           </div>
 
@@ -223,7 +252,7 @@ export default function SubscribeFormClient({
           </div>
         </div>
       ) : (
-        /* Lead Capture Form */
+        /* Dynamic Lead Capture Form */
         <div className="space-y-5">
           <div className="flex items-start gap-3">
             <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 shadow-2xs">
@@ -231,11 +260,13 @@ export default function SubscribeFormClient({
             </div>
             <div className="space-y-0.5">
               <h1 className="text-base font-bold text-slate-900">
-                Subscribe for Updates
+                {config.title || 'Subscribe for Updates'}
               </h1>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Stay in the loop with announcements, updates, and direct notifications from @{username}.
-              </p>
+              {config.description && (
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  {config.description}
+                </p>
+              )}
             </div>
           </div>
 
@@ -247,95 +278,121 @@ export default function SubscribeFormClient({
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Full Name */}
-            <Input
-              id="lead-name"
-              label="Full Name *"
-              placeholder="Jane Doe"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              leadingIcon={User}
-              required
-            />
+            {/* Dynamically Render All Enabled Fields in Saved Order */}
+            {enabledFields.map((field) => {
+              const fieldKey = field.key || field.id;
+              const Icon = getFieldIcon(field.type, fieldKey);
+              const isRequired = Boolean(field.required);
+              const labelText = `${field.label || 'Field'} ${isRequired ? '*' : ''}`;
 
-            {/* Email Address */}
-            <Input
-              id="lead-email"
-              label="Email Address *"
-              type="email"
-              placeholder="jane@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              leadingIcon={Mail}
-              required
-            />
+              // 1. Phone Field with Country Code Picker
+              if (field.type === 'phone' || fieldKey === 'mobile_number') {
+                return (
+                  <div key={field.id || fieldKey} className="flex flex-col gap-1.5 text-left">
+                    <label htmlFor={`lead-${fieldKey}`} className="text-xs font-semibold text-slate-700">
+                      {labelText}
+                    </label>
+                    <div className="flex gap-2.5">
+                      <div className="w-36 shrink-0">
+                        <select
+                          id={`lead-country-code-${fieldKey}`}
+                          value={countryCode}
+                          onChange={(e) => setCountryCode(e.target.value)}
+                          aria-label="Country Code"
+                          className="w-full rounded-xl border border-slate-200 hover:border-slate-300 bg-white text-slate-900 px-3 py-2.5 text-sm shadow-xs transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 font-mono cursor-pointer"
+                        >
+                          {COUNTRY_CODES.map((c) => (
+                            <option key={c.code + c.name} value={c.code}>
+                              {c.flag} {c.code}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-            {/* Mobile Number with Country Code Dropdown */}
-            <div className="flex flex-col gap-1.5 text-left">
-              <label htmlFor="lead-mobile" className="text-xs font-semibold text-slate-700">
-                Mobile / WhatsApp Number *
-              </label>
-              <div className="flex gap-2.5">
-                {/* Country Code Select styled consistently with Input */}
-                <div className="w-36 shrink-0">
-                  <select
-                    id="lead-country-code"
-                    value={countryCode}
-                    onChange={(e) => setCountryCode(e.target.value)}
-                    aria-label="Country Code"
-                    className="w-full rounded-xl border border-slate-200 hover:border-slate-300 bg-white text-slate-900 px-3 py-2.5 text-sm shadow-xs transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 font-mono cursor-pointer"
-                  >
-                    {COUNTRY_CODES.map((c) => (
-                      <option key={c.code + c.name} value={c.code}>
-                        {c.flag} {c.code}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                      <div className="flex-1 min-w-0">
+                        <Input
+                          id={`lead-${fieldKey}`}
+                          type="tel"
+                          placeholder={field.placeholder || '98765 43210'}
+                          value={formData[fieldKey] || ''}
+                          onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
+                          leadingIcon={Icon}
+                          required={isRequired}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
 
-                {/* Mobile Digits Input */}
-                <div className="flex-1 min-w-0">
-                  <Input
-                    id="lead-mobile"
-                    type="tel"
-                    placeholder="98765 43210"
-                    value={mobileNumber}
-                    onChange={(e) => setMobileNumber(e.target.value)}
-                    leadingIcon={Phone}
-                    required
-                  />
-                </div>
-              </div>
-            </div>
+              // 2. Textarea Field
+              if (field.type === 'textarea') {
+                return (
+                  <div key={field.id || fieldKey} className="flex flex-col gap-1.5 text-left">
+                    <label
+                      htmlFor={`lead-${fieldKey}`}
+                      className="text-xs font-semibold text-slate-700 flex items-center justify-between"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <Icon size={14} /> {labelText}
+                      </span>
+                      {!isRequired && (
+                        <span className="text-[10px] text-slate-400 font-normal">Optional</span>
+                      )}
+                    </label>
+                    <textarea
+                      id={`lead-${fieldKey}`}
+                      rows={3}
+                      placeholder={field.placeholder || ''}
+                      value={formData[fieldKey] || ''}
+                      onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
+                      required={isRequired}
+                      className="w-full rounded-xl border border-slate-200 hover:border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 p-3.5 text-sm shadow-xs transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900"
+                    />
+                  </div>
+                );
+              }
 
-            {/* Place / City */}
-            <Input
-              id="lead-place"
-              label="Place / City *"
-              placeholder="e.g. New York, London, Mumbai"
-              value={place}
-              onChange={(e) => setPlace(e.target.value)}
-              leadingIcon={MapPin}
-              required
-            />
+              // 3. Dropdown Select Field
+              if (field.type === 'dropdown') {
+                return (
+                  <div key={field.id || fieldKey} className="flex flex-col gap-1.5 text-left">
+                    <label htmlFor={`lead-${fieldKey}`} className="text-xs font-semibold text-slate-700">
+                      {labelText}
+                    </label>
+                    <select
+                      id={`lead-${fieldKey}`}
+                      value={formData[fieldKey] || ''}
+                      onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
+                      required={isRequired}
+                      className="w-full rounded-xl border border-slate-200 hover:border-slate-300 bg-white text-slate-900 px-3.5 py-2.5 text-sm shadow-xs transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 cursor-pointer"
+                    >
+                      <option value="">{field.placeholder || 'Select an option...'}</option>
+                      {field.options?.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              }
 
-            {/* Street Address (Optional) */}
-            <div className="flex flex-col gap-1.5 text-left">
-              <label htmlFor="lead-address" className="text-xs font-semibold text-slate-700 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <FileText size={14} /> Address
-                </span>
-                <span className="text-[10px] text-slate-400 font-normal">Optional</span>
-              </label>
-              <textarea
-                id="lead-address"
-                rows={3}
-                placeholder="Street address, apartment, or delivery details..."
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 hover:border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 p-3.5 text-sm shadow-xs transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900"
-              />
-            </div>
+              // 4. Standard Single-line Input Field (text, email, number, date)
+              return (
+                <Input
+                  key={field.id || fieldKey}
+                  id={`lead-${fieldKey}`}
+                  label={labelText}
+                  type={field.type || 'text'}
+                  placeholder={field.placeholder || ''}
+                  value={formData[fieldKey] || ''}
+                  onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
+                  leadingIcon={Icon}
+                  required={isRequired}
+                />
+              );
+            })}
 
             {/* Submit Action Button */}
             <div className="pt-2">
@@ -347,11 +404,11 @@ export default function SubscribeFormClient({
                 loading={loading}
                 className="shadow-btn hover:shadow-btn-hover text-sm font-semibold py-3"
               >
-                Subscribe & Connect
+                {config.submitButtonText || 'Subscribe & Connect'}
               </Button>
             </div>
 
-            {/* reCAPTCHA badge disclosure */}
+            {/* reCAPTCHA disclosure */}
             <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400 pt-1 text-center font-medium">
               <ShieldCheck size={14} className="text-slate-400 shrink-0" />
               <span>Protected by Google reCAPTCHA v3 bot defense</span>

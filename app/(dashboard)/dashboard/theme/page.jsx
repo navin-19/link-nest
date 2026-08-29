@@ -45,19 +45,21 @@ export default function ThemePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 rounded-full border-2 border-slate-900 border-t-transparent animate-spin" />
+        <div className="w-8 h-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start text-slate-900">
+    <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start text-slate-900 dark:text-slate-100">
       {/* Left: Theme Editor */}
       <div className="lg:col-span-7 space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Appearance & Theme</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Pick presets or craft custom backgrounds, buttons, and typography.
+          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+            Appearance & Theme
+          </h1>
+          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+            Pick presets or craft custom backgrounds, card styles, and typography.
           </p>
         </div>
 
@@ -76,8 +78,8 @@ export default function ThemePage() {
       </div>
 
       {/* Right: Live Phone Mockup Preview */}
-      <div className="lg:col-span-5 sticky top-0 hidden lg:block self-start">
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-4 shadow-card">
+      <div className="lg:col-span-5 sticky top-4 hidden lg:block self-start">
+        <div className="bg-white dark:bg-[#0c0f1e] rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 shadow-card">
           <LivePreview
             profile={effectiveProfile}
             links={links}

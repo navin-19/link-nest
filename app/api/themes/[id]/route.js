@@ -18,6 +18,7 @@ export async function PATCH(request, props) {
   if (body.background !== undefined) updates.background = body.background;
   if (body.button_style !== undefined) updates.button_style = body.button_style;
   if (body.font !== undefined) updates.font = body.font;
+  if (body.text_color !== undefined) updates.text_color = body.text_color;
 
   const { data: theme, error } = await supabase
     .from('themes')

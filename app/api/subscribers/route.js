@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabaseServer';
 import { verifyRecaptchaToken } from '@/lib/recaptcha';
+import { resolveCustomerFormConfig } from '@/utils/customerFormConfig';
 
 /**
  * GET /api/subscribers
@@ -17,7 +18,7 @@ export async function GET() {
 
     const { data: subscribers, error } = await supabase
       .from('subscribers')
-      .select('id, profile_user_id, name, email, country_code, mobile_number, place, address, created_at')
+      .select('id, profile_user_id, name, email, country_code, mobile_number, place, address, custom_data, created_at')
       .eq('profile_user_id', user.id)
       .order('created_at', { ascending: false });
 
@@ -39,7 +40,7 @@ export async function GET() {
 
 /**
  * POST /api/subscribers
- * Public subscription endpoint — captures rich lead details (name, email, phone, city, address)
+ * Public subscription endpoint — captures rich lead details & custom fields
  * protected by server-side reCAPTCHA bot verification.
  */
 export async function POST(request) {
@@ -55,31 +56,68 @@ export async function POST(request) {
       mobile_number,
       place,
       address,
+      custom_data = {},
+      customData = {},
       captchaToken,
       token,
+      ...otherFields
     } = body;
 
     const rawMobile = mobileNumber || mobile_number;
     const rawCountryCode = countryCode || country_code;
 
-    if (!email || !username) {
-      return NextResponse.json({ error: 'Email and username are required.' }, { status: 400 });
+    if (!username) {
+      return NextResponse.json({ error: 'Profile username is required.' }, { status: 400 });
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
-      return NextResponse.json({ error: 'Invalid email address.' }, { status: 400 });
-    }
+    // Security: Use RLS-respecting server client for public reads and inserts
+    const supabase = await createClient();
 
-    // Bot protection: Verify reCAPTCHA token
-    const effectiveToken = captchaToken || token;
-    const recaptchaResult = await verifyRecaptchaToken(effectiveToken);
-    if (!recaptchaResult.success) {
+    // 1. Fetch user ID and customer form config for the given profile username
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, customer_form_config')
+      .eq('username', username.toLowerCase())
+      .maybeSingle();
+
+    if (profileError || !profile) {
       return NextResponse.json(
-        { error: recaptchaResult.error || 'CAPTCHA verification failed. Please try again.' },
+        { error: 'Profile not found.' },
+        { status: 404 }
+      );
+    }
+
+    const formConfig = resolveCustomerFormConfig(profile.customer_form_config);
+    if (!formConfig.enabled) {
+      return NextResponse.json(
+        { error: 'Subscriptions are currently disabled for this profile.' },
         { status: 400 }
       );
+    }
+
+    // Validate email if present or enabled
+    const emailField = formConfig.fields.find((f) => f.key === 'email' || f.id === 'email');
+    if (emailField?.enabled && emailField?.required && !email) {
+      return NextResponse.json({ error: 'Email address is required.' }, { status: 400 });
+    }
+
+    if (email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        return NextResponse.json({ error: 'Invalid email address.' }, { status: 400 });
+      }
+    }
+
+    // Bot protection: Verify reCAPTCHA token if token provided
+    const effectiveToken = captchaToken || token;
+    if (effectiveToken) {
+      const recaptchaResult = await verifyRecaptchaToken(effectiveToken);
+      if (!recaptchaResult.success) {
+        return NextResponse.json(
+          { error: recaptchaResult.error || 'CAPTCHA verification failed. Please try again.' },
+          { status: 400 }
+        );
+      }
     }
 
     // Optional mobile number sanity validation
@@ -93,32 +131,30 @@ export async function POST(request) {
       sanitizedMobile = trimmed;
     }
 
-    // Security: Use RLS-respecting server client for public reads and inserts
-    const supabase = await createClient();
+    // Collect custom fields into combined custom_data object
+    const mergedCustomData = {
+      ...(typeof customData === 'object' ? customData : {}),
+      ...(typeof custom_data === 'object' ? custom_data : {}),
+    };
 
-    // 1. Fetch user ID for the given profile username
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('username', username.toLowerCase())
-      .maybeSingle();
-
-    if (profileError || !profile) {
-      return NextResponse.json(
-        { error: 'Profile not found.' },
-        { status: 404 }
-      );
-    }
+    // Filter out standard fields from otherFields and add to mergedCustomData
+    const standardKeys = new Set(['name', 'email', 'username', 'countryCode', 'country_code', 'mobileNumber', 'mobile_number', 'place', 'address', 'captchaToken', 'token', 'custom_data', 'customData']);
+    Object.entries(otherFields).forEach(([k, v]) => {
+      if (!standardKeys.has(k) && v !== undefined && v !== null && v !== '') {
+        mergedCustomData[k] = v;
+      }
+    });
 
     // 2. Insert the subscriber lead with all provided contact fields
     const insertPayload = {
       profile_user_id: profile.id,
       name: name && typeof name === 'string' ? name.trim() : null,
-      email: email.trim().toLowerCase(),
+      email: email ? email.trim().toLowerCase() : null,
       country_code: rawCountryCode && typeof rawCountryCode === 'string' ? rawCountryCode.trim() : null,
       mobile_number: sanitizedMobile,
       place: place && typeof place === 'string' ? place.trim() : null,
       address: address && typeof address === 'string' ? address.trim() : null,
+      custom_data: Object.keys(mergedCustomData).length > 0 ? mergedCustomData : {},
     };
 
     const { error: insertError } = await supabase
@@ -148,7 +184,10 @@ export async function POST(request) {
       );
     }
 
-    return NextResponse.json({ success: true, message: 'Subscribed successfully!' }, { status: 201 });
+    return NextResponse.json({
+      success: true,
+      message: formConfig.successMessage || 'Subscribed successfully!',
+    }, { status: 201 });
   } catch (err) {
     console.error('Subscription API exception:', err);
     return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });

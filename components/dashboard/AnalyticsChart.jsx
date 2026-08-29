@@ -13,7 +13,7 @@ import {
 export default function AnalyticsChart({ data = [] }) {
   if (!data || data.length === 0) {
     return (
-      <div className="h-64 flex items-center justify-center text-xs text-slate-400 border border-slate-200 rounded-3xl bg-white shadow-soft font-medium">
+      <div className="h-64 flex items-center justify-center text-xs text-slate-400 border border-slate-200 dark:border-slate-800 rounded-3xl bg-white dark:bg-[#0c0f1d] shadow-soft font-medium">
         No click data available yet. Share your link to start tracking!
       </div>
     );
@@ -22,9 +22,9 @@ export default function AnalyticsChart({ data = [] }) {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="p-3 bg-white border border-slate-200 rounded-2xl shadow-card text-xs">
-          <p className="font-bold text-slate-900 mb-0.5">{label}</p>
-          <p className="text-indigo-600 font-mono font-semibold">
+        <div className="p-3 bg-white dark:bg-[#0d1020] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-card text-xs">
+          <p className="font-bold text-slate-900 dark:text-white mb-0.5">{label}</p>
+          <p className="text-emerald-600 dark:text-emerald-400 font-mono font-semibold">
             {payload[0].value} {payload[0].value === 1 ? 'click' : 'clicks'}
           </p>
         </div>
@@ -34,7 +34,7 @@ export default function AnalyticsChart({ data = [] }) {
   };
 
   return (
-    <div className="w-full h-72">
+    <div className="w-full h-72 text-slate-900 dark:text-slate-100">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
@@ -42,12 +42,12 @@ export default function AnalyticsChart({ data = [] }) {
         >
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="rgba(0,0,0,0.05)"
+            stroke="rgba(150,150,150,0.1)"
             vertical={false}
           />
           <XAxis
             dataKey="name"
-            stroke="rgba(15,23,42,0.4)"
+            stroke="rgba(150,150,150,0.6)"
             fontSize={11}
             tickLine={false}
             interval={0}
@@ -55,13 +55,13 @@ export default function AnalyticsChart({ data = [] }) {
             textAnchor="end"
           />
           <YAxis
-            stroke="rgba(15,23,42,0.4)"
+            stroke="rgba(150,150,150,0.6)"
             fontSize={11}
             tickLine={false}
             axisLine={false}
             allowDecimals={false}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,0,0,0.02)' }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
           <Bar
             dataKey="clicks"
             fill="url(#lightBarGradient)"
@@ -69,8 +69,8 @@ export default function AnalyticsChart({ data = [] }) {
           />
           <defs>
             <linearGradient id="lightBarGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1e1b4b" stopOpacity={0.9} />
-              <stop offset="100%" stopColor="#4f46e5" stopOpacity={0.7} />
+              <stop offset="0%" stopColor="#10b981" stopOpacity={0.9} />
+              <stop offset="100%" stopColor="#059669" stopOpacity={0.7} />
             </linearGradient>
           </defs>
         </BarChart>

@@ -13,7 +13,6 @@ import {
   X,
   ExternalLink,
   Package,
-  DollarSign,
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -109,18 +108,18 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
       style={style}
       className={[
         'group flex items-center gap-3 p-4 rounded-2xl border',
-        'bg-white dark:bg-slate-900 transition-all duration-150',
+        'bg-white dark:bg-[#0c0f1d] transition-all duration-150',
         isDragging
-          ? 'border-indigo-400 bg-indigo-50/40 shadow-card'
+          ? 'border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/40 shadow-card'
           : 'border-slate-200/90 dark:border-slate-800 shadow-soft hover:shadow-card hover:border-slate-300 dark:hover:border-slate-700',
-        !product.is_active ? 'opacity-60 bg-slate-50/80 dark:bg-slate-850' : '',
+        !product.is_active ? 'opacity-60 bg-slate-50/80 dark:bg-slate-900/50' : '',
       ].join(' ')}
     >
       {/* Drag handle */}
       <button
         {...attributes}
         {...listeners}
-        className="text-slate-300 hover:text-slate-700 dark:hover:text-slate-200 cursor-grab active:cursor-grabbing touch-none shrink-0 transition-colors p-1"
+        className="text-slate-300 dark:text-slate-600 hover:text-slate-700 dark:hover:text-slate-200 cursor-grab active:cursor-grabbing touch-none shrink-0 transition-colors p-1"
         aria-label="Drag to reorder"
       >
         <GripVertical size={18} />
@@ -137,7 +136,7 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <Package size={20} className="text-slate-400" />
+          <Package size={20} className="text-slate-400 dark:text-slate-500" />
         )}
       </div>
 
@@ -196,13 +195,13 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Short description"
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-850 p-2 text-xs text-slate-900 dark:text-slate-100"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1020] p-2 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             />
           </div>
         ) : (
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
+              <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
                 {product.name}
               </p>
               {product.category && (
@@ -211,7 +210,7 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
                 </span>
               )}
               {product.price && (
-                <span className="inline-flex items-center text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900 px-1.5 py-0.5 rounded-md">
+                <span className="inline-flex items-center text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-1.5 py-0.5 rounded-md">
                   {product.price}
                 </span>
               )}
@@ -221,7 +220,7 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
                 {product.description}
               </p>
             )}
-            <p className="text-[11px] text-slate-400 font-mono truncate mt-0.5">{product.url}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 font-mono truncate mt-0.5">{product.url}</p>
           </div>
         )}
       </div>
@@ -244,7 +243,7 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
                 href={product.url.startsWith('http://') || product.url.startsWith('https://') ? product.url : `https://${product.url}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
                 aria-label="Open product link"
                 title="View product"
               >
@@ -258,7 +257,7 @@ export default function ProductEditorItem({ product, onUpdate, onDelete }) {
               aria-label={product.is_active ? 'Deactivate' : 'Activate'}
               title={product.is_active ? 'Hide product' : 'Show product'}
             >
-              {product.is_active ? <Eye size={15} className="text-slate-600 dark:text-slate-300" /> : <EyeOff size={15} className="text-slate-400" />}
+              {product.is_active ? <Eye size={15} className="text-slate-600 dark:text-slate-300" /> : <EyeOff size={15} className="text-slate-400 dark:text-slate-500" />}
             </Button>
             <Button
               size="icon"

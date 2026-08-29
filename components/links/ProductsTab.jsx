@@ -17,7 +17,7 @@ import {
 } from '@dnd-kit/sortable';
 import AddProductForm from '@/components/products/AddProductForm';
 import ProductEditorItem from '@/components/products/ProductEditorItem';
-import { Package, ShoppingBag, AlertCircle } from 'lucide-react';
+import { ShoppingBag, AlertCircle } from 'lucide-react';
 
 export default function ProductsTab({
   userId,
@@ -43,7 +43,6 @@ export default function ProductsTab({
 
   async function handleToggleShowProducts(val) {
     const previous = showProducts;
-    // Optimistic UI update: change visual state instantly
     setShowProducts(val);
     setToggleError(null);
     if (onLocalProfileChange) {
@@ -61,7 +60,6 @@ export default function ProductsTab({
       }
     } catch (err) {
       console.error('[ProductsTab toggle error]', err);
-      // Revert on error
       setShowProducts(previous);
       if (onLocalProfileChange) {
         onLocalProfileChange({ show_products: previous });
@@ -96,20 +94,20 @@ export default function ProductsTab({
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-150">
+    <div className="space-y-6 animate-in fade-in duration-150 text-slate-900 dark:text-slate-100">
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Package size={18} className="text-indigo-600" /> Products & Store
+            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <ShoppingBag size={18} className="text-emerald-500" /> Products & Store
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Showcase your digital products, merch, courses, or services directly on your LinkNest.
             </p>
           </div>
 
-          <label className="flex items-center gap-2.5 cursor-pointer select-none bg-slate-100/90 border border-slate-200/90 px-3 py-1.5 rounded-2xl shrink-0 self-start sm:self-auto shadow-2xs">
-            <span className="text-xs font-semibold text-slate-700">
+          <label className="flex items-center gap-2.5 cursor-pointer select-none bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200/90 dark:border-slate-700 px-3 py-1.5 rounded-2xl shrink-0 self-start sm:self-auto shadow-2xs">
+            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
               {showProducts ? 'Visible on page' : 'Hidden from page'}
             </span>
             <button
@@ -118,7 +116,7 @@ export default function ProductsTab({
               aria-checked={showProducts}
               onClick={() => handleToggleShowProducts(!showProducts)}
               className={`relative w-10 h-6 rounded-full transition-colors cursor-pointer ${
-                showProducts ? 'bg-emerald-500' : 'bg-slate-300'
+                showProducts ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
               }`}
             >
               <span
@@ -132,7 +130,7 @@ export default function ProductsTab({
 
         {/* Toggle Error Alert */}
         {toggleError && (
-          <div className="p-3 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2 animate-in fade-in">
+          <div className="p-3 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-300 text-xs flex items-center gap-2 animate-in fade-in">
             <AlertCircle size={15} className="shrink-0" />
             <span>{toggleError}</span>
           </div>
@@ -140,7 +138,7 @@ export default function ProductsTab({
 
         {/* Error Alert */}
         {error && (
-          <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+          <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-300 text-xs flex items-center gap-2">
             <AlertCircle size={16} className="shrink-0" />
             <span>{error}</span>
           </div>
@@ -152,19 +150,19 @@ export default function ProductsTab({
         {/* Products List with DnD */}
         <div className="space-y-3 min-h-[160px]">
           {userLoading || (loading && products.length === 0) ? (
-            <div className="p-12 text-center border border-slate-200 rounded-3xl bg-white shadow-soft flex flex-col items-center justify-center gap-3">
-              <div className="w-7 h-7 rounded-full border-2 border-slate-900 border-t-transparent animate-spin" />
-              <span className="text-xs font-medium text-slate-500">Loading your products...</span>
+            <div className="p-12 text-center border border-slate-200 dark:border-slate-800 rounded-3xl bg-white dark:bg-[#0c0f1d] shadow-soft flex flex-col items-center justify-center gap-3">
+              <div className="w-7 h-7 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Loading your products...</span>
             </div>
           ) : products.length === 0 ? (
-            <div className="p-10 text-center border border-dashed border-slate-300 rounded-3xl bg-white shadow-soft space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-700 mx-auto flex items-center justify-center shadow-xs">
+            <div className="p-10 text-center border border-dashed border-slate-300 dark:border-slate-800 rounded-3xl bg-white dark:bg-[#0c0f1d] shadow-soft space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 mx-auto flex items-center justify-center shadow-xs">
                 <ShoppingBag size={22} />
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-900">No products added yet</p>
-                <p className="text-xs text-slate-500 mt-1">
-                  Click &ldquo;Add New Product&rdquo; above to showcase your first product or service!
+                <p className="text-sm font-bold text-slate-900 dark:text-white">No products added yet</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Add a product to start showcasing what you offer.
                 </p>
               </div>
             </div>

@@ -68,7 +68,6 @@ export default function AddProductForm({ userId, onAdd }) {
       setImageUrl(publicUrl);
     } catch (err) {
       console.warn('Product image upload failed:', err);
-      // If bucket is not yet provisioned on Supabase remote, allow direct image URL or fallback
       setErrors((prev) => ({
         ...prev,
         image: 'Could not upload to storage bucket. You can also paste an image URL directly.',
@@ -105,7 +104,6 @@ export default function AddProductForm({ userId, onAdd }) {
         category: finalCategory || null,
       });
 
-      // Reset form
       setName('');
       setUrl('');
       setPrice('');
@@ -139,11 +137,11 @@ export default function AddProductForm({ userId, onAdd }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-6 rounded-3xl border border-slate-200/90 bg-white space-y-4 shadow-card animate-slide-down text-slate-900"
+      className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] space-y-4 shadow-card animate-slide-down text-slate-900 dark:text-slate-100"
     >
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-        <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-          <Package size={16} className="text-indigo-600" /> Add New Product
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <h3 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+          <Package size={16} className="text-emerald-500" /> Add New Product
         </h3>
         <button
           type="button"
@@ -151,30 +149,29 @@ export default function AddProductForm({ userId, onAdd }) {
             setIsOpen(false);
             setErrors({});
           }}
-          className="text-xs font-semibold text-slate-400 hover:text-slate-700 transition-colors"
+          className="text-xs font-semibold text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
         >
           Cancel
         </button>
       </div>
 
       {errors.form && (
-        <div className="p-3 text-xs text-red-600 bg-red-50 border border-red-200 rounded-xl">
+        <div className="p-3 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 rounded-xl">
           {errors.form}
         </div>
       )}
 
       {/* Image Upload Row */}
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-slate-700 block">
+        <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
           Product Image
         </label>
         <div className="flex items-center gap-4">
-          <div className="w-20 h-20 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center relative shrink-0 shadow-2xs">
+          <div className="w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center relative shrink-0 shadow-2xs">
             {imageUrl ? (
-              /* Using <img> for local blob/data preview URLs that cannot be pre-optimized by next/image */
               <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
             ) : (
-              <ImageIcon size={26} className="text-slate-400" />
+              <ImageIcon size={26} className="text-slate-400 dark:text-slate-500" />
             )}
             {imageUrl && (
               <button
@@ -206,10 +203,9 @@ export default function AddProductForm({ userId, onAdd }) {
               >
                 <Upload size={14} /> {imageUrl ? 'Change Image' : 'Upload Image'}
               </Button>
-              <span className="text-[11px] text-slate-400">PNG, JPG or WebP (max 3MB)</span>
+              <span className="text-[11px] text-slate-400 dark:text-slate-500">PNG, JPG or WebP (max 3MB)</span>
             </div>
             
-            {/* Direct image URL input fallback */}
             <div>
               <Input
                 id="product-image-url"
@@ -224,7 +220,7 @@ export default function AddProductForm({ userId, onAdd }) {
             </div>
           </div>
         </div>
-        {errors.image && <p className="text-xs text-red-500 mt-1">{errors.image}</p>}
+        {errors.image && <p className="text-xs text-red-500 dark:text-red-400 mt-1">{errors.image}</p>}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -289,7 +285,7 @@ export default function AddProductForm({ userId, onAdd }) {
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="product-desc" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+        <label htmlFor="product-desc" className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
           <FileText size={14} /> Short Description (Optional)
         </label>
         <textarea
@@ -298,7 +294,7 @@ export default function AddProductForm({ userId, onAdd }) {
           placeholder="A quick 1-2 sentence overview of what makes this product great..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full rounded-2xl border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 p-3 text-xs focus:outline-none focus:ring-2 focus:ring-slate-900/10 shadow-xs"
+          className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 p-3 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-xs"
         />
       </div>
 

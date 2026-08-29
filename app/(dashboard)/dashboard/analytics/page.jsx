@@ -6,13 +6,12 @@ import {
   TrendingUp,
   Award,
   Globe,
-  Link2,
-  Calendar,
   Share2,
   AlertCircle,
   ExternalLink,
   MessageCircle,
   Phone,
+  Calendar,
 } from 'lucide-react';
 
 export default function AnalyticsDashboardPage() {
@@ -44,8 +43,8 @@ export default function AnalyticsDashboardPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-96 gap-4">
-        <div className="w-9 h-9 rounded-full border-2 border-slate-900 border-t-transparent animate-spin" />
-        <span className="text-xs text-slate-500 font-medium">Fetching your analytics...</span>
+        <div className="w-9 h-9 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
+        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Fetching your analytics...</span>
       </div>
     );
   }
@@ -53,24 +52,18 @@ export default function AnalyticsDashboardPage() {
   if (error) {
     return (
       <div className="max-w-4xl mx-auto p-8 text-center space-y-4">
-        <div className="w-12 h-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto shadow-2xs">
+        <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto shadow-2xs">
           <AlertCircle size={22} />
         </div>
         <div className="space-y-1">
-          <h3 className="font-bold text-slate-900 text-sm">Failed to load analytics</h3>
-          <p className="text-xs text-slate-500">{error}</p>
+          <h3 className="font-bold text-slate-900 dark:text-white text-sm">Failed to load analytics</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{error}</p>
         </div>
       </div>
     );
   }
 
-  // Filter clicks over time based on selected time range
   const now = new Date();
-  const cutoffDate = new Date();
-  cutoffDate.setDate(now.getDate() - timeRange);
-  const cutoffStr = cutoffDate.toISOString().split('T')[0];
-
-  // Construct complete date keys to prevent empty gaps in chart
   const dateList = [];
   for (let i = timeRange - 1; i >= 0; i--) {
     const d = new Date();
@@ -87,7 +80,6 @@ export default function AnalyticsDashboardPage() {
 
   const chartData = dateList.map((dateStr) => {
     const matched = dbClicksByDate[dateStr];
-    // Format label as "Mon DD"
     const parsedDate = new Date(dateStr + 'T00:00:00');
     const formattedLabel = parsedDate.toLocaleDateString('en-US', {
       month: 'short',
@@ -110,7 +102,6 @@ export default function AnalyticsDashboardPage() {
 
   const hasData = data && data.allTimeClicks > 0;
 
-  // Range specific breakdown computations
   const breakdown =
     timeRange === 7
       ? data?.breakdown7d
@@ -129,20 +120,21 @@ export default function AnalyticsDashboardPage() {
         : data?.clicks30Days;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 text-slate-900">
+    <div className="max-w-5xl mx-auto space-y-8 text-slate-900 dark:text-slate-100 pb-16">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Analytics Dashboard</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Track engagement, traffic channels, and countries for your links and store.
+          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+            Analytics Dashboard
+          </h1>
+          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+            Monitor profile views, link clicks, and subscriber activity.
           </p>
         </div>
 
         {/* Action Controls */}
         <div className="flex flex-wrap items-center gap-3 shrink-0">
-          {/* Time Range Selector */}
-          <div className="flex items-center gap-1 p-1 bg-slate-100/90 border border-slate-200/95 rounded-2xl shadow-2xs">
+          <div className="flex items-center gap-1 p-1 bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200/95 dark:border-slate-700 rounded-2xl shadow-2xs">
             {[
               { label: '7 Days', value: 7 },
               { label: '30 Days', value: 30 },
@@ -153,8 +145,8 @@ export default function AnalyticsDashboardPage() {
                 onClick={() => setTimeRange(item.value)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   timeRange === item.value
-                    ? 'bg-slate-900 text-white shadow-btn'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                    ? 'bg-slate-900 dark:bg-emerald-500 text-white shadow-btn'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-700/50'
                 }`}
               >
                 {item.label}
@@ -165,13 +157,13 @@ export default function AnalyticsDashboardPage() {
       </div>
 
       {!hasData ? (
-        <div className="p-12 text-center border border-dashed border-slate-300 rounded-3xl bg-white shadow-soft space-y-4">
-          <div className="w-16 h-16 rounded-3xl bg-slate-50 text-slate-700 mx-auto flex items-center justify-center shadow-xs">
-            <Share2 size={24} className="text-slate-400 animate-pulse" />
+        <div className="p-12 text-center border border-dashed border-slate-300 dark:border-slate-800 rounded-3xl bg-white dark:bg-[#0c0f1d] shadow-soft space-y-4">
+          <div className="w-16 h-16 rounded-3xl bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 mx-auto flex items-center justify-center shadow-xs">
+            <Share2 size={24} className="text-slate-400 dark:text-slate-500 animate-pulse" />
           </div>
           <div className="space-y-1.5 max-w-sm mx-auto">
-            <p className="text-base font-bold text-slate-900">No clicks tracked yet</p>
-            <p className="text-xs text-slate-500 leading-relaxed">
+            <p className="text-base font-bold text-slate-900 dark:text-white">No clicks tracked yet</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
               Once you share your profile and visitors start tapping your links and products, real-time analytics will populate here automatically.
             </p>
           </div>
@@ -180,104 +172,104 @@ export default function AnalyticsDashboardPage() {
         <>
           {/* Summary Metric Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-            <div className="p-5 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-2">
-              <div className="flex items-center justify-between text-slate-500">
+            <div className="p-5 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-2">
+              <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
                 <span className="text-[11px] font-bold uppercase tracking-wider">All-Time Clicks</span>
-                <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-2xs">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-2xs">
                   <MousePointerClick size={15} />
                 </div>
               </div>
-              <div className="text-3xl font-extrabold text-slate-900 font-mono">
+              <div className="text-3xl font-extrabold text-slate-900 dark:text-white font-mono">
                 {data.allTimeClicks ?? 0}
               </div>
             </div>
 
-            <div className="p-5 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-2">
-              <div className="flex items-center justify-between text-slate-500">
+            <div className="p-5 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-2">
+              <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
                 <span className="text-[11px] font-bold uppercase tracking-wider">WhatsApp Enquiries</span>
-                <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-2xs">
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-2xs">
                   <MessageCircle size={15} />
                 </div>
               </div>
-              <div className="text-3xl font-extrabold text-slate-900 font-mono">
+              <div className="text-3xl font-extrabold text-slate-900 dark:text-white font-mono">
                 {data.whatsappClicks ?? 0}
               </div>
             </div>
 
-            <div className="p-5 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-2">
-              <div className="flex items-center justify-between text-slate-500">
+            <div className="p-5 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-2">
+              <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
                 <span className="text-[11px] font-bold uppercase tracking-wider">Call Clicks</span>
-                <div className="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center shadow-2xs">
+                <div className="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 flex items-center justify-center shadow-2xs">
                   <Phone size={15} />
                 </div>
               </div>
-              <div className="text-3xl font-extrabold text-slate-900 font-mono">
+              <div className="text-3xl font-extrabold text-slate-900 dark:text-white font-mono">
                 {data.callClicks ?? 0}
               </div>
             </div>
 
-            <div className="p-5 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-2">
-              <div className="flex items-center justify-between text-slate-500">
+            <div className="p-5 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-2">
+              <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
                 <span className="text-[11px] font-bold uppercase tracking-wider">Last 7 Days</span>
-                <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-2xs">
+                <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-2xs">
                   <TrendingUp size={15} />
                 </div>
               </div>
-              <div className="text-3xl font-extrabold text-slate-900 font-mono">
+              <div className="text-3xl font-extrabold text-slate-900 dark:text-white font-mono">
                 {data.clicks7Days ?? 0}
               </div>
             </div>
 
-            <div className="p-5 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-2">
-              <div className="flex items-center justify-between text-slate-500">
+            <div className="p-5 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-2">
+              <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
                 <span className="text-[11px] font-bold uppercase tracking-wider">Last 30 Days</span>
-                <div className="w-8 h-8 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center shadow-2xs">
+                <div className="w-8 h-8 rounded-xl bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 flex items-center justify-center shadow-2xs">
                   <Calendar size={15} />
                 </div>
               </div>
-              <div className="text-3xl font-extrabold text-slate-900 font-mono">
+              <div className="text-3xl font-extrabold text-slate-900 dark:text-white font-mono">
                 {data.clicks30Days ?? 0}
               </div>
             </div>
 
-            <div className="p-5 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-2">
-              <div className="flex items-center justify-between text-slate-500">
+            <div className="p-5 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-2">
+              <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
                 <span className="text-[11px] font-bold uppercase tracking-wider">Top Performing</span>
-                <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shadow-2xs">
+                <div className="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shadow-2xs">
                   <Award size={15} />
                 </div>
               </div>
               {data.topPerformingLink ? (
                 <div className="space-y-0.5">
-                  <div className="text-sm font-bold text-slate-900 truncate">
+                  <div className="text-sm font-bold text-slate-900 dark:text-white truncate">
                     {data.topPerformingLink.title}
                   </div>
-                  <div className="text-[10px] text-slate-400 font-mono">
+                  <div className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
                     {data.topPerformingLink.clicks} clicks
                   </div>
                 </div>
               ) : (
-                <div className="text-xs text-slate-400 font-semibold">None yet</div>
+                <div className="text-xs text-slate-400 dark:text-slate-500 font-semibold">None yet</div>
               )}
             </div>
           </div>
 
           {/* Line Chart Section */}
-          <div className="p-6 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-4">
+          <div className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-4">
             <div>
-              <h2 className="text-base font-bold text-slate-900">Traffic Engagement Over Time</h2>
-              <p className="text-xs text-slate-500">Daily click counts over the selected range.</p>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">Traffic Engagement Over Time</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Daily click counts over the selected range.</p>
             </div>
 
             <div className="space-y-3 pt-2">
-              <div className="flex items-end justify-between gap-1 h-36 pt-4 border-b border-slate-100 pb-2">
+              <div className="flex items-end justify-between gap-1 h-36 pt-4 border-b border-slate-100 dark:border-slate-800 pb-2">
                 {chartData.map((d) => {
                   const maxClicks = Math.max(...chartData.map((c) => c.clicks), 1);
                   const heightPct = Math.max(8, Math.round((d.clicks / maxClicks) * 100));
                   return (
                     <div key={d.date} className="flex-1 flex flex-col items-center gap-1.5 group h-full justify-end">
                       <div
-                        className="w-full max-w-[18px] bg-slate-900 group-hover:bg-indigo-600 rounded-t-md transition-all relative"
+                        className="w-full max-w-[18px] bg-slate-900 dark:bg-emerald-500 group-hover:bg-indigo-600 dark:group-hover:bg-emerald-400 rounded-t-md transition-all relative"
                         style={{ height: `${heightPct}%` }}
                         title={`${d.label}: ${d.clicks} clicks`}
                       />
@@ -285,7 +277,7 @@ export default function AnalyticsDashboardPage() {
                   );
                 })}
               </div>
-              <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono px-1">
+              <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 font-mono px-1">
                 <span>{chartData[0]?.label}</span>
                 <span>{chartData[Math.floor(chartData.length / 2)]?.label}</span>
                 <span>{chartData[chartData.length - 1]?.label}</span>
@@ -295,15 +287,15 @@ export default function AnalyticsDashboardPage() {
 
           {/* Breakdown Section Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Top Traffic Channels (Referrers) */}
-            <div className="p-6 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-4">
+            {/* Top Traffic Channels */}
+            <div className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-4">
               <div>
-                <h3 className="font-bold text-slate-900 text-sm">Top Traffic Channels</h3>
-                <p className="text-[11px] text-slate-500">Visitor referral hostnames and social apps.</p>
+                <h3 className="font-bold text-slate-900 dark:text-white text-sm">Top Traffic Channels</h3>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">Visitor referral hostnames and social apps.</p>
               </div>
               <div className="space-y-3.5 min-h-[160px]">
                 {referrers.length === 0 ? (
-                  <p className="text-xs text-slate-400 italic text-center pt-8">No referrer channels logged.</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 italic text-center pt-8">No referrer channels logged.</p>
                 ) : (
                   referrers.map((ref) => {
                     const pct = Math.max(
@@ -313,12 +305,12 @@ export default function AnalyticsDashboardPage() {
                     return (
                       <div key={ref.name} className="space-y-1.5">
                         <div className="flex justify-between text-xs font-semibold">
-                          <span className="text-slate-900 truncate max-w-[200px]">{ref.name}</span>
-                          <span className="text-slate-500 font-mono">{ref.clicks} clicks</span>
+                          <span className="text-slate-900 dark:text-slate-100 truncate max-w-[200px]">{ref.name}</span>
+                          <span className="text-slate-500 dark:text-slate-400 font-mono">{ref.clicks} clicks</span>
                         </div>
-                        <div className="w-full bg-slate-50 h-2 rounded-full overflow-hidden">
+                        <div className="w-full bg-slate-50 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                           <div
-                            className="bg-indigo-600 h-full rounded-full"
+                            className="bg-indigo-600 dark:bg-emerald-500 h-full rounded-full"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -329,17 +321,17 @@ export default function AnalyticsDashboardPage() {
               </div>
             </div>
  
-            {/* Top Geo Locations (Countries) */}
-            <div className="p-6 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-4">
+            {/* Top Geo Locations */}
+            <div className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-4">
               <div>
-                <h3 className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-                  <Globe size={15} className="text-slate-500" /> Top Countries
+                <h3 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-1.5">
+                  <Globe size={15} className="text-slate-500 dark:text-slate-400" /> Top Countries
                 </h3>
-                <p className="text-[11px] text-slate-500">Visitor distribution based on IP location.</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">Visitor distribution based on IP location.</p>
               </div>
               <div className="space-y-3.5 min-h-[160px]">
                 {countries.length === 0 ? (
-                  <p className="text-xs text-slate-400 italic text-center pt-8">No geo data logged.</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 italic text-center pt-8">No geo data logged.</p>
                 ) : (
                   countries.map((c) => {
                     const pct = Math.max(
@@ -349,12 +341,12 @@ export default function AnalyticsDashboardPage() {
                     return (
                       <div key={c.name} className="space-y-1.5">
                         <div className="flex justify-between text-xs font-semibold">
-                          <span className="text-slate-900">{c.name}</span>
-                          <span className="text-slate-500 font-mono">{c.clicks} clicks</span>
+                          <span className="text-slate-900 dark:text-slate-100">{c.name}</span>
+                          <span className="text-slate-500 dark:text-slate-400 font-mono">{c.clicks} clicks</span>
                         </div>
-                        <div className="w-full bg-slate-50 h-2 rounded-full overflow-hidden">
+                        <div className="w-full bg-slate-50 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                           <div
-                            className="bg-emerald-600 h-full rounded-full"
+                            className="bg-emerald-600 dark:bg-emerald-400 h-full rounded-full"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -367,33 +359,33 @@ export default function AnalyticsDashboardPage() {
           </div>
 
           {/* Links Breakdown Table */}
-          <div className="p-6 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-4">
+          <div className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-4">
             <div>
-              <h2 className="text-base font-bold text-slate-900">Link Performance</h2>
-              <p className="text-xs text-slate-500">Details and metrics for all your active profile links.</p>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">Link Performance</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Details and metrics for all your active profile links.</p>
             </div>
             <div className="overflow-x-auto scrollbar-none">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-slate-100 text-slate-400 uppercase tracking-wider">
+                  <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                     <th className="pb-3 font-semibold">Title</th>
                     <th className="pb-3 font-semibold">Destination</th>
                     <th className="pb-3 font-semibold">Status</th>
                     <th className="pb-3 font-semibold text-right">Total Clicks</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {data.topLinks.map((link) => (
-                    <tr key={link.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="py-3.5 font-bold text-slate-900 max-w-[160px] truncate">
+                    <tr key={link.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                      <td className="py-3.5 font-bold text-slate-900 dark:text-white max-w-[160px] truncate">
                         {link.title}
                       </td>
-                      <td className="py-3.5 text-slate-500 max-w-[200px] truncate">
+                      <td className="py-3.5 text-slate-500 dark:text-slate-400 max-w-[200px] truncate">
                         <a
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hover:text-indigo-600 inline-flex items-center gap-1 font-mono"
+                          className="hover:text-emerald-600 dark:hover:text-emerald-400 inline-flex items-center gap-1 font-mono"
                         >
                           {link.url} <ExternalLink size={10} />
                         </a>
@@ -402,14 +394,14 @@ export default function AnalyticsDashboardPage() {
                         <span
                           className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                             link.is_active
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                              : 'bg-slate-50 text-slate-500 border-slate-200'
+                              ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60'
+                              : 'bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700'
                           }`}
                         >
                           {link.is_active ? 'Active' : 'Hidden'}
                         </span>
                       </td>
-                      <td className="py-3.5 text-right font-mono font-bold text-slate-950">
+                      <td className="py-3.5 text-right font-mono font-bold text-slate-950 dark:text-white">
                         {link.clicks}
                       </td>
                     </tr>

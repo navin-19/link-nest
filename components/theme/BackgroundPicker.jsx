@@ -16,7 +16,7 @@ const GRADIENT_PRESETS = [
   'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
   'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%)',
   'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%)',
-  'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%)',
+  'linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 50%, #bae6fd 100%)',
   'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
   'linear-gradient(135deg, #1a0533 0%, #3d0068 50%, #c800a1 100%)',
   'linear-gradient(135deg, #020024 0%, #090979 50%, #00d4ff 100%)',
@@ -32,11 +32,9 @@ export default function BackgroundPicker({ value, onChange }) {
   );
   const [colorMode, setColorMode] = useState(currentType === 'gradient' ? 'gradient' : 'solid');
 
-  // Gradient stops (fixed angle 135deg per Issue 4c)
   const [gradColor1, setGradColor1] = useState('#1a1a2e');
   const [gradColor2, setGradColor2] = useState('#0f3460');
 
-  // Image states
   const [imageUrl, setImageUrl] = useState(currentType === 'image' ? currentValue : '');
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
@@ -81,7 +79,6 @@ export default function BackgroundPicker({ value, onChange }) {
       const fileExt = file.name.split('.').pop();
       const filePath = `bg_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
 
-      // Upload to avatars bucket (which is configured as public in supabase)
       const { error: uploadErr } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, { upsert: true });
@@ -103,9 +100,9 @@ export default function BackgroundPicker({ value, onChange }) {
   }
 
   return (
-    <div className="space-y-4 text-slate-900">
+    <div className="space-y-4 text-slate-900 dark:text-slate-100">
       {/* 3 Main Mode Tabs: Color, Upload Image, Image URL */}
-      <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200 gap-1">
+      <div className="flex bg-slate-100 dark:bg-[#0c0f1d] p-1 rounded-2xl border border-slate-200 dark:border-slate-800 gap-1">
         <button
           type="button"
           onClick={() => {
@@ -117,7 +114,9 @@ export default function BackgroundPicker({ value, onChange }) {
             }
           }}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-            activeTab === 'color' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'color'
+              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           <Palette size={14} /> Color
@@ -127,7 +126,9 @@ export default function BackgroundPicker({ value, onChange }) {
           type="button"
           onClick={() => setActiveTab('upload')}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-            activeTab === 'upload' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'upload'
+              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           <Upload size={14} /> Upload Image
@@ -137,7 +138,9 @@ export default function BackgroundPicker({ value, onChange }) {
           type="button"
           onClick={() => setActiveTab('url')}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-            activeTab === 'url' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+            activeTab === 'url'
+              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
           }`}
         >
           <ImageIcon size={14} /> Image URL
@@ -154,8 +157,8 @@ export default function BackgroundPicker({ value, onChange }) {
               onClick={() => handleColorModeChange('solid')}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 colorMode === 'solid'
-                  ? 'bg-slate-900 text-white shadow-btn'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'bg-slate-900 dark:bg-emerald-500 text-white shadow-btn'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
               Solid Color
@@ -165,8 +168,8 @@ export default function BackgroundPicker({ value, onChange }) {
               onClick={() => handleColorModeChange('gradient')}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 colorMode === 'gradient'
-                  ? 'bg-slate-900 text-white shadow-btn'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'bg-slate-900 dark:bg-emerald-500 text-white shadow-btn'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
               <Sparkles size={12} className="inline mr-1" /> Gradient Color
@@ -185,8 +188,8 @@ export default function BackgroundPicker({ value, onChange }) {
                     style={{ backgroundColor: color }}
                     className={`h-9 rounded-xl border-2 transition-transform hover:scale-105 shadow-xs cursor-pointer ${
                       currentValue === color
-                        ? 'border-slate-900 scale-105 ring-2 ring-slate-900/20'
-                        : 'border-slate-200'
+                        ? 'border-emerald-500 scale-105 ring-2 ring-emerald-500/20'
+                        : 'border-slate-200 dark:border-slate-800'
                     }`}
                   />
                 ))}
@@ -196,9 +199,9 @@ export default function BackgroundPicker({ value, onChange }) {
                   type="color"
                   value={currentValue.startsWith('#') ? currentValue : '#ffffff'}
                   onChange={(e) => onChange({ type: 'solid', value: e.target.value })}
-                  className="w-9 h-9 rounded-xl border border-slate-200 bg-transparent cursor-pointer shadow-xs"
+                  className="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent cursor-pointer shadow-xs"
                 />
-                <span className="text-xs text-slate-600 font-mono font-semibold">
+                <span className="text-xs text-slate-600 dark:text-slate-300 font-mono font-semibold">
                   {currentValue.startsWith('#') ? currentValue : '#ffffff'}
                 </span>
               </div>
@@ -208,39 +211,39 @@ export default function BackgroundPicker({ value, onChange }) {
           {/* Gradient Color Picker (2 stops) */}
           {colorMode === 'gradient' && (
             <div className="space-y-3">
-              <div className="flex items-center gap-4 p-3 bg-slate-50 border border-slate-200 rounded-2xl">
+              <div className="flex items-center gap-4 p-3 bg-slate-50 dark:bg-[#0d1020] border border-slate-200 dark:border-slate-800 rounded-2xl">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase text-slate-500 block">Color Stop 1</label>
+                  <label className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block">Color Stop 1</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
                       value={gradColor1}
                       onChange={(e) => handleGradColorChange(e.target.value, gradColor2)}
-                      className="w-8 h-8 rounded-xl border border-slate-200 bg-transparent cursor-pointer"
+                      className="w-8 h-8 rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent cursor-pointer"
                     />
-                    <span className="text-xs font-mono font-semibold">{gradColor1}</span>
+                    <span className="text-xs font-mono font-semibold text-slate-700 dark:text-slate-300">{gradColor1}</span>
                   </div>
                 </div>
 
-                <div className="h-8 w-px bg-slate-200" />
+                <div className="h-8 w-px bg-slate-200 dark:bg-slate-800" />
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase text-slate-500 block">Color Stop 2</label>
+                  <label className="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block">Color Stop 2</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
                       value={gradColor2}
                       onChange={(e) => handleGradColorChange(gradColor1, e.target.value)}
-                      className="w-8 h-8 rounded-xl border border-slate-200 bg-transparent cursor-pointer"
+                      className="w-8 h-8 rounded-xl border border-slate-200 dark:border-slate-800 bg-transparent cursor-pointer"
                     />
-                    <span className="text-xs font-mono font-semibold">{gradColor2}</span>
+                    <span className="text-xs font-mono font-semibold text-slate-700 dark:text-slate-300">{gradColor2}</span>
                   </div>
                 </div>
               </div>
 
               {/* Gradient Presets */}
               <div className="space-y-1 pt-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
                   Gradient Presets
                 </label>
                 <div className="grid grid-cols-4 gap-2">
@@ -252,8 +255,8 @@ export default function BackgroundPicker({ value, onChange }) {
                       style={{ background: grad }}
                       className={`h-12 rounded-xl border-2 transition-transform hover:scale-105 shadow-xs cursor-pointer ${
                         currentValue === grad
-                          ? 'border-slate-900 scale-105 ring-2 ring-slate-900/20'
-                          : 'border-slate-200'
+                          ? 'border-emerald-500 scale-105 ring-2 ring-emerald-500/20'
+                          : 'border-slate-200 dark:border-slate-800'
                       }`}
                     />
                   ))}
@@ -276,30 +279,30 @@ export default function BackgroundPicker({ value, onChange }) {
           />
 
           {uploadError && (
-            <div className="p-3 text-xs text-red-600 bg-red-50 border border-red-200 rounded-xl">
+            <div className="p-3 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 rounded-xl">
               {uploadError}
             </div>
           )}
 
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="p-6 border-2 border-dashed border-slate-300 hover:border-slate-400 rounded-3xl bg-slate-50/50 hover:bg-slate-50 text-center cursor-pointer transition-all space-y-2"
+            className="p-6 border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 rounded-3xl bg-slate-50/50 dark:bg-slate-900/40 hover:bg-slate-50 dark:hover:bg-slate-900/60 text-center cursor-pointer transition-all space-y-2"
           >
-            <div className="w-10 h-10 rounded-2xl bg-white border border-slate-200 text-slate-700 mx-auto flex items-center justify-center shadow-xs">
-              {uploading ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
+            <div className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 mx-auto flex items-center justify-center shadow-xs">
+              {uploading ? <Loader2 size={18} className="animate-spin text-emerald-500" /> : <Upload size={18} />}
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-900">
+              <p className="text-xs font-bold text-slate-900 dark:text-white">
                 {uploading ? 'Uploading background image...' : 'Click to upload custom background'}
               </p>
-              <p className="text-[11px] text-slate-500 mt-0.5">PNG, JPG, or WebP up to 5MB</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">PNG, JPG, or WebP up to 5MB</p>
             </div>
           </div>
 
           {imageUrl && (
-            <div className="relative rounded-2xl overflow-hidden border border-slate-200 h-28 bg-cover bg-center shadow-xs" style={{ backgroundImage: `url(${imageUrl})` }}>
-              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                <span className="text-xs font-bold text-white bg-black/50 px-3 py-1 rounded-full backdrop-blur-xs">
+            <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 h-28 bg-cover bg-center shadow-xs" style={{ backgroundImage: `url(${imageUrl})` }}>
+              <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                <span className="text-xs font-bold text-white bg-black/60 px-3 py-1 rounded-full backdrop-blur-xs">
                   Active Uploaded Background
                 </span>
               </div>
@@ -322,13 +325,13 @@ export default function BackgroundPicker({ value, onChange }) {
             }}
           />
           {imageUrl && !imageUrl.startsWith('https://') && !imageUrl.startsWith('/') && !imageUrl.startsWith('data:') && (
-            <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-xl p-2.5">
+            <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl p-2.5">
               ⚠️ <strong>Secure URL required:</strong> Images starting with <code className="font-mono">http://</code> are blocked by modern browsers for security. Please use a direct <code className="font-mono">https://</code> link.
             </p>
           )}
           {imageUrl && (
             <div
-              className="h-28 rounded-2xl border border-slate-200 bg-cover bg-center shadow-xs"
+              className="h-28 rounded-2xl border border-slate-200 dark:border-slate-800 bg-cover bg-center shadow-xs"
               style={{ backgroundImage: `url(${imageUrl})` }}
             />
           )}

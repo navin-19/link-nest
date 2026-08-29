@@ -1,19 +1,38 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabaseServer';
+import { OFFICIAL_PRESET_THEMES } from '@/utils/presetThemes';
 
 export async function GET() {
   const supabase = await createClient();
-  const { data: themes, error } = await supabase
-    .from('themes')
-    .select('*')
-    .order('created_at', { ascending: true });
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  try {
+    const { data: dbThemes, error } = await supabase
+      .from('themes')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.warn('[API /api/themes GET db error - returning official presets]:', error.message);
+      return NextResponse.json({ themes: OFFICIAL_PRESET_THEMES });
+    }
+
+    // Merge ensuring all 6 official presets are available in exact order
+    const presetMap = new Map();
+    OFFICIAL_PRESET_THEMES.forEach((p) => presetMap.set(p.id, p));
+
+    (dbThemes || []).forEach((t) => {
+      if (presetMap.has(t.id)) {
+        presetMap.set(t.id, t);
+      }
+    });
+
+    const themes = Array.from(presetMap.values());
+    return NextResponse.json({ themes });
+  } catch (err) {
+    console.error('[API /api/themes GET exception]:', err);
+    return NextResponse.json({ themes: OFFICIAL_PRESET_THEMES });
   }
-
-  return NextResponse.json({ themes });
 }
 
 export async function POST(request) {
@@ -24,18 +43,22 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body = await request.json();
-  const { name, background, button_style, font } = body;
+  const { name, background, button_style, font, text_color } = body;
+
+  const insertPayload = {
+    user_id: user.id,
+    name: name || 'My Custom Theme',
+    background: background || { type: 'solid', value: '#ffffff' },
+    button_style: button_style || 'rounded',
+    font: font || 'Inter',
+  };
+  if (text_color !== undefined) {
+    insertPayload.text_color = text_color;
+  }
 
   const { data: theme, error } = await supabase
     .from('themes')
-    .insert({
-      user_id: user.id,
-      name: name || 'My Custom Theme',
-      background: background || { type: 'solid', value: '#ffffff' },
-      button_style: button_style || 'rounded',
-      font: font || 'Inter',
-    })
+    .insert(insertPayload)
     .select()
     .single();
 

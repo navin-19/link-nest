@@ -155,28 +155,28 @@ function SignupForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] flex flex-col justify-center items-center p-4 relative overflow-hidden text-slate-900">
+    <div className="min-h-screen bg-[#fafaf9] dark:bg-[#0a0b0f] flex flex-col justify-center items-center p-4 relative overflow-hidden text-slate-900 dark:text-slate-100 transition-colors duration-150">
       {/* Subtle background ambient blur */}
-      <div className="absolute top-1/4 right-1/3 w-96 h-96 bg-indigo-50/60 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 right-1/3 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Brand Header */}
       <div className="text-center mb-6 relative z-10">
         <Link href="/" className="inline-flex items-center gap-2.5 mb-4">
-          <div className="w-9 h-9 rounded-full bg-slate-900 flex items-center justify-center text-white shadow-soft">
+          <div className="w-9 h-9 rounded-full bg-slate-900 dark:bg-emerald-500 flex items-center justify-center text-white shadow-soft">
             <Link2 size={18} strokeWidth={2.5} />
           </div>
-          <span className="text-2xl font-bold text-slate-900 tracking-tight">
+          <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
             LinkNest
           </span>
         </Link>
-        <h1 className="text-2xl font-bold text-slate-900">Claim your LinkNest URL</h1>
-        <p className="text-xs text-slate-500 mt-1">Get started in seconds — 100% free</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Claim your LinkNest URL</h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Get started in seconds — 100% free</p>
       </div>
 
       {/* Card */}
-      <div className="w-full max-w-md p-8 rounded-3xl border border-slate-200/80 bg-white shadow-card relative z-10 space-y-6">
+      <div className="w-full max-w-md p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card relative z-10 space-y-6">
         {formError && (
-          <div className="p-3 text-xs text-red-600 bg-red-50 border border-red-200 rounded-2xl">
+          <div className="p-3 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 rounded-2xl">
             {formError}
           </div>
         )}
@@ -201,7 +201,7 @@ function SignupForm() {
               required
             />
             {usernameStatus === 'available' && !usernameError && (
-              <p className="text-xs text-emerald-600 flex items-center gap-1 mt-1 font-medium">
+              <p className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mt-1 font-medium">
                 <CheckCircle2 size={13} /> linknest.app/{username} is available!
               </p>
             )}
@@ -252,9 +252,9 @@ function SignupForm() {
           </Button>
         </form>
 
-        <p className="text-center text-xs text-slate-500">
+        <p className="text-center text-xs text-slate-500 dark:text-slate-400">
           Already have an account?{' '}
-          <Link href="/login" className="text-slate-900 font-semibold hover:underline">
+          <Link href="/login" className="text-slate-900 dark:text-emerald-400 font-semibold hover:underline">
             Sign in
           </Link>
         </p>
@@ -265,7 +265,7 @@ function SignupForm() {
 
 export default function SignupPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#fafaf9]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#fafaf9] dark:bg-[#0a0b0f]" />}>
       <SignupForm />
     </Suspense>
   );

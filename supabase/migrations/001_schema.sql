@@ -96,7 +96,9 @@ INSERT INTO public.themes (id, user_id, name, background, button_style, font) VA
   ('00000000-0000-0000-0000-000000000005', NULL, 'Forest',
    '{"type":"gradient","value":"linear-gradient(135deg,#0a2e0a 0%,#1a4a1a 50%,#2d8a2d 100%)"}'::jsonb, 'shadow', 'Inter'),
   ('00000000-0000-0000-0000-000000000006', NULL, 'Rose Gold',
-   '{"type":"gradient","value":"linear-gradient(135deg,#1a0a0a 0%,#3d1515 50%,#c87941 100%)"}'::jsonb, 'rounded', 'Outfit')
+   '{"type":"gradient","value":"linear-gradient(135deg,#1a0a0a 0%,#3d1515 50%,#c87941 100%)"}'::jsonb, 'rounded', 'Outfit'),
+  ('00000000-0000-0000-0000-000000000007', NULL, 'Ember',
+   '{"type":"gradient","value":"radial-gradient(circle at 50% 15%, rgba(234,88,12,0.35) 0%, rgba(180,83,9,0.15) 35%, rgba(9,9,11,0.98) 75%)"}'::jsonb, 'rounded', 'Outfit')
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================

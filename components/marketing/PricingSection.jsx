@@ -67,18 +67,18 @@ export default function PricingSection() {
   return (
     <section
       id="pricing"
-      className="py-24 border-t border-stone-200/80 bg-stone-50 scroll-mt-24"
+      className="py-24 border-t border-white/10 bg-[#05060f] scroll-mt-24"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-xl mx-auto mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-stone-200/80 text-xs font-medium text-stone-600 shadow-xs">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.05] border border-white/10 text-xs font-medium text-teal-400 shadow-xs">
             Simple, transparent pricing
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-900">
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
             Start free. Upgrade when you&rsquo;re ready.
           </h2>
-          <p className="text-stone-600 text-base leading-relaxed">
+          <p className="text-slate-400 text-base leading-relaxed">
             No credit card required to get started. Cancel any time.
           </p>
         </div>
@@ -89,16 +89,16 @@ export default function PricingSection() {
             <div
               key={plan.name}
               className={[
-                'relative flex flex-col rounded-3xl p-8 border transition-all duration-200',
+                'relative flex flex-col rounded-3xl p-8 border transition-all duration-200 backdrop-blur-md',
                 plan.popular
-                  ? 'bg-stone-900 border-stone-900 text-white shadow-xl scale-[1.02]'
-                  : 'bg-white border-stone-200/80 text-stone-900 shadow-soft hover:shadow-card hover:border-stone-400',
+                  ? 'bg-gradient-to-b from-[#161a38] to-[#0e1329] border-teal-400/40 text-white shadow-2xl ring-1 ring-teal-400/20 scale-[1.03]'
+                  : 'bg-[#0b0e20]/70 border-white/10 text-white shadow-lg hover:border-white/25 hover:bg-[#0f132b]/80',
               ].join(' ')}
             >
               {/* Popular Badge */}
               {plan.popular && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-indigo-600 text-white text-xs font-semibold shadow-sm">
+                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-teal-400 text-white text-xs font-bold shadow-md">
                     <Zap size={11} />
                     Most popular
                   </span>
@@ -107,34 +107,18 @@ export default function PricingSection() {
 
               {/* Plan Header */}
               <div className="space-y-1 mb-6">
-                <p
-                  className={`text-xs font-semibold uppercase tracking-widest ${
-                    plan.popular ? 'text-stone-400' : 'text-stone-500'
-                  }`}
-                >
+                <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
                   {plan.name}
                 </p>
                 <div className="flex items-baseline gap-1.5">
-                  <span
-                    className={`text-4xl font-extrabold tracking-tight ${
-                      plan.popular ? 'text-white' : 'text-stone-900'
-                    }`}
-                  >
+                  <span className="text-4xl font-extrabold tracking-tight text-white">
                     {plan.price}
                   </span>
-                  <span
-                    className={`text-sm ${
-                      plan.popular ? 'text-stone-400' : 'text-stone-500'
-                    }`}
-                  >
+                  <span className="text-sm text-slate-400">
                     /{plan.period}
                   </span>
                 </div>
-                <p
-                  className={`text-sm leading-relaxed ${
-                    plan.popular ? 'text-stone-400' : 'text-stone-600'
-                  }`}
-                >
+                <p className="text-xs text-slate-400 leading-relaxed pt-1">
                   {plan.description}
                 </p>
               </div>
@@ -143,40 +127,30 @@ export default function PricingSection() {
               <Link
                 href={plan.ctaHref}
                 className={[
-                  'w-full inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-semibold transition-all duration-150 active:scale-[0.98] mb-8',
+                  'w-full inline-flex items-center justify-center px-6 py-3 rounded-full text-xs font-bold transition-all duration-150 active:scale-[0.98] mb-8 cursor-pointer',
                   plan.popular
-                    ? 'bg-white text-stone-900 hover:bg-stone-100 shadow-btn'
+                    ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-teal-400 text-white shadow-md hover:opacity-95'
                     : plan.ctaVariant === 'outline'
-                    ? 'border border-stone-300 text-stone-700 hover:bg-stone-50 hover:border-stone-400'
-                    : 'bg-stone-900 text-white hover:bg-stone-800 shadow-btn',
+                    ? 'border border-white/20 text-slate-200 hover:bg-white/[0.08] hover:border-white/30'
+                    : 'bg-white/[0.08] text-white hover:bg-white/[0.15] border border-white/15',
                 ].join(' ')}
               >
                 {plan.cta}
               </Link>
 
               {/* Divider */}
-              <div
-                className={`mb-6 border-t ${
-                  plan.popular ? 'border-stone-800' : 'border-stone-100'
-                }`}
-              />
+              <div className="mb-6 border-t border-white/10" />
 
               {/* Feature List */}
               <ul className="space-y-3">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-3 text-sm">
+                  <li key={f} className="flex items-start gap-3 text-xs sm:text-sm">
                     <Check
                       size={15}
                       strokeWidth={2.5}
-                      className={`mt-0.5 shrink-0 ${
-                        plan.popular ? 'text-indigo-400' : 'text-indigo-600'
-                      }`}
+                      className="mt-0.5 shrink-0 text-teal-400"
                     />
-                    <span
-                      className={
-                        plan.popular ? 'text-stone-300' : 'text-stone-700'
-                      }
-                    >
+                    <span className="text-slate-300">
                       {f}
                     </span>
                   </li>

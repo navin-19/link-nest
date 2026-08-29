@@ -1,11 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import ProfileHeader from '@/components/profile/ProfileHeader';
+import GoogleReviewsSummary from '@/components/profile/GoogleReviewsSummary';
 import LinkList from '@/components/links/LinkList';
+import ReachUsSection from '@/components/profile/ReachUsSection';
+import ProductsStoreSection from '@/components/profile/ProductsStoreSection';
 import SocialIcons from '@/components/profile/SocialIcons';
-import ProductList from '@/components/products/ProductList';
 import SubscribeBar from '@/components/profile/SubscribeBar';
 import Link from 'next/link';
+import { Crown } from 'lucide-react';
 import { getContrastMode } from '@/utils/getContrastMode';
 
 /**
@@ -21,12 +25,19 @@ export default function LinkBioRenderer({
   compact = false,
   username,
 }) {
+  // All accordion sections start COLLAPSED by default on page load
+  const [expandedSection, setExpandedSection] = useState(null); // 'quick-links' | 'reach-us' | 'products' | null
+
+  const toggleSection = (sectionId) => {
+    setExpandedSection((prev) => (prev === sectionId ? null : sectionId));
+  };
+
   const effectiveTheme = theme || profile?.themes;
   const effectiveUsername = username || profile?.username;
 
   // Background style resolution supporting object and string formats
   const bg = effectiveTheme?.background;
-  let bgStyle = { backgroundColor: '#ffffff' };
+  let bgStyle = { backgroundColor: '#09090b' };
 
   if (bg?.type === 'solid') {
     bgStyle = { backgroundColor: bg.value };
@@ -62,24 +73,34 @@ export default function LinkBioRenderer({
 
   const font = effectiveTheme?.font || 'Inter';
   const buttonStyle = effectiveTheme?.button_style || 'rounded';
+  const textColor = effectiveTheme?.text_color || (isDark ? '#ffffff' : '#0f172a');
 
   const content = (
-    <div className="w-full flex flex-col justify-between min-h-full space-y-4">
+    <div
+      style={{ fontFamily: font, color: textColor }}
+      className="w-full flex flex-col justify-between min-h-full space-y-4"
+    >
       <div className="space-y-4 w-full">
         {/* Top Header / Subscribe Bar */}
         {preview ? (
-          <div className="w-full flex items-center justify-between py-1 mb-1 shrink-0 opacity-90 select-none pointer-events-none">
+          <div className="w-full flex items-center justify-between py-1 mb-1 shrink-0 opacity-95 select-none pointer-events-none">
             {/* Logo */}
-            <div className="flex items-center gap-1.5 text-slate-900 dark:text-white font-bold text-[10px] tracking-tight bg-white/80 dark:bg-slate-900/80 px-2.5 py-1.5 rounded-full border border-slate-200/90 dark:border-slate-800 shadow-2xs">
-              <div className="w-4 h-4 rounded-full bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-900">
-                <span className="text-[8px] font-bold">L</span>
+            <div className="flex items-center gap-1.5 text-white/90 font-bold text-[10px] tracking-tight bg-[#111322]/80 px-2.5 py-1.5 rounded-full border border-white/15 shadow-xs">
+              <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white font-bold text-[8px]">
+                L
               </div>
               <span>LinkNest</span>
             </div>
 
-            {/* Subscribe Button */}
-            <div className="px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] font-bold shadow-btn">
-              Subscribe
+            {/* Subscribe Button + Overflow Menu */}
+            <div className="flex items-center gap-1.5">
+              <div className="px-3 py-1 rounded-full bg-white text-slate-950 text-[10px] font-bold shadow-md flex items-center gap-1">
+                <Crown size={10} className="text-amber-500 fill-amber-500" />
+                <span>Subscribe</span>
+              </div>
+              <div className="w-6 h-6 rounded-full bg-[#111322]/80 border border-white/15 flex items-center justify-center text-white/80">
+                <span className="text-[10px] font-bold leading-none">⋮</span>
+              </div>
             </div>
           </div>
         ) : (
@@ -94,9 +115,22 @@ export default function LinkBioRenderer({
           theme={effectiveTheme}
         />
 
-        {/* Links List (Single consolidated source of truth) */}
+        {/* Compact Google Reviews Summary (Respects show_google_reviews toggle and navigates to Google Reviews) */}
+        {profile?.show_google_reviews !== false && (profile?.google_place_id || (preview && profile?.google_place_id)) && (
+          <GoogleReviewsSummary
+            placeId={profile?.google_place_id}
+            mapsUrl={profile?.google_maps_url || profile?.reach_out?.mapsUrl}
+            preview={preview}
+          />
+        )}
+
+        {/* Quick Links Section (Social Links expandable accordion cards - Collapsed by default) */}
         <LinkList
+          profile={profile}
+          socialLinks={profile?.social_links}
           links={links}
+          isExpanded={expandedSection === 'quick-links'}
+          onToggle={() => toggleSection('quick-links')}
           buttonStyle={buttonStyle}
           font={font}
           username={effectiveUsername}
@@ -104,30 +138,45 @@ export default function LinkBioRenderer({
           contrastMode={contrastMode}
         />
 
-        {/* Social Icons Bar (Unified dark-themed rounded square icon system) */}
-        <SocialIcons
+        {/* Reach Us Section (Collapsed by default) */}
+        <ReachUsSection
           profile={profile}
+          reachOut={profile?.reach_out}
+          isExpanded={expandedSection === 'reach-us'}
+          onToggle={() => toggleSection('reach-us')}
+          buttonStyle={buttonStyle}
+          font={font}
           preview={preview}
+          contrastMode={contrastMode}
         />
 
-        {/* Products & Services Section (Category filters + Products list) */}
-        {profile?.show_products !== false && (
-          <ProductList
-            products={products}
-            font={font}
-            preview={preview}
-            contrastMode={contrastMode}
-          />
-        )}
+        {/* Products & Services Section (Collapsed by default) */}
+        <ProductsStoreSection
+          products={products}
+          profile={profile}
+          isExpanded={expandedSection === 'products'}
+          onToggle={() => toggleSection('products')}
+          buttonStyle={buttonStyle}
+          font={font}
+          preview={preview}
+          contrastMode={contrastMode}
+        />
+
+        {/* Social Icons Row at bottom */}
+        <SocialIcons
+          profile={profile}
+          socialLinks={profile?.social_links}
+          preview={preview}
+        />
       </div>
 
       {/* Footer */}
       {preview ? (
-        <div className="py-4 text-center">
+        <div className="py-3 text-center">
           <span
-            className={`text-[10px] tracking-widest uppercase font-bold px-3 py-1 rounded-full border shadow-xs backdrop-blur-xs transition-colors ${
+            className={`text-[9px] tracking-widest uppercase font-bold px-3 py-1 rounded-full border shadow-xs backdrop-blur-xs transition-colors ${
               isDark
-                ? 'text-white/70 bg-slate-900/70 border-slate-700/60'
+                ? 'text-white/70 bg-[#111322]/80 border-white/10'
                 : 'text-slate-500 bg-white/70 border-slate-200/60'
             }`}
           >
@@ -140,13 +189,11 @@ export default function LinkBioRenderer({
             href="/"
             className={`inline-flex items-center gap-1.5 text-[11px] tracking-wider uppercase font-bold px-4 py-1.5 rounded-full border shadow-xs hover:shadow-soft transition-all backdrop-blur-xs ${
               isDark
-                ? 'text-white/80 hover:text-white bg-slate-900/80 hover:bg-slate-900 border-slate-700/80'
+                ? 'text-white/80 hover:text-white bg-[#111322]/80 hover:bg-[#181c33] border-white/15'
                 : 'text-slate-500 hover:text-slate-800 bg-white/80 hover:bg-white border-slate-200/80'
             }`}
           >
-            <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold ${
-              isDark ? 'bg-white text-slate-900' : 'bg-slate-900 text-white'
-            }`}>
+            <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white text-[8px] font-bold">
               L
             </div>
             <span>Create your LinkNest</span>
@@ -164,7 +211,7 @@ export default function LinkBioRenderer({
   return (
     <main
       style={bgStyle}
-      className={`min-h-screen flex flex-col justify-between py-10 px-4 selection:bg-slate-900 selection:text-white ${
+      className={`min-h-screen flex flex-col justify-between py-8 px-4 selection:bg-orange-500 selection:text-white ${
         isDark ? 'text-white' : 'text-slate-900'
       }`}
     >

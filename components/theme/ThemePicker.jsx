@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Check, Sparkles, AlertCircle } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import BackgroundPicker from './BackgroundPicker';
+import PresetThemes from './PresetThemes';
 
 const BUTTON_STYLES = [
   { id: 'rounded', label: 'Soft Shadow Rounded', desc: 'Sleek white card with drop shadow' },
@@ -34,17 +35,6 @@ export default function ThemePicker({
   const [saving, setSaving] = useState(false);
   const [actionError, setActionError] = useState(null);
 
-  async function handlePickPreset(theme) {
-    setIsCustomizing(false);
-    setActionError(null);
-    setPreviewTheme(theme);
-    try {
-      await onSelectTheme(theme.id);
-    } catch (err) {
-      setActionError(err.message || 'Failed to select theme');
-    }
-  }
-
   async function handleSaveCustom() {
     setSaving(true);
     setActionError(null);
@@ -68,10 +58,10 @@ export default function ThemePicker({
   }
 
   return (
-    <div className="space-y-8 text-slate-900">
+    <div className="space-y-8 text-slate-900 dark:text-slate-100">
       {/* Action Error Alert */}
       {actionError && (
-        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2 animate-slide-down">
+        <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-xs flex items-center gap-2 animate-slide-down">
           <AlertCircle size={16} className="shrink-0" />
           <span>{actionError}</span>
         </div>
@@ -79,54 +69,26 @@ export default function ThemePicker({
 
       {/* Preset Themes Section */}
       <div>
-        <h3 className="text-base font-bold text-slate-900 mb-1">Preset Themes</h3>
-        <p className="text-xs text-slate-500 mb-4">Choose from crafted modern themes or build your own.</p>
+        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Preset Themes</h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Choose from crafted modern themes or build your own.</p>
         
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {themes.map((theme) => {
-            const isSelected = activeThemeId === theme.id;
-            let bgStyle = {};
-            if (theme.background?.type === 'solid') bgStyle = { backgroundColor: theme.background.value };
-            else if (theme.background?.type === 'gradient') bgStyle = { background: theme.background.value };
-            else if (theme.background?.type === 'image') bgStyle = { backgroundImage: `url(${theme.background.value})`, backgroundSize: 'cover' };
-
-            return (
-              <button
-                key={theme.id}
-                type="button"
-                onClick={() => handlePickPreset(theme)}
-                className={`relative group flex flex-col p-3 rounded-2xl border text-left transition-all overflow-hidden bg-white shadow-soft hover:shadow-card cursor-pointer ${
-                  isSelected
-                    ? 'border-slate-900 ring-2 ring-slate-900/10 shadow-card'
-                    : 'border-slate-200/90 hover:border-slate-300'
-                }`}
-              >
-                <div
-                  style={bgStyle}
-                  className="w-full h-20 rounded-xl mb-3 flex items-center justify-center p-2 border border-slate-200/60 shadow-inner"
-                >
-                  <div className="w-full h-6 rounded-lg bg-white/80 backdrop-blur-xs border border-slate-200 shadow-xs flex items-center justify-center">
-                    <span className="text-[10px] text-slate-800 font-semibold">Link Preview</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900 truncate">{theme.name || 'Custom'}</span>
-                  {isSelected && <Check size={14} className="text-slate-900 shrink-0" strokeWidth={2.5} />}
-                </div>
-              </button>
-            );
-          })}
-        </div>
+        <PresetThemes
+          themes={themes}
+          activeThemeId={activeThemeId}
+          onSelectTheme={onSelectTheme}
+          previewTheme={previewTheme}
+          setPreviewTheme={setPreviewTheme}
+        />
       </div>
 
       {/* Custom Theme Builder */}
-      <div className="p-6 rounded-3xl border border-slate-200/90 bg-white shadow-card space-y-6">
+      <div className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Sparkles size={16} className="text-indigo-600" /> Custom Theme Designer
+            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Sparkles size={16} className="text-emerald-500" /> Custom Theme Designer
             </h3>
-            <p className="text-xs text-slate-500">Personalize background, button styling, and typography</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Personalize background, button styling, and typography</p>
           </div>
           <Button
             size="sm"
@@ -139,9 +101,9 @@ export default function ThemePicker({
         </div>
 
         {isCustomizing && (
-          <div className="space-y-6 pt-4 border-t border-slate-100 animate-fade-in">
+          <div className="space-y-6 pt-4 border-t border-slate-100 dark:border-slate-800 animate-fade-in">
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-2">Background Style</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-2">Background Style</label>
               <BackgroundPicker
                 value={customBg}
                 onChange={(bg) => {
@@ -152,7 +114,7 @@ export default function ThemePicker({
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-2">Button Appearance</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-2">Button Appearance</label>
               <div className="grid grid-cols-2 gap-2.5">
                 {BUTTON_STYLES.map((b) => (
                   <button
@@ -164,19 +126,19 @@ export default function ThemePicker({
                     }}
                     className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                       customButtonStyle === b.id
-                        ? 'border-slate-900 bg-slate-50 shadow-soft ring-1 ring-slate-900/10'
-                        : 'border-slate-200 bg-white hover:border-slate-300 shadow-xs'
+                        ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 shadow-soft ring-1 ring-emerald-500/20'
+                        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1020] hover:border-slate-300 dark:hover:border-slate-700 shadow-xs'
                     }`}
                   >
-                    <div className="text-xs font-bold text-slate-900">{b.label}</div>
-                    <div className="text-[10px] text-slate-500 mt-0.5">{b.desc}</div>
+                    <div className="text-xs font-bold text-slate-900 dark:text-white">{b.label}</div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">{b.desc}</div>
                   </button>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-2">Font Family</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-2">Font Family</label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 {FONTS.map((f) => (
                   <button
@@ -188,17 +150,17 @@ export default function ThemePicker({
                     }}
                     className={`p-3 rounded-2xl border text-center transition-all cursor-pointer ${
                       customFont === f.id
-                        ? 'border-slate-900 bg-slate-50 shadow-soft ring-1 ring-slate-900/10'
-                        : 'border-slate-200 bg-white hover:border-slate-300 shadow-xs'
+                        ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 shadow-soft ring-1 ring-emerald-500/20'
+                        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1020] hover:border-slate-300 dark:hover:border-slate-700 shadow-xs'
                     }`}
                   >
-                    <span className="text-xs font-semibold text-slate-900" style={{ fontFamily: f.id }}>{f.name}</span>
+                    <span className="text-xs font-semibold text-slate-900 dark:text-white" style={{ fontFamily: f.id }}>{f.name}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
               <Button
                 variant="primary"
                 onClick={handleSaveCustom}

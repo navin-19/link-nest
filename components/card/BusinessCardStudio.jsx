@@ -1,10 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import {
-  CreditCard,
   Download,
   Printer,
   Smartphone,
@@ -13,9 +12,6 @@ import {
   Mail,
   Phone,
   MapPin,
-  Globe,
-  Sparkles,
-  Palette,
   Layout,
   UserCheck,
   QrCode,
@@ -105,7 +101,6 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
   const [copied, setCopied] = useState(false);
   const [exporting, setExporting] = useState(false);
 
-  // Synchronize when profile or user loads
   useEffect(() => {
     if (profile) {
       if (profile.display_name || profile.username) {
@@ -122,14 +117,12 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
 
   const targetUrl = customQrUrl.trim() || profileUrl || (typeof window !== 'undefined' ? `${window.location.origin}/${profile?.username || ''}` : 'https://linknest.app');
 
-  // Switch Theme & Sync QR Colors
   function handleSelectTheme(theme) {
     setSelectedTheme(theme);
     setCustomQrFg(theme.qrFg);
     setCustomQrBg(theme.qrBg);
   }
 
-  // Export card as PNG using HTML5 Canvas drawing
   function handleDownloadCardImage() {
     setExporting(true);
     try {
@@ -137,7 +130,6 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
 
-      // High DPI scale factor
       const scale = 3;
       const width = isHorizontal ? 1050 : 680;
       const height = isHorizontal ? 600 : 1040;
@@ -146,7 +138,6 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
       canvas.height = height * scale;
       ctx.scale(scale, scale);
 
-      // Draw Background Gradient
       const gradient = ctx.createLinearGradient(0, 0, width, height);
       if (selectedTheme.id === 'obsidian') {
         gradient.addColorStop(0, '#0f172a');
@@ -169,7 +160,6 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
         gradient.addColorStop(1, '#701a75');
       }
 
-      // Rounded rectangle for card
       const radius = 32;
       ctx.beginPath();
       ctx.moveTo(radius, 0);
@@ -185,18 +175,15 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
       ctx.fillStyle = gradient;
       ctx.fill();
 
-      // Card Border Stroke
       ctx.lineWidth = 3;
       ctx.strokeStyle = selectedTheme.id === 'pearl' ? '#e2e8f0' : 'rgba(255, 255, 255, 0.15)';
       ctx.stroke();
 
-      // Text Colors
       const textColor = selectedTheme.textColor;
       const subTextColor = selectedTheme.subTextColor;
       const accentColor = selectedTheme.accentColor;
 
       if (isHorizontal) {
-        // Horizontal Layout
         ctx.fillStyle = textColor;
         ctx.font = 'bold 36px Inter, sans-serif';
         ctx.fillText(name || 'Your Name', 60, 95);
@@ -211,7 +198,6 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
           ctx.fillText(`at ${company}`, 60, 165);
         }
 
-        // Contact Info Left Column
         let contactY = 240;
         ctx.fillStyle = textColor;
         ctx.font = '500 16px Inter, sans-serif';
@@ -229,19 +215,16 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
           contactY += 36;
         }
 
-        // Tagline at bottom
         ctx.fillStyle = subTextColor;
         ctx.font = 'italic 15px Inter, sans-serif';
         ctx.fillText(tagline || '', 60, height - 60);
 
-        // Draw QR code image on right side
         const qrCanvas = document.getElementById('card-qr-export-canvas');
         if (qrCanvas && showQR) {
           const qrSize = 220;
           const qrX = width - qrSize - 60;
           const qrY = 70;
 
-          // Background card for QR
           ctx.fillStyle = customQrBg;
           ctx.beginPath();
           ctx.roundRect(qrX - 16, qrY - 16, qrSize + 32, qrSize + 32, 20);
@@ -249,7 +232,6 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
 
           ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
 
-          // URL under QR
           ctx.fillStyle = subTextColor;
           ctx.font = 'bold 13px monospace';
           ctx.textAlign = 'center';
@@ -257,7 +239,6 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
           ctx.textAlign = 'left';
         }
       } else {
-        // Vertical Badge Layout
         ctx.textAlign = 'center';
 
         ctx.fillStyle = textColor;
@@ -274,7 +255,6 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
           ctx.fillText(company, width / 2, 180);
         }
 
-        // Central QR
         const qrCanvas = document.getElementById('card-qr-export-canvas');
         if (qrCanvas && showQR) {
           const qrSize = 240;
@@ -293,7 +273,6 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
           ctx.fillText(`/${profile?.username || ''}`, width / 2, qrY + qrSize + 48);
         }
 
-        // Contact info at bottom
         let vContactY = height - 200;
         ctx.fillStyle = textColor;
         ctx.font = '500 16px Inter, sans-serif';
@@ -314,7 +293,6 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
         ctx.textAlign = 'left';
       }
 
-      // Trigger PNG Download
       const pngUrl = canvas.toDataURL('image/png');
       const downloadLink = document.createElement('a');
       downloadLink.href = pngUrl;
@@ -356,25 +334,25 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
   }
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+    <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start text-slate-900 dark:text-slate-100">
       {/* Left: Customization Controls */}
       <div className="xl:col-span-6 space-y-6">
         {/* Layout & Theme Presets */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-card space-y-5">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#0c0f1d] border border-slate-200/90 dark:border-slate-800 shadow-card space-y-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Layout size={18} className="text-slate-700" />
-              <h3 className="text-sm font-bold text-slate-900">Card Layout & Ratio</h3>
+              <Layout size={18} className="text-slate-700 dark:text-slate-300" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Card Layout & Ratio</h3>
             </div>
 
-            <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200/70">
+            <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200/70 dark:border-slate-700">
               <button
                 type="button"
                 onClick={() => setOrientation('horizontal')}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   orientation === 'horizontal'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Horizontal (3.5&quot; × 2&quot;)
@@ -384,8 +362,8 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
                 onClick={() => setOrientation('vertical')}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   orientation === 'vertical'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Vertical (Badge / NFC)
@@ -395,7 +373,7 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
 
           {/* Theme Presets */}
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-2.5">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-2.5">
               Card Theme Preset
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
@@ -406,15 +384,15 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
                   onClick={() => handleSelectTheme(theme)}
                   className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all cursor-pointer ${
                     selectedTheme.id === theme.id
-                      ? 'border-slate-900 ring-2 ring-slate-900/10 shadow-xs bg-slate-50'
-                      : 'border-slate-200/80 hover:border-slate-300 hover:bg-slate-50/50'
+                      ? 'border-emerald-500 ring-2 ring-emerald-500/20 shadow-xs bg-slate-50 dark:bg-slate-800/80'
+                      : 'border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50/50 dark:hover:bg-slate-800/40'
                   }`}
                 >
                   <div
                     className="w-6 h-6 rounded-lg shadow-inner shrink-0 border border-black/10"
                     style={{ background: theme.bg }}
                   />
-                  <div className="text-xs font-semibold text-slate-900 truncate">
+                  <div className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
                     {theme.name}
                   </div>
                 </button>
@@ -424,15 +402,15 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
         </div>
 
         {/* QR Code Styling Inside Card */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-card space-y-4">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#0c0f1d] border border-slate-200/90 dark:border-slate-800 shadow-card space-y-4">
           <div className="flex items-center gap-2">
-            <QrCode size={18} className="text-slate-700" />
-            <h3 className="text-sm font-bold text-slate-900">Card QR Code Customization</h3>
+            <QrCode size={18} className="text-slate-700 dark:text-slate-300" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Card QR Code Customization</h3>
           </div>
 
           {/* Custom QR Link Destination */}
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
               QR Code Destination URL
             </label>
             <div className="relative">
@@ -441,11 +419,11 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
                 value={customQrUrl}
                 onChange={(e) => setCustomQrUrl(e.target.value)}
                 placeholder={profileUrl || 'https://linknest.app/username'}
-                className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-200 text-xs font-mono font-medium focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900"
+                className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1020] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs font-mono font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               />
-              <Link2 size={14} className="absolute left-3 top-2.5 text-slate-400" />
+              <Link2 size={14} className="absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
               Leave blank to use your default LinkNest profile URL.
             </p>
           </div>
@@ -453,142 +431,142 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
           {/* QR Code Colors on Card */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
                 QR Pattern Color
               </label>
-              <div className="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-slate-50">
+              <div className="flex items-center gap-2 p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0d1020]">
                 <input
                   type="color"
                   value={customQrFg}
                   onChange={(e) => setCustomQrFg(e.target.value)}
                   className="w-7 h-7 rounded-lg cursor-pointer border-0 bg-transparent p-0"
                 />
-                <span className="text-xs font-mono text-slate-700">{customQrFg}</span>
+                <span className="text-xs font-mono text-slate-700 dark:text-slate-300">{customQrFg}</span>
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
                 QR Background Color
               </label>
-              <div className="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-slate-50">
+              <div className="flex items-center gap-2 p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0d1020]">
                 <input
                   type="color"
                   value={customQrBg}
                   onChange={(e) => setCustomQrBg(e.target.value)}
                   className="w-7 h-7 rounded-lg cursor-pointer border-0 bg-transparent p-0"
                 />
-                <span className="text-xs font-mono text-slate-700">{customQrBg}</span>
+                <span className="text-xs font-mono text-slate-700 dark:text-slate-300">{customQrBg}</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Card Content Information */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-card space-y-4">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#0c0f1d] border border-slate-200/90 dark:border-slate-800 shadow-card space-y-4">
           <div className="flex items-center gap-2">
-            <UserCheck size={18} className="text-slate-700" />
-            <h3 className="text-sm font-bold text-slate-900">Cardholder Information</h3>
+            <UserCheck size={18} className="text-slate-700 dark:text-slate-300" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Cardholder Information</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Full Name</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Full Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Alex Rivers"
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900"
+                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1020] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Job Title / Role</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Job Title / Role</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Creative Director"
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900"
+                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1020] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Company / Brand</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Company / Brand</label>
               <input
                 type="text"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 placeholder="e.g. Acme Studios"
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900"
+                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1020] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Email</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="alex@example.com"
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900"
+                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1020] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Phone Number</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Phone Number</label>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+1 (555) 123-4567"
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900"
+                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1020] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Location</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Location</label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="San Francisco, CA"
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900"
+                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1020] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1">Card Footer Tagline</label>
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Card Footer Tagline</label>
             <input
               type="text"
               value={tagline}
               onChange={(e) => setTagline(e.target.value)}
               placeholder="Tagline or motto..."
               maxLength={80}
-              className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900"
+              className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1020] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             />
           </div>
 
           {/* Feature Toggles */}
-          <div className="pt-2 flex items-center gap-6 border-t border-slate-100 text-xs">
-            <label className="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+          <div className="pt-2 flex items-center gap-6 border-t border-slate-100 dark:border-slate-800 text-xs">
+            <label className="flex items-center gap-2 cursor-pointer font-medium text-slate-700 dark:text-slate-300">
               <input
                 type="checkbox"
                 checked={showAvatar}
                 onChange={(e) => setShowAvatar(e.target.checked)}
-                className="rounded text-slate-900 focus:ring-0"
+                className="rounded text-emerald-600 focus:ring-0"
               />
               Include Avatar
             </label>
 
-            <label className="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
+            <label className="flex items-center gap-2 cursor-pointer font-medium text-slate-700 dark:text-slate-300">
               <input
                 type="checkbox"
                 checked={showQR}
                 onChange={(e) => setShowQR(e.target.checked)}
-                className="rounded text-slate-900 focus:ring-0"
+                className="rounded text-emerald-600 focus:ring-0"
               />
               Include QR Code
             </label>
@@ -598,7 +576,7 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
 
       {/* Right: Live Interactive Business Card Preview & Export Actions */}
       <div className="xl:col-span-6 sticky top-24 space-y-6">
-        <div className="p-8 rounded-3xl bg-slate-900 text-white shadow-2xl flex flex-col items-center justify-center space-y-6 overflow-hidden">
+        <div className="p-8 rounded-3xl bg-slate-900 dark:bg-[#0c0f1d] border border-slate-800 text-white shadow-2xl flex flex-col items-center justify-center space-y-6 overflow-hidden">
           <div className="flex items-center justify-between w-full">
             <span className="text-xs font-bold tracking-wider uppercase text-slate-400">
               Live Card Preview
@@ -807,7 +785,7 @@ export default function BusinessCardStudio({ user, profile, profileUrl }) {
                 size="md"
                 onClick={handleDownloadCardImage}
                 loading={exporting}
-                className="w-full bg-white text-slate-900 hover:bg-slate-100 shadow-md font-semibold"
+                className="w-full bg-white dark:bg-emerald-500 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-emerald-600 shadow-md font-semibold"
               >
                 <Download size={15} /> Download Card (PNG)
               </Button>

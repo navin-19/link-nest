@@ -4,17 +4,17 @@ import { forwardRef } from 'react';
 
 const variants = {
   primary:
-    'bg-slate-900 hover:bg-slate-800 text-white shadow-btn hover:shadow-btn-hover active:shadow-xs border border-slate-900',
+    'bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-bold shadow-btn hover:shadow-btn-hover border border-emerald-500',
   brand:
-    'bg-indigo-600 hover:bg-indigo-500 text-white shadow-btn-brand hover:shadow-lg active:shadow-xs border border-indigo-600',
+    'bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-btn-brand hover:shadow-lg border border-emerald-600',
   secondary:
-    'bg-white hover:bg-slate-50 text-slate-800 border border-slate-200/90 shadow-soft hover:shadow-card hover:border-slate-300',
+    'bg-white hover:bg-slate-50 dark:bg-slate-800/90 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-200/90 dark:border-slate-700/80 shadow-soft hover:shadow-card hover:border-slate-300 dark:hover:border-slate-600 font-semibold',
   ghost:
-    'bg-transparent hover:bg-slate-100/80 text-slate-700 hover:text-slate-950',
+    'bg-transparent hover:bg-slate-100/80 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white font-medium',
   danger:
-    'bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/80 shadow-xs hover:shadow-soft',
+    'bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 border border-red-200/80 dark:border-red-800/60 shadow-xs hover:shadow-soft font-semibold',
   outline:
-    'bg-transparent border border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 hover:text-slate-900 shadow-xs',
+    'bg-transparent border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-400 dark:hover:border-slate-600 hover:text-slate-900 dark:hover:text-white shadow-xs font-semibold',
 };
 
 const sizes = {
@@ -26,7 +26,7 @@ const sizes = {
 };
 
 /**
- * Reusable Button component with light-theme styling and drop shadow effects.
+ * Reusable Button component with light and dark theme styling.
  */
 const Button = forwardRef(function Button(
   {
@@ -48,7 +48,7 @@ const Button = forwardRef(function Button(
       className={[
         'inline-flex items-center justify-center gap-2 font-medium rounded-full',
         'transition-all duration-150 ease-out',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/30 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900',
         'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
         'active:scale-[0.98]',
         variants[variant] ?? variants.primary,

@@ -15,7 +15,6 @@ import {
   Palette,
   QrCode,
   Users,
-  User,
 } from 'lucide-react';
 
 export default function UserNavDropdown({ user, profile }) {
@@ -74,10 +73,6 @@ export default function UserNavDropdown({ user, profile }) {
 
   async function handleSignOut() {
     setIsOpen(false);
-    // Use the server-side signout route — it invalidates the session on Supabase's
-    // auth server AND clears the auth cookies from the browser in one request.
-    // This is more reliable than client-only signOut() which can leave stale
-    // cookies if the browser client fails for any reason.
     window.location.href = '/api/auth/signout';
   }
 
@@ -85,21 +80,20 @@ export default function UserNavDropdown({ user, profile }) {
   const displayName = profile?.display_name || username || 'User';
   const email = user?.email || '';
 
-  // Other profiles excluding the currently active one
   const otherProfiles = allProfiles.filter((p) => p.id !== profile?.id);
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Navbar Trigger: Split into Link (/dashboard) + Dropdown Chevron Toggle */}
-      <div className="flex items-center rounded-2xl border border-slate-200/70 bg-white/80 shadow-xs hover:border-slate-300 transition-all">
+      {/* Navbar Trigger */}
+      <div className="flex items-center rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-[#0c0f1d]/90 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all">
         {/* Name + Avatar navigate to /dashboard */}
         <Link
           href="/dashboard"
-          className="flex items-center gap-2.5 py-1.5 pl-3 pr-2 rounded-l-2xl hover:bg-slate-100/80 transition-colors group cursor-pointer"
+          className="flex items-center gap-2.5 py-1.5 pl-3 pr-2 rounded-l-2xl hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-colors group cursor-pointer"
           title="Go to Dashboard Home"
         >
           <span
-            className="text-xs font-semibold text-slate-800 group-hover:text-slate-950 hidden sm:inline-block max-w-[150px] truncate whitespace-nowrap"
+            className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-950 dark:group-hover:text-white hidden sm:inline-block max-w-[150px] truncate whitespace-nowrap"
             title={displayName}
           >
             {displayName}
@@ -108,7 +102,7 @@ export default function UserNavDropdown({ user, profile }) {
             src={profile?.avatar_url}
             alt={displayName}
             size={32}
-            className="shrink-0"
+            className="shrink-0 ring-1 ring-slate-200 dark:ring-slate-700"
           />
         </Link>
 
@@ -116,7 +110,7 @@ export default function UserNavDropdown({ user, profile }) {
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 pr-2.5 rounded-r-2xl hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer border-l border-slate-100"
+          className="p-2 pr-2.5 rounded-r-2xl hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors cursor-pointer border-l border-slate-100 dark:border-slate-800"
           title="Account Menu"
           aria-expanded={isOpen}
           aria-haspopup="true"
@@ -124,7 +118,7 @@ export default function UserNavDropdown({ user, profile }) {
           <ChevronDown
             size={14}
             className={`transition-transform duration-200 ${
-              isOpen ? 'rotate-180 text-slate-900' : ''
+              isOpen ? 'rotate-180 text-slate-900 dark:text-white' : ''
             }`}
           />
         </button>
@@ -132,19 +126,19 @@ export default function UserNavDropdown({ user, profile }) {
 
       {/* Floating Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-84 sm:w-96 rounded-3xl bg-white border border-slate-200/90 shadow-2xl z-50 p-3 animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] overflow-y-auto">
-          {/* Active Account Card (Clickable -> Go to Dashboard) */}
+        <div className="absolute right-0 mt-2 w-84 sm:w-96 rounded-3xl bg-white dark:bg-[#0d1020] border border-slate-200/90 dark:border-slate-800 shadow-2xl z-50 p-3 animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] overflow-y-auto">
+          {/* Active Account Card */}
           <Link
             href="/dashboard"
             onClick={() => setIsOpen(false)}
-            className="block p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 mb-2 transition-all group cursor-pointer shadow-2xs"
+            className="block p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 hover:bg-slate-100/90 dark:hover:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 mb-2 transition-all group cursor-pointer shadow-2xs"
             title="Go to Dashboard"
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-bold tracking-wider uppercase text-slate-500 group-hover:text-slate-900 flex items-center gap-1">
+              <span className="text-[10px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white flex items-center gap-1">
                 Active Account • Go to Dashboard →
               </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                 Active
               </span>
@@ -159,18 +153,18 @@ export default function UserNavDropdown({ user, profile }) {
               />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <h4 className="text-xs font-bold text-slate-900 truncate group-hover:text-indigo-600 transition-colors">
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                     {displayName}
                   </h4>
-                  <Check size={13} className="text-emerald-600 shrink-0" />
+                  <Check size={13} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
                 </div>
                 {username && (
-                  <p className="text-[11px] font-mono text-slate-500 truncate">
+                  <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 truncate">
                     @{username}
                   </p>
                 )}
                 {email && (
-                  <p className="text-[10px] text-slate-400 truncate">
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">
                     {email}
                   </p>
                 )}
@@ -183,14 +177,14 @@ export default function UserNavDropdown({ user, profile }) {
             <Link
               href="/signup"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2.5 rounded-2xl text-xs font-bold text-slate-800 hover:text-slate-950 hover:bg-slate-100/80 transition-all group"
+              className="flex items-center gap-2.5 px-3 py-2.5 rounded-2xl text-xs font-bold text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition-all group"
             >
-              <div className="w-6 h-6 rounded-lg bg-slate-900 text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+              <div className="w-6 h-6 rounded-lg bg-emerald-500 text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
                 <Plus size={14} strokeWidth={2.5} />
               </div>
               <div className="flex-1 min-w-0">
                 <span>Add Account / New User</span>
-                <span className="block text-[10px] font-normal text-slate-500">
+                <span className="block text-[10px] font-normal text-slate-500 dark:text-slate-400">
                   Claim another username or create a new page
                 </span>
               </div>
@@ -198,7 +192,7 @@ export default function UserNavDropdown({ user, profile }) {
           </div>
 
           {/* All Users / Profiles Section */}
-          <div className="pt-2 border-t border-slate-100">
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
             <div className="flex items-center justify-between px-2 py-1.5">
               <span className="text-[10px] font-bold tracking-wider uppercase text-slate-400 flex items-center gap-1.5">
                 <Users size={12} />
@@ -206,27 +200,25 @@ export default function UserNavDropdown({ user, profile }) {
               </span>
             </div>
 
-            <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
+            <div className="space-y-1 max-h-44 overflow-y-auto pr-1">
               {loadingProfiles && allProfiles.length === 0 ? (
                 <div className="p-3 text-center text-xs text-slate-400">
                   Loading users...
                 </div>
               ) : otherProfiles.length === 0 ? (
-                <div className="px-3 py-2 text-[11px] text-slate-400 italic">
-                  No other profiles found. Click &quot;Add Account&quot; above to create one.
+                <div className="px-3 py-2 text-[11px] text-slate-400 dark:text-slate-500 italic">
+                  No other profiles found.
                 </div>
               ) : (
                 otherProfiles.map((other) => (
                   <div
                     key={other.id}
-                    className="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 transition-colors group"
+                    className="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group"
                   >
-                    {/* Click user -> Go to Dashboard */}
                     <Link
                       href="/dashboard"
                       onClick={() => setIsOpen(false)}
                       className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer"
-                      title={`Go to Dashboard for @${other.username}`}
                     >
                       <Avatar
                         src={other.avatar_url}
@@ -235,7 +227,7 @@ export default function UserNavDropdown({ user, profile }) {
                         className="shrink-0"
                       />
                       <div className="min-w-0 flex-1">
-                        <div className="text-xs font-semibold text-slate-800 truncate group-hover:text-indigo-600 flex items-center gap-1.5">
+                        <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
                           {other.display_name || other.username}
                         </div>
                         <div className="text-[10px] font-mono text-slate-400 truncate">
@@ -244,13 +236,11 @@ export default function UserNavDropdown({ user, profile }) {
                       </div>
                     </Link>
 
-                    {/* Public Profile View button */}
                     <a
                       href={`/${other.username}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1.5 rounded-lg hover:bg-slate-200/70 text-slate-400 hover:text-slate-800 transition-colors shrink-0 inline-flex items-center gap-1 text-[11px]"
-                      title="View public profile in new tab"
+                      className="p-1.5 rounded-lg hover:bg-slate-200/70 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors shrink-0"
                     >
                       <ExternalLink size={12} />
                     </a>
@@ -260,7 +250,7 @@ export default function UserNavDropdown({ user, profile }) {
             </div>
           </div>
 
-          <div className="h-px bg-slate-100 my-2" />
+          <div className="h-px bg-slate-100 dark:bg-slate-800 my-2" />
 
           {/* Quick Navigation Links */}
           <div className="space-y-0.5 py-0.5">
@@ -270,7 +260,7 @@ export default function UserNavDropdown({ user, profile }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition-colors"
+                className="flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
               >
                 <span className="flex items-center gap-2.5">
                   <ExternalLink size={13} className="text-slate-400" />
@@ -283,7 +273,7 @@ export default function UserNavDropdown({ user, profile }) {
             <Link
               href="/dashboard/settings"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition-colors"
+              className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
             >
               <Settings size={13} className="text-slate-400" />
               Profile Settings
@@ -292,7 +282,7 @@ export default function UserNavDropdown({ user, profile }) {
             <Link
               href="/dashboard/theme"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition-colors"
+              className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
             >
               <Palette size={13} className="text-slate-400" />
               Theme Customizer
@@ -301,21 +291,21 @@ export default function UserNavDropdown({ user, profile }) {
             <Link
               href="/dashboard/card"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition-colors"
+              className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
             >
               <QrCode size={13} className="text-slate-400" />
               QR & Business Card
             </Link>
           </div>
 
-          <div className="h-px bg-slate-100 my-2" />
+          <div className="h-px bg-slate-100 dark:bg-slate-800 my-2" />
 
           {/* Sign Out Action */}
           <div>
             <button
               type="button"
               onClick={handleSignOut}
-              className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 transition-all cursor-pointer"
+              className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer"
             >
               <LogOut size={13} />
               Sign Out of LinkNest
@@ -326,4 +316,3 @@ export default function UserNavDropdown({ user, profile }) {
     </div>
   );
 }
-

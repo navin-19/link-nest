@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import {
   Download,
@@ -35,7 +35,7 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
   const [fgColor, setFgColor] = useState('#0f172a');
   const [bgColor, setBgColor] = useState('#ffffff');
   const [includeAvatar, setIncludeAvatar] = useState(false);
-  const [size, setSize] = useState(240);
+  const [size] = useState(240);
   const [level, setLevel] = useState('M');
   const [frameStyle, setFrameStyle] = useState('scan_me');
   const [customLabel, setCustomLabel] = useState('SCAN TO CONNECT');
@@ -108,14 +108,14 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start text-slate-900 dark:text-slate-100">
       {/* Left: Customization Controls */}
       <div className="lg:col-span-7 space-y-6">
         {/* Custom URL Input */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-card space-y-3">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#0c0f1d] border border-slate-200/90 dark:border-slate-800 shadow-card space-y-3">
           <div className="flex items-center gap-2">
-            <Link2 size={18} className="text-slate-700" />
-            <h3 className="text-sm font-bold text-slate-900">QR Code Link Destination</h3>
+            <Link2 size={18} className="text-slate-700 dark:text-slate-300" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">QR Code Link Destination</h3>
           </div>
 
           <div>
@@ -124,19 +124,19 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
               value={customUrl}
               onChange={(e) => setCustomUrl(e.target.value)}
               placeholder={profileUrl || 'https://linknest.app/yourname'}
-              className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 text-xs font-mono font-medium focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900"
+              className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1020] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs font-mono font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             />
-            <p className="text-[11px] text-slate-400 mt-1.5">
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1.5">
               Customize where the QR code leads (default: your LinkNest profile).
             </p>
           </div>
         </div>
 
         {/* Preset Color Themes */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-card space-y-4">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#0c0f1d] border border-slate-200/90 dark:border-slate-800 shadow-card space-y-4">
           <div className="flex items-center gap-2">
-            <Palette size={18} className="text-slate-700" />
-            <h3 className="text-sm font-bold text-slate-900">Color Palette Presets</h3>
+            <Palette size={18} className="text-slate-700 dark:text-slate-300" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Color Palette Presets</h3>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -150,12 +150,12 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
                 }}
                 className={`p-3 rounded-2xl border text-left flex items-center gap-3 transition-all cursor-pointer ${
                   fgColor === preset.fg && bgColor === preset.bg
-                    ? 'border-slate-900 bg-slate-50 ring-2 ring-slate-900/10 shadow-xs'
-                    : 'border-slate-200/80 hover:border-slate-300 hover:bg-slate-50/50'
+                    ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/40 ring-2 ring-emerald-500/20 shadow-xs'
+                    : 'border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50/50 dark:hover:bg-slate-800/50'
                 }`}
               >
                 <div
-                  className="w-7 h-7 rounded-xl border border-slate-200/80 flex items-center justify-center shrink-0 shadow-xs"
+                  className="w-7 h-7 rounded-xl border border-slate-200/80 dark:border-slate-700 flex items-center justify-center shrink-0 shadow-xs"
                   style={{ backgroundColor: preset.bg }}
                 >
                   <div
@@ -164,20 +164,20 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
                   />
                 </div>
                 <div className="truncate">
-                  <div className="text-xs font-semibold text-slate-900">{preset.name}</div>
-                  <div className="text-[10px] text-slate-400 font-mono truncate">{preset.fg}</div>
+                  <div className="text-xs font-semibold text-slate-900 dark:text-white">{preset.name}</div>
+                  <div className="text-[10px] text-slate-400 dark:text-slate-500 font-mono truncate">{preset.fg}</div>
                 </div>
               </button>
             ))}
           </div>
 
           {/* Custom Color Pickers */}
-          <div className="pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
                 Foreground (Pattern) Color
               </label>
-              <div className="flex items-center gap-2.5 p-2 rounded-2xl border border-slate-200 bg-slate-50/50">
+              <div className="flex items-center gap-2.5 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-[#0d1020]">
                 <input
                   type="color"
                   value={fgColor}
@@ -188,16 +188,16 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
                   type="text"
                   value={fgColor}
                   onChange={(e) => setFgColor(e.target.value)}
-                  className="w-full bg-transparent text-xs font-mono font-semibold text-slate-800 uppercase focus:outline-none"
+                  className="w-full bg-transparent text-xs font-mono font-semibold text-slate-800 dark:text-slate-200 uppercase focus:outline-none"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
                 Background Color
               </label>
-              <div className="flex items-center gap-2.5 p-2 rounded-2xl border border-slate-200 bg-slate-50/50">
+              <div className="flex items-center gap-2.5 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-[#0d1020]">
                 <input
                   type="color"
                   value={bgColor}
@@ -208,7 +208,7 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
                   type="text"
                   value={bgColor}
                   onChange={(e) => setBgColor(e.target.value)}
-                  className="w-full bg-transparent text-xs font-mono font-semibold text-slate-800 uppercase focus:outline-none"
+                  className="w-full bg-transparent text-xs font-mono font-semibold text-slate-800 dark:text-slate-200 uppercase focus:outline-none"
                 />
               </div>
             </div>
@@ -216,10 +216,10 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
         </div>
 
         {/* Frame & Badge Style */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-card space-y-4">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#0c0f1d] border border-slate-200/90 dark:border-slate-800 shadow-card space-y-4">
           <div className="flex items-center gap-2">
-            <Layers size={18} className="text-slate-700" />
-            <h3 className="text-sm font-bold text-slate-900">Frame & Banner Style</h3>
+            <Layers size={18} className="text-slate-700 dark:text-slate-300" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Frame & Banner Style</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -230,14 +230,14 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
                 onClick={() => setFrameStyle(frame.id)}
                 className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                   frameStyle === frame.id
-                    ? 'border-slate-900 bg-slate-900 text-white shadow-btn'
-                    : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/60 text-slate-800'
+                    ? 'border-emerald-500 bg-slate-900 dark:bg-emerald-500 text-white shadow-btn'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 text-slate-800 dark:text-slate-200'
                 }`}
               >
                 <div className="text-xs font-bold">{frame.label}</div>
                 <div
                   className={`text-[11px] mt-0.5 ${
-                    frameStyle === frame.id ? 'text-slate-300' : 'text-slate-500'
+                    frameStyle === frame.id ? 'text-slate-300 dark:text-emerald-100' : 'text-slate-500 dark:text-slate-400'
                   }`}
                 >
                   {frame.desc}
@@ -248,7 +248,7 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
 
           {frameStyle !== 'none' && (
             <div className="pt-2">
-              <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
                 Badge Header Text
               </label>
               <input
@@ -257,26 +257,26 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
                 onChange={(e) => setCustomLabel(e.target.value)}
                 maxLength={30}
                 placeholder="e.g. SCAN TO CONNECT"
-                className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 bg-white text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900"
+                className="w-full px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d1020] text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               />
             </div>
           )}
         </div>
 
         {/* QR Customization Options */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-card space-y-5">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#0c0f1d] border border-slate-200/90 dark:border-slate-800 shadow-card space-y-5">
           <div className="flex items-center gap-2">
-            <Sliders size={18} className="text-slate-700" />
-            <h3 className="text-sm font-bold text-slate-900">Advanced Adjustments</h3>
+            <Sliders size={18} className="text-slate-700 dark:text-slate-300" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Advanced Adjustments</h3>
           </div>
 
           <div className="space-y-4">
             {/* Center Avatar Toggle */}
             {profile?.avatar_url && (
-              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-[#0d1020] border border-slate-200/70 dark:border-slate-800">
                 <div>
-                  <div className="text-xs font-bold text-slate-900">Embed Profile Avatar in Center</div>
-                  <div className="text-[11px] text-slate-500">
+                  <div className="text-xs font-bold text-slate-900 dark:text-white">Embed Profile Avatar in Center</div>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400">
                     Places your profile photo inside the center of the QR code
                   </div>
                 </div>
@@ -287,7 +287,7 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
                     onChange={(e) => setIncludeAvatar(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-900"></div>
+                  <div className="w-11 h-6 bg-slate-300 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
                 </label>
               </div>
             )}
@@ -295,10 +295,10 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
             {/* Error Correction Level */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-semibold text-slate-700">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Error Correction Density
                 </label>
-                <span className="text-[11px] font-mono text-slate-500">Level {level}</span>
+                <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">Level {level}</span>
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {[
@@ -313,8 +313,8 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
                     onClick={() => setLevel(lvl.id)}
                     className={`py-2 px-1 text-center rounded-xl border text-[11px] font-medium transition-all cursor-pointer ${
                       level === lvl.id
-                        ? 'border-slate-900 bg-slate-900 text-white font-bold'
-                        : 'border-slate-200 hover:bg-slate-100 text-slate-700'
+                        ? 'border-emerald-500 bg-slate-900 dark:bg-emerald-500 text-white font-bold'
+                        : 'border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
                     }`}
                   >
                     {lvl.name}
@@ -328,8 +328,8 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
 
       {/* Right: Live Preview & Action Hub */}
       <div className="lg:col-span-5 sticky top-24 space-y-6">
-        <div className="p-8 rounded-3xl bg-white border border-slate-200/90 shadow-card flex flex-col items-center justify-center text-center space-y-6">
-          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+        <div className="p-8 rounded-3xl bg-white dark:bg-[#0c0f1d] border border-slate-200/90 dark:border-slate-800 shadow-card flex flex-col items-center justify-center text-center space-y-6">
+          <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             Live QR Preview
           </div>
 
@@ -340,8 +340,8 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
               frameStyle === 'scan_me'
                 ? 'p-6 rounded-3xl bg-slate-900 text-white shadow-xl flex flex-col items-center space-y-4 border border-slate-800'
                 : frameStyle === 'card_frame'
-                ? 'p-6 rounded-3xl bg-white border border-slate-200 shadow-xl flex flex-col items-center space-y-3'
-                : 'p-4 rounded-3xl bg-white shadow-card border border-slate-100 inline-block'
+                ? 'p-6 rounded-3xl bg-white dark:bg-[#0d1020] border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col items-center space-y-3'
+                : 'p-4 rounded-3xl bg-white dark:bg-[#0d1020] shadow-card border border-slate-100 dark:border-slate-800 inline-block'
             }`}
           >
             {frameStyle === 'scan_me' && (
@@ -368,10 +368,10 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
 
             {frameStyle === 'card_frame' && (
               <div className="text-center pt-1">
-                <div className="text-xs font-bold text-slate-900">
+                <div className="text-xs font-bold text-slate-900 dark:text-white">
                   {profile?.display_name || profile?.username || 'LinkNest Profile'}
                 </div>
-                <div className="text-[11px] font-mono text-slate-500 truncate max-w-[200px]">
+                <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400 truncate max-w-[200px]">
                   {targetUrl}
                 </div>
               </div>
@@ -379,17 +379,17 @@ export default function QRCodeCustomizer({ profile, profileUrl }) {
           </div>
 
           {/* Profile URL pill */}
-          <div className="w-full p-2.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2">
-            <span className="text-xs font-mono text-slate-700 truncate pl-2">
+          <div className="w-full p-2.5 rounded-2xl bg-slate-50 dark:bg-[#0d1020] border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2">
+            <span className="text-xs font-mono text-slate-700 dark:text-slate-300 truncate pl-2">
               {targetUrl}
             </span>
             <button
               type="button"
               onClick={handleCopyLink}
-              className="p-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 shadow-xs transition-colors shrink-0 cursor-pointer"
+              className="p-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 shadow-xs transition-colors shrink-0 cursor-pointer"
               title="Copy Profile URL"
             >
-              {copied ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
+              {copied ? <Check size={14} className="text-emerald-600 dark:text-emerald-400" /> : <Copy size={14} />}
             </button>
           </div>
 
