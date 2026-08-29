@@ -91,7 +91,7 @@ function SignupForm() {
       }
 
       const supabase = createClient();
-      const { data, error: signupError } = await supabase.auth.signUp({
+      const authPromise = supabase.auth.signUp({
         email,
         password,
         options: {
@@ -101,12 +101,24 @@ function SignupForm() {
           },
         },
       });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error('Signup request timed out. Please check your connection and try again.')),
+          10000
+        )
+      );
+
+      const { data, error: signupError } = await Promise.race([authPromise, timeoutPromise]);
 
       if (signupError) {
-        if (signupError.message?.toLowerCase().includes('rate limit')) {
+        const msg = signupError.message || '';
+        const lower = msg.toLowerCase();
+        if (lower.includes('rate limit')) {
           setFormError('Supabase email rate limit reached. Please disable "Confirm email" in Supabase Auth settings for instant development signups, or try again in a few minutes.');
+        } else if (lower.includes('aborted') || lower.includes('signal') || lower.includes('timed out')) {
+          setFormError('Signup request timed out. Please try again.');
         } else {
-          setFormError(signupError.message);
+          setFormError(msg);
         }
         setLoading(false);
         return;
@@ -130,7 +142,13 @@ function SignupForm() {
         router.push('/login?message=Account created! Please check your email to confirm or sign in.');
       }
     } catch (err) {
-      setFormError(err.message || 'Signup failed');
+      const msg = err?.message || '';
+      const lower = msg.toLowerCase();
+      if (lower.includes('aborted') || lower.includes('signal') || lower.includes('timed out')) {
+        setFormError('Signup request timed out. Please try again.');
+      } else {
+        setFormError(msg || 'Signup failed');
+      }
     } finally {
       setLoading(false);
     }
@@ -227,9 +245,10 @@ function SignupForm() {
             size="lg"
             fullWidth
             loading={loading}
+            disabled={loading}
             className="shadow-btn hover:shadow-btn-hover"
           >
-            Create My LinkNest <ArrowRight size={16} />
+            {loading ? 'Creating account...' : <>Create My LinkNest <ArrowRight size={16} /></>}
           </Button>
         </form>
 

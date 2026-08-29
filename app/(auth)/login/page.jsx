@@ -19,6 +19,15 @@ function LoginForm() {
   const [oauthLoading, setOauthLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  function formatAuthError(msg) {
+    if (!msg) return 'Login failed. Please try again.';
+    const lower = msg.toLowerCase();
+    if (lower.includes('aborted') || lower.includes('signal') || lower.includes('timed out')) {
+      return 'Authentication check timed out. Please check your credentials and try again.';
+    }
+    return msg;
+  }
+
   async function handleEmailLogin(e) {
     e.preventDefault();
     setError(null);
@@ -26,19 +35,39 @@ function LoginForm() {
 
     try {
       const supabase = createClient();
-      const { error: authError } = await supabase.auth.signInWithPassword({
+      const authPromise = supabase.auth.signInWithPassword({
         email,
         password,
       });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error('This is taking longer than expected. Please check your connection and try again.')),
+          10000
+        )
+      );
 
-      if (authError) {
-        setError(authError.message);
+      let result;
+      try {
+        result = await Promise.race([authPromise, timeoutPromise]);
+      } catch (err) {
+        setError(formatAuthError(err.message));
+        setLoading(false);
         return;
       }
 
-      window.location.href = '/dashboard';
+      const { error: authError } = result;
+
+      if (authError) {
+        setError(formatAuthError(authError.message));
+        setLoading(false);
+        return;
+      }
+
+      const redirectTo = searchParams?.get('redirectTo') || '/dashboard';
+      router.replace(redirectTo);
+      router.refresh();
     } catch (err) {
-      setError(err.message || 'Login failed');
+      setError(formatAuthError(err?.message));
     } finally {
       setLoading(false);
     }
@@ -55,9 +84,9 @@ function LoginForm() {
           redirectTo: `${window.location.origin}/dashboard`,
         },
       });
-      if (authError) setError(authError.message);
+      if (authError) setError(formatAuthError(authError.message));
     } catch (err) {
-      setError(err.message || 'OAuth login failed');
+      setError(formatAuthError(err.message));
     } finally {
       setOauthLoading(false);
     }
@@ -134,9 +163,10 @@ function LoginForm() {
             size="lg"
             fullWidth
             loading={loading}
+            disabled={loading || oauthLoading}
             className="shadow-btn hover:shadow-btn-hover"
           >
-            Sign In <ArrowRight size={16} />
+            {loading ? 'Signing in...' : <>Sign In <ArrowRight size={16} /></>}
           </Button>
         </form>
 

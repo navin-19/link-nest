@@ -1,26 +1,34 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabaseServer';
+import { createClient, getAuthenticatedUser } from '@/lib/supabaseServer';
 import Sidebar from '@/components/dashboard/Sidebar';
 import UserNavDropdown from '@/components/dashboard/UserNavDropdown';
 import Link from 'next/link';
 import { Link2, ShieldAlert } from 'lucide-react';
 
 export default async function DashboardLayout({ children }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthenticatedUser();
 
   if (!user) {
     redirect('/login');
   }
 
+  const supabase = await createClient();
+
   // Fetch current user's profile with active theme
-  const { data: profile } = await supabase
+  let { data: profile } = await supabase
     .from('profiles')
     .select('*, themes!profiles_theme_id_fkey(*)')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
+
+  if (!profile) {
+    const { data: fallbackProf } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle();
+    profile = fallbackProf;
+  }
 
   // Enforce account suspension block
   if (profile?.is_suspended) {

@@ -1,6 +1,19 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabaseServer';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { validateUsername, normalizeUsername } from '@/utils/validators';
+
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
+
+let publicClient;
+function getPublicClient() {
+  if (!publicClient && url && key) {
+    publicClient = createSupabaseClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+  }
+  return publicClient;
+}
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -15,7 +28,13 @@ export async function GET(request) {
     );
   }
 
-  const supabase = await createClient();
+  const supabase = getPublicClient();
+  if (!supabase) {
+    return NextResponse.json(
+      { available: false, error: 'Supabase configuration missing' },
+      { status: 500 }
+    );
+  }
 
   // Query database for existing profile with this username
   const { data, error } = await supabase

@@ -6,35 +6,11 @@ import { createClient } from '@/lib/supabaseClient';
 /**
  * Hook that returns the current Supabase user and their profile.
  *
- * Guarantees three clean states — loading is ALWAYS resolved:
- *   { loading: true, user: null, profile: null }   — while checking
+ * Guarantees three clean states — loading is ALWAYS resolved immediately:
+ *   { loading: true, user: null, profile: null }   — while checking session
  *   { loading: false, user: <User>, profile: ... }  — signed in
- *   { loading: false, user: null, profile: null }   — signed out or any error
- *
- * Strategy:
- *   1. Call getUser() first (server-validated, not fooled by stale cookies).
- *   2. Set confirmed state from the server response.
- *   3. Only then subscribe to onAuthStateChange for subsequent events
- *      (sign-out, token refresh, etc.) so it can never race ahead of step 2.
- *   4. Any error anywhere → user: null, loading: false (signed-out is always
- *      the safe default; never leave loading stuck at true).
+ *   { loading: false, user: null, profile: null }   — signed out or error
  */
-async function getUserWithRetry(supabase, attempt = 1, maxAttempts = 2) {
-  const timeoutPromise = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('Auth check timed out')), 6000)
-  );
-
-  try {
-    return await Promise.race([supabase.auth.getUser(), timeoutPromise]);
-  } catch (err) {
-    if (attempt < maxAttempts) {
-      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
-      return getUserWithRetry(supabase, attempt + 1, maxAttempts);
-    }
-    throw err;
-  }
-}
-
 export function useUser() {
   const [user, setUser]       = useState(null);
   const [profile, setProfile] = useState(null);
@@ -44,81 +20,74 @@ export function useUser() {
     let isMounted = true;
     let subscription = null;
 
+    // Asynchronous non-blocking profile fetch
+    async function fetchProfile(userId) {
+      if (!userId) return;
+      try {
+        const supabase = createClient();
+        const { data: prof, error } = await supabase
+          .from('profiles')
+          .select('*, themes!profiles_theme_id_fkey(*)')
+          .eq('id', userId)
+          .maybeSingle();
+
+        if (error) {
+          console.warn('[useUser] Profile query error:', error.message);
+        }
+
+        if (isMounted) {
+          setProfile(prof ?? null);
+        }
+      } catch (profErr) {
+        console.warn('[useUser] Profile fetch exception:', profErr);
+      }
+    }
+
     async function initAuth() {
       try {
         const supabase = createClient();
 
-        // ── Step 1: Server-validated user check with bounded auto-retry ──
-        // Attempts getUser() with a 6-second timeout per attempt, retrying
-        // once upon transient network stalls before falling back to signed-out.
-        const { data: { user: authUser }, error } = await getUserWithRetry(supabase);
+        // 1. Instant local session check (<1ms)
+        const { data: { session }, error: sessionErr } = await supabase.auth.getSession();
 
-        if (!isMounted) return;
-
-        if (error || !authUser) {
-          // Unauthenticated or error — always resolve to signed-out.
-          setUser(null);
-          setProfile(null);
-          setLoading(false);
-        } else {
-          // Authenticated — set user, then try to fetch profile.
-          setUser(authUser);
-
-          try {
-            const { data: prof } = await supabase
-              .from('profiles')
-              .select('*, themes!profiles_theme_id_fkey(*)')
-              .eq('id', authUser.id)
-              .maybeSingle();
-
-            if (isMounted) setProfile(prof ?? null);
-          } catch (profErr) {
-            console.warn('[useUser] Profile fetch error:', profErr);
-            // Profile fetch failing is non-fatal — user is still authenticated.
-          } finally {
-            if (isMounted) setLoading(false);
-          }
+        if (sessionErr) {
+          console.warn('[useUser] getSession error:', sessionErr.message);
         }
 
-        // ── Step 2: Subscribe AFTER server check resolves ────────────────
-        // Starting the subscription here (after await) means onAuthStateChange
-        // cannot fire with stale cookie data before we've set the confirmed
-        // server-validated state above. This prevents the flash-of-wrong-state
-        // race condition.
+        const initialUser = session?.user ?? null;
+
         if (!isMounted) return;
 
+        // 2. Set user and resolve loading IMMEDIATELY (non-blocking)
+        setUser(initialUser);
+        setLoading(false);
+
+        if (initialUser) {
+          // Fetch profile asynchronously in background
+          fetchProfile(initialUser.id);
+        } else {
+          setProfile(null);
+        }
+
+        // 3. Register Auth state change listener
         const { data: authListener } = supabase.auth.onAuthStateChange(
-          async (_event, session) => {
+          (event, currentSession) => {
             if (!isMounted) return;
 
-            const currentUser = session?.user ?? null;
+            const currentUser = currentSession?.user ?? null;
             setUser(currentUser);
+            setLoading(false);
 
             if (currentUser) {
-              try {
-                const { data: prof } = await supabase
-                  .from('profiles')
-                  .select('*, themes!profiles_theme_id_fkey(*)')
-                  .eq('id', currentUser.id)
-                  .maybeSingle();
-
-                if (isMounted) setProfile(prof ?? null);
-              } catch {
-                // Non-fatal — keep stale profile rather than clearing it.
-              }
+              fetchProfile(currentUser.id);
             } else {
               setProfile(null);
             }
-
-            if (isMounted) setLoading(false);
           }
         );
 
         subscription = authListener?.subscription;
-
       } catch (err) {
-        // createClient() itself threw, or getUser() threw unexpectedly.
-        // Always resolve to signed-out — never leave loading: true.
         console.warn('[useUser] Auth init error:', err);
         if (isMounted) {
           setUser(null);
@@ -138,3 +107,4 @@ export function useUser() {
 
   return { user, profile, loading };
 }
+

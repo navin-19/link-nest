@@ -14,19 +14,6 @@ import {
   MessageCircle,
   Phone,
 } from 'lucide-react';
-import dynamic from 'next/dynamic';
-
-const AnalyticsChartsView = dynamic(
-  () => import('@/components/analytics/AnalyticsChartsView'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="w-full h-80 flex items-center justify-center bg-slate-50 rounded-2xl">
-        <div className="w-7 h-7 rounded-full border-2 border-slate-900 border-t-transparent animate-spin" />
-      </div>
-    ),
-  }
-);
 
 export default function AnalyticsDashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -282,7 +269,28 @@ export default function AnalyticsDashboardPage() {
               <p className="text-xs text-slate-500">Daily click counts over the selected range.</p>
             </div>
 
-            <AnalyticsChartsView chartData={chartData} />
+            <div className="space-y-3 pt-2">
+              <div className="flex items-end justify-between gap-1 h-36 pt-4 border-b border-slate-100 pb-2">
+                {chartData.map((d) => {
+                  const maxClicks = Math.max(...chartData.map((c) => c.clicks), 1);
+                  const heightPct = Math.max(8, Math.round((d.clicks / maxClicks) * 100));
+                  return (
+                    <div key={d.date} className="flex-1 flex flex-col items-center gap-1.5 group h-full justify-end">
+                      <div
+                        className="w-full max-w-[18px] bg-slate-900 group-hover:bg-indigo-600 rounded-t-md transition-all relative"
+                        style={{ height: `${heightPct}%` }}
+                        title={`${d.label}: ${d.clicks} clicks`}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono px-1">
+                <span>{chartData[0]?.label}</span>
+                <span>{chartData[Math.floor(chartData.length / 2)]?.label}</span>
+                <span>{chartData[chartData.length - 1]?.label}</span>
+              </div>
+            </div>
           </div>
 
           {/* Breakdown Section Grid */}

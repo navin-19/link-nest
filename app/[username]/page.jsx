@@ -1,9 +1,22 @@
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabaseServer';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { getProfileByUsername } from '@/lib/profile';
 import PublicProfileClient from '@/components/profile/PublicProfileClient';
 import Link from 'next/link';
 import { Link2 } from 'lucide-react';
+
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
+
+let publicClient;
+function getPublicClient() {
+  if (!publicClient && url && key) {
+    publicClient = createSupabaseClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+  }
+  return publicClient;
+}
 
 // Performance: Enable ISR edge caching with 60s background revalidation + on-demand revalidatePath
 export const revalidate = 60;
@@ -90,7 +103,7 @@ export default async function PublicProfilePage({ params }) {
   }
 
   // Security: Use anon RLS-respecting server client for public links & products reads
-  const supabase = await createClient();
+  const supabase = getPublicClient();
 
   // Performance: Fetch active links and active products concurrently with Promise.all
   const [linksRes, productsRes] = await Promise.all([
