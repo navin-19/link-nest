@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { Plus, Package, Link2, DollarSign, FileText, Image as ImageIcon, Upload, X, Tag } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Heading from '@/components/ui/Heading';
 import Select from '@/components/ui/Select';
 import { validateUrl } from '@/utils/validators';
 import { createClient } from '@/lib/supabaseClient';
@@ -140,9 +141,9 @@ export default function AddProductForm({ userId, onAdd }) {
       className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] space-y-4 shadow-card animate-slide-down text-slate-900 dark:text-slate-100"
     >
       <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-        <h3 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+        <Heading as="h3" className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
           <Package size={16} className="text-emerald-500" /> Add New Product
-        </h3>
+        </Heading>
         <button
           type="button"
           onClick={() => {

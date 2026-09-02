@@ -2,8 +2,10 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Heading from '@/components/ui/Heading';
 import Avatar from '@/components/profile/Avatar';
 import {
   resolveCustomerFormConfig,
@@ -16,9 +18,11 @@ import {
   Trash2,
   ArrowUp,
   ArrowDown,
+  ArrowRight,
   Sparkles,
   ShieldCheck,
   User,
+  Users,
   Mail,
   Phone,
   MapPin,
@@ -218,11 +222,11 @@ export default function CustomerFormSettings({ profile }) {
           <div className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-3">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Heading as="h3" className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <Sliders size={18} className="text-emerald-600 dark:text-emerald-400" />
                   <span>Customer Subscribe Form</span>
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                </Heading>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Allow visitors to subscribe and share their details with you from your public profile.
                 </p>
               </div>
@@ -244,13 +248,27 @@ export default function CustomerFormSettings({ profile }) {
                 />
               </button>
             </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+              <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                View submitted visitor contacts and responses in Leads.
+              </span>
+              <Link
+                href="/dashboard/leads"
+                className="inline-flex items-center gap-1.5 font-bold text-[11px] text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors shrink-0"
+              >
+                <Users size={13} />
+                <span>View Submitted Leads</span>
+                <ArrowRight size={13} />
+              </Link>
+            </div>
           </div>
 
           {/* Form Content & Copy Section */}
           <div className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-4">
-            <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] text-slate-400 dark:text-slate-500">
+            <Heading as="h4" className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] text-slate-400 dark:text-slate-500">
               Form Content & Messaging
-            </h4>
+            </Heading>
 
             {/* Form Title */}
             <div className="space-y-1">

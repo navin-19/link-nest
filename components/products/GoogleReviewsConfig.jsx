@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Star, CheckCircle2, AlertCircle, Building2, Search, Loader2 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Heading from '@/components/ui/Heading';
 
 export default function GoogleReviewsConfig({ profile, onLocalProfileChange }) {
   const [placeId, setPlaceId] = useState(profile?.google_place_id || '');
@@ -156,10 +157,10 @@ export default function GoogleReviewsConfig({ profile, onLocalProfileChange }) {
       {/* Header with Switch */}
       <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
         <div>
-          <h3 className="text-base font-bold flex items-center gap-2">
+          <Heading as="h3" className="text-base font-bold flex items-center gap-2">
             <Star size={18} className="text-amber-500 fill-amber-500" /> Google Business Reviews
-          </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          </Heading>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Display your Google star rating and customer reviews on your public profile. Powered automatically by your selected business in Reach Us.
           </p>
         </div>

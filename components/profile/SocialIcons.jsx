@@ -4,22 +4,6 @@ import React from 'react';
 import { resolveLinkIcon } from '@/components/links/resolveLinkIcon';
 
 // Official platform vector paths
-function PhoneLogo({ size = 20, className = '' }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M6.62 10.79a15.053 15.053 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z" />
-    </svg>
-  );
-}
-
-function WhatsAppLogo({ size = 20, className = '' }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M12.031 2C6.516 2 2.031 6.485 2.031 12a9.96 9.96 0 0 0 1.529 5.309L2 22l4.823-1.528A9.96 9.96 0 0 0 12.031 22C17.546 22 22.031 17.515 22.031 12S17.546 2 12.031 2zm0 18.232c-1.643 0-3.21-.439-4.58-1.258l-.328-.195-3.411 1.082 1.096-3.327-.214-.341a8.163 8.163 0 0 1-1.256-4.193c0-4.538 3.693-8.231 8.231-8.231 4.538 0 8.231 3.693 8.231 8.231 0 4.538-3.693 8.232-8.231 8.232zm4.512-6.175c-.247-.124-1.464-.722-1.691-.805-.227-.082-.392-.124-.557.124-.165.247-.639.805-.783.97-.144.165-.289.186-.536.062-.247-.124-1.044-.385-1.988-1.227-.735-.656-1.231-1.465-1.375-1.712-.144-.247-.015-.381.108-.504.111-.111.247-.289.371-.433.124-.144.165-.247.247-.412.082-.165.041-.309-.021-.433-.062-.124-.557-1.34-.763-1.835-.2-.485-.403-.418-.557-.426-.144-.008-.309-.01-.474-.01-.165 0-.433.062-.66.309-.227.247-.866.845-.866 2.062s.887 2.392 1.01 2.557c.124.165 1.742 2.66 4.22 3.731.59.255 1.05.407 1.41.522.593.188 1.132.161 1.558.098.475-.071 1.464-.598 1.67-1.175.206-.577.206-1.072.144-1.175-.062-.103-.227-.165-.474-.289z" />
-    </svg>
-  );
-}
-
 function FacebookLogo({ size = 20, className = '' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -62,19 +46,34 @@ function LinkedInLogo({ size = 20, className = '' }) {
   );
 }
 
-function TelegramLogo({ size = 20, className = '' }) {
+function TikTokLogo({ size = 20, className = '' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z" />
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.88 2.89 2.89 0 0 1-2.88-2.88 2.89 2.89 0 0 1 2.88-2.88c.37 0 .73.08 1.05.22v-3.52a6.34 6.34 0 0 0-1.05-.09A6.34 6.34 0 0 0 3.15 15.67a6.34 6.34 0 0 0 6.34 6.33 6.34 6.34 0 0 0 6.34-6.33V9.12a8.16 8.16 0 0 0 4.76 1.52v-3.45a4.85 4.85 0 0 1-1-.5z" />
     </svg>
   );
 }
 
-function EmailLogo({ size = 20, className = '' }) {
+function GitHubLogo({ size = 20, className = '' }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-      <polyline points="22,6 12,13 2,6" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" />
+    </svg>
+  );
+}
+
+function TwitchLogo({ size = 20, className = '' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M2.149 0l-1.612 4.119v16.836h5.731v3.045h3.224l3.045-3.045h4.657l6.27-6.269v-14.686h-21.315zm19.164 13.612l-3.582 3.582h-5.015l-3.045 3.045v-3.045h-4.299v-15.045h15.941v11.463zm-4.299-6.448h-2.149v6.09h2.149v-6.09zm-5.731 0h-2.149v6.09h2.149v-6.09z" />
+    </svg>
+  );
+}
+
+function TelegramLogo({ size = 20, className = '' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z" />
     </svg>
   );
 }
@@ -100,6 +99,11 @@ const PLATFORM_MAP = {
     label: 'YouTube',
     format: (v) => (v.startsWith('http') ? v : `https://youtube.com/${v.startsWith('@') ? v : '@' + v}`),
   },
+  tiktok: {
+    Icon: TikTokLogo,
+    label: 'TikTok',
+    format: (v) => (v.startsWith('http') ? v : `https://tiktok.com/@${v.replace(/^@/, '')}`),
+  },
   twitter: {
     Icon: TwitterXLogo,
     label: 'Twitter / X',
@@ -120,36 +124,20 @@ const PLATFORM_MAP = {
     label: 'LinkedIn',
     format: (v) => (v.startsWith('http') ? v : (v.includes('/') ? `https://linkedin.com/${v}` : `https://linkedin.com/in/${v}`)),
   },
-  whatsapp: {
-    Icon: WhatsAppLogo,
-    label: 'WhatsApp',
-    format: (v) => (v.startsWith('http') ? v : `https://wa.me/${v.replace(/\D/g, '')}`),
+  github: {
+    Icon: GitHubLogo,
+    label: 'GitHub',
+    format: (v) => (v.startsWith('http') ? v : `https://github.com/${v.replace(/^@/, '')}`),
   },
-  phone: {
-    Icon: PhoneLogo,
-    label: 'Phone / Call',
-    format: (v) => {
-      const c = v.replace(/[^\d+]/g, '');
-      return c.startsWith('tel:') ? c : `tel:${c}`;
-    },
-  },
-  call: {
-    Icon: PhoneLogo,
-    label: 'Phone / Call',
-    format: (v) => {
-      const c = v.replace(/[^\d+]/g, '');
-      return c.startsWith('tel:') ? c : `tel:${c}`;
-    },
+  twitch: {
+    Icon: TwitchLogo,
+    label: 'Twitch',
+    format: (v) => (v.startsWith('http') ? v : `https://twitch.tv/${v.replace(/^@/, '')}`),
   },
   telegram: {
     Icon: TelegramLogo,
     label: 'Telegram',
     format: (v) => (v.startsWith('http') ? v : `https://t.me/${v.replace(/^@/, '')}`),
-  },
-  email: {
-    Icon: EmailLogo,
-    label: 'Email',
-    format: (v) => (v.startsWith('mailto:') ? v : `mailto:${v}`),
   },
   website: {
     Icon: WebsiteLogo,
@@ -160,34 +148,39 @@ const PLATFORM_MAP = {
 
 /**
  * Shared SocialIcon Button Component:
- * Circular button with subtle border, dark translucent background, and hover scale.
+ * Circular button with subtle border, soft shadow, and hover scale.
  */
-export function SocialIconItem({ item, preview = false, onTrack }) {
+export function SocialIconItem({ item, preview = false, onTrack, contrastMode = 'dark' }) {
   const Icon = item.Icon;
-  const isNativeLink = item.id === 'phone' || item.id === 'call' || item.id === 'email';
+  const isLight = contrastMode === 'light';
 
   return (
     <a
       href={item.url}
-      target={isNativeLink ? undefined : '_blank'}
-      rel={isNativeLink ? undefined : 'noopener noreferrer'}
+      target="_blank"
+      rel="noopener noreferrer"
       aria-label={item.label}
       title={item.label}
       onClick={() => onTrack && onTrack(item.id)}
-      className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#111322]/80 dark:bg-black/70 hover:bg-[#181c33] text-white border border-white/15 shadow-md flex items-center justify-center shrink-0 transition-all duration-150 ease-out hover:scale-110 active:scale-95 cursor-pointer select-none"
+      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border shadow-soft flex items-center justify-center shrink-0 transition-all duration-150 ease-out hover:scale-110 active:scale-95 cursor-pointer select-none ${
+        isLight
+          ? 'bg-white hover:bg-slate-50 text-slate-800 border-slate-200/90 hover:border-slate-300 hover:shadow-card'
+          : 'bg-[#111322]/80 hover:bg-[#181c33] text-white border-white/15 hover:border-white/25 hover:shadow-card'
+      }`}
     >
-      <Icon size={18} className="shrink-0 text-white" />
+      <Icon size={18} className={`shrink-0 ${isLight ? 'text-slate-800' : 'text-white'}`} />
     </a>
   );
 }
 
 /**
- * SocialIcons Section
+ * SocialIcons Section - Pure Social Media Channels only
  */
 export default function SocialIcons({
   profile,
   socialLinks: customSocialLinks,
   preview = false,
+  contrastMode = 'dark',
 }) {
   const profileSocial = customSocialLinks || profile?.social_links;
   if (!profileSocial || typeof profileSocial !== 'object') return null;
@@ -197,6 +190,11 @@ export default function SocialIcons({
     .map(([platform, rawVal]) => {
       const val = rawVal.trim();
       const platformKey = platform.toLowerCase();
+
+      // Only allow social platforms (exclude phone, email, whatsapp)
+      if (platformKey === 'phone' || platformKey === 'email' || platformKey === 'call' || platformKey === 'whatsapp') {
+        return null;
+      }
 
       let config = PLATFORM_MAP[platformKey];
       let url = config ? config.format(val) : (val.startsWith('http') ? val : `https://${val}`);
@@ -217,39 +215,21 @@ export default function SocialIcons({
         label,
       };
     })
-    .filter((item) => Boolean(item.Icon));
+    .filter((item) => Boolean(item && item.Icon));
 
   if (items.length === 0) return null;
-
-  function handleIconClick(platformId) {
-    if (preview) return;
-    if (platformId === 'whatsapp' || platformId === 'phone' || platformId === 'call') {
-      try {
-        fetch('/api/track/social-click', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            profileUserId: profile?.id,
-            click_type: platformId === 'whatsapp' ? 'whatsapp' : 'call',
-          }),
-        }).catch(() => {});
-      } catch (err) {
-        // Non-blocking
-      }
-    }
-  }
 
   return (
     <nav
       aria-label="Social media links"
-      className="flex items-center justify-center gap-2.5 sm:gap-3 flex-wrap py-2 w-full max-w-md mx-auto"
+      className="flex items-center justify-center gap-2.5 sm:gap-3 flex-wrap py-1.5 w-full max-w-md mx-auto"
     >
       {items.map((item) => (
         <SocialIconItem
           key={item.id + item.url}
           item={item}
           preview={preview}
-          onTrack={handleIconClick}
+          contrastMode={contrastMode}
         />
       ))}
     </nav>

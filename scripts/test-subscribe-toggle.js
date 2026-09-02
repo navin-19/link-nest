@@ -4,16 +4,16 @@ const assert = require('assert');
 
 console.log('=== Running Test Suite: Subscribe Button Visibility on Toggle ===\n');
 
-// 1. Check SubscribeBar.jsx condition
-console.log('--- Test 1: SubscribeBar.jsx Toggle Check ---');
+// 1. Check SubscribeBar.jsx clean header check
+console.log('--- Test 1: SubscribeBar.jsx Header Inspection ---');
 const barPath = path.join(__dirname, '../components/profile/SubscribeBar.jsx');
 const barContent = fs.readFileSync(barPath, 'utf8');
 
 assert(
-  barContent.includes('profile?.customer_form_config?.enabled !== false'),
-  'SubscribeBar must check profile?.customer_form_config?.enabled !== false before rendering the button'
+  !barContent.includes('<Crown'),
+  'SubscribeBar must not render standalone Subscribe button'
 );
-console.log('✅ Test 1 Passed: When toggle is ON (enabled: true), Subscribe button appears. When toggle is OFF (enabled: false), Subscribe button is hidden.');
+console.log('✅ Test 1 Passed: Header Subscribe button removed in favor of unified Content Form.');
 
 // 2. Check CustomerFormSettings.jsx toggle and save payload
 console.log('\n--- Test 2: CustomerFormSettings.jsx State & Save Payload ---');

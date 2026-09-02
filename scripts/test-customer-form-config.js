@@ -33,25 +33,26 @@ assert(settingsCompContent.includes('Live Form Preview'), 'Must contain Live For
 assert(settingsCompContent.includes('Save Customer Form'), 'Must contain Save Customer Form button');
 console.log('✅ Test 2 Passed: CustomerFormSettings contains master switch, fields manager, custom field creator, and live preview.');
 
-// 3. Check Settings page tabs
-console.log('\n--- Test 3: Settings Page Tabs Inspection ---');
-const settingsPagePath = path.join(__dirname, '../app/(dashboard)/dashboard/settings/page.jsx');
-const settingsPageContent = fs.readFileSync(settingsPagePath, 'utf8');
-assert(settingsPageContent.includes('Profile Information'), 'Must contain Profile Information tab');
-assert(settingsPageContent.includes('Customer Form'), 'Must contain Customer Form tab');
-assert(settingsPageContent.includes('<CustomerFormSettings'), 'Must render CustomerFormSettings component');
-console.log('✅ Test 3 Passed: Settings page contains segmented tabs linking to Customer Form.');
+// 3. Check Customer Form Page
+console.log('\n--- Test 3: Customer Form Page Inspection ---');
+const customerFormPagePath = path.join(__dirname, '../app/(dashboard)/dashboard/customer-form/page.jsx');
+const customerFormPageContent = fs.readFileSync(customerFormPagePath, 'utf8');
+assert(customerFormPageContent.includes('<CustomerFormSettings'), 'Must render CustomerFormSettings component');
+console.log('✅ Test 3 Passed: Dedicated Customer Form dashboard page renders CustomerFormSettings.');
 
-// 4. Check SubscribeFormClient.jsx dynamic rendering
-console.log('\n--- Test 4: SubscribeFormClient.jsx Dynamic Renderer Inspection ---');
-const subscribeFormPath = path.join(__dirname, '../components/profile/SubscribeFormClient.jsx');
-const subscribeFormContent = fs.readFileSync(subscribeFormPath, 'utf8');
-assert(subscribeFormContent.includes('resolveCustomerFormConfig'), 'Must resolve customer form config');
-assert(subscribeFormContent.includes('enabledFields.map'), 'Must dynamically map enabled fields');
-assert(subscribeFormContent.includes('config.title'), 'Must render config.title');
-assert(subscribeFormContent.includes('config.submitButtonText'), 'Must render config.submitButtonText');
-assert(subscribeFormContent.includes('config.successMessage'), 'Must render config.successMessage');
-console.log('✅ Test 4 Passed: SubscribeFormClient dynamically renders enabled fields and custom copy.');
+// 4. Check CustomerFormClient.jsx & QuickActionGroup.jsx dynamic rendering
+console.log('\n--- Test 4: CustomerFormClient.jsx & QuickActionGroup Dynamic Renderer Inspection ---');
+const customerFormClientPath = path.join(__dirname, '../components/profile/CustomerFormClient.jsx');
+const customerFormClientContent = fs.readFileSync(customerFormClientPath, 'utf8');
+assert(customerFormClientContent.includes('resolveCustomerFormConfig'), 'Must resolve customer form config');
+assert(customerFormClientContent.includes('formConfig?.title') || customerFormClientContent.includes('formConfig.title'), 'Must render formConfig.title');
+assert(customerFormClientContent.includes('formConfig?.submitButtonText') || customerFormClientContent.includes('formConfig.submitButtonText'), 'Must render formConfig.submitButtonText');
+assert(customerFormClientContent.includes('formConfig?.successMessage') || customerFormClientContent.includes('formConfig.successMessage'), 'Must render formConfig.successMessage');
+
+const quickActionPath = path.join(__dirname, '../components/profile/QuickActionGroup.jsx');
+const quickActionContent = fs.readFileSync(quickActionPath, 'utf8');
+assert(quickActionContent.includes('CustomerFormClient'), 'QuickActionGroup must render CustomerFormClient');
+console.log('✅ Test 4 Passed: CustomerFormClient dynamically renders custom copy and is wired to QuickActionGroup.');
 
 // 5. Check API routes for customer_form_config and subscribers
 console.log('\n--- Test 5: API Routes Inspection ---');

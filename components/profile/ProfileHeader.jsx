@@ -31,9 +31,11 @@ export default function ProfileHeader({
   compact = false,
   contrastMode,
   theme,
+  font,
 }) {
   if (!profile) return null;
 
+  const effectiveFont = font || theme?.font || profile?.themes?.font;
   const layout = profile.avatar_layout || 'classic';
   const avatarUrl = profile.avatar_url;
   const displayName = profile.display_name || profile.username || 'User';
@@ -76,16 +78,17 @@ export default function ProfileHeader({
     : 'font-normal text-slate-600 leading-relaxed max-w-sm';
 
   const textColor = effectiveTheme?.text_color;
+  const fontStyle = effectiveFont && titleStyle !== 'classic' ? { fontFamily: effectiveFont } : {};
   const textShadowStyle = isImageBg
-    ? { textShadow: '0 1px 3px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.5)', ...(textColor ? { color: textColor } : {}) }
-    : (textColor ? { color: textColor } : undefined);
+    ? { textShadow: '0 1px 3px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.5)', ...(textColor ? { color: textColor } : {}), ...fontStyle }
+    : { ...(textColor ? { color: textColor } : {}), ...fontStyle };
 
   // Pure transparent title and bio without heavy container box
   const titleAndBio = (
-    <div className="space-y-1 my-1">
+    <div className="w-full max-w-sm mx-auto space-y-1 mt-1">
       <h1
         style={textShadowStyle}
-        className={`${titleClasses} ${compact ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl'}`}
+        className={`${titleClasses} ${compact ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl font-bold'} tracking-tight`}
       >
         {displayName}
       </h1>
@@ -94,18 +97,18 @@ export default function ProfileHeader({
         <div className="flex items-center justify-center gap-1.5 pt-0.5">
           <p
             style={textShadowStyle}
-            className={`${usernameClass} ${compact ? 'text-xs sm:text-sm' : 'text-sm sm:text-base'}`}
+            className={`${usernameClass} ${compact ? 'text-xs' : 'text-xs sm:text-sm font-medium opacity-80'}`}
           >
             @{username}
           </p>
-          <VerifiedSeal size={compact ? 15 : 17} />
+          <VerifiedSeal size={compact ? 13 : 15} />
         </div>
       )}
 
       {bio && (
         <p
           style={textShadowStyle}
-          className={`${bioClass} ${compact ? 'text-xs mt-1.5' : 'text-sm mt-2'} mx-auto`}
+          className={`${bioClass} ${compact ? 'text-xs mt-1.5' : 'text-xs sm:text-sm mt-2'} opacity-80 leading-relaxed max-w-xs sm:max-w-sm mx-auto`}
         >
           {bio}
         </p>
@@ -117,15 +120,15 @@ export default function ProfileHeader({
   if (layout === 'hero') {
     const avatarSize = compact ? 76 : 100;
     return (
-      <div className={`flex flex-col items-center text-center ${compact ? 'gap-2 py-2' : 'gap-3 py-4'}`}>
-        <div className="relative inline-flex items-center justify-center my-1">
-          <div className="absolute -inset-3 rounded-full bg-gradient-to-tr from-amber-500/40 via-orange-500/40 to-yellow-500/30 blur-xl opacity-90 animate-pulse pointer-events-none" />
-          <div className="relative p-1 rounded-full bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-400 shadow-xl">
+      <div className={`flex flex-col items-center text-center ${compact ? 'gap-2 py-1' : 'gap-2.5 py-3'}`}>
+        <div className="relative inline-flex items-center justify-center my-0.5">
+          <div className="absolute -inset-2 rounded-full bg-gradient-to-tr from-amber-500/30 via-orange-500/30 to-yellow-500/20 blur-lg opacity-80 pointer-events-none" />
+          <div className="relative p-1 rounded-full bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-400 shadow-soft">
             <Avatar
               src={avatarUrl}
               alt={displayName}
               size={avatarSize}
-              className="ring-2 ring-white/90 shadow-md"
+              className="ring-2 ring-white/90 shadow-soft"
             />
           </div>
         </div>
@@ -138,8 +141,8 @@ export default function ProfileHeader({
   if (layout === 'banner') {
     const avatarSize = compact ? 64 : 84;
     return (
-      <div className={`flex flex-col items-center text-center w-full ${compact ? 'pb-2' : 'pb-4'}`}>
-        <div className="w-full h-20 sm:h-24 rounded-2xl bg-gradient-to-r from-slate-900 via-orange-950/40 to-slate-900 shadow-md relative overflow-hidden flex items-center justify-center border border-orange-500/20">
+      <div className={`flex flex-col items-center text-center w-full ${compact ? 'pb-1' : 'pb-3'}`}>
+        <div className="w-full h-20 sm:h-24 rounded-2xl bg-gradient-to-r from-slate-900 via-orange-950/40 to-slate-900 shadow-soft relative overflow-hidden flex items-center justify-center border border-orange-500/20">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(249,115,22,0.25),transparent_70%)]" />
         </div>
         <div className="-mt-10 sm:-mt-11 mb-2 z-10">
@@ -147,7 +150,7 @@ export default function ProfileHeader({
             src={avatarUrl}
             alt={displayName}
             size={avatarSize}
-            className="shadow-xl ring-4 ring-orange-500/50"
+            className="shadow-soft ring-3 ring-orange-500/50"
           />
         </div>
         {titleAndBio}
@@ -157,21 +160,21 @@ export default function ProfileHeader({
 
   // ── Layout: Cutout ─────────────────────────────────────────────────────────
   if (layout === 'cutout') {
-    const sizeClasses = compact ? 'w-18 h-18' : 'w-24 h-24 sm:w-28 sm:h-28';
+    const sizeClasses = compact ? 'w-16 h-16' : 'w-20 h-20 sm:w-24 sm:h-24';
     return (
-      <div className={`flex flex-col items-center text-center ${compact ? 'gap-1.5 py-2' : 'gap-2 py-4'}`}>
-        <div className={`relative ${sizeClasses} flex items-center justify-center my-1`}>
+      <div className={`flex flex-col items-center text-center ${compact ? 'gap-1.5 py-1' : 'gap-2 py-3'}`}>
+        <div className={`relative ${sizeClasses} flex items-center justify-center my-0.5`}>
           {avatarUrl ? (
             <Image
               src={avatarUrl}
               alt={displayName}
-              width={112}
-              height={112}
-              className="w-full h-full object-contain drop-shadow-[0_12px_25px_rgba(249,115,22,0.3)] transition-transform hover:scale-105 duration-200"
+              width={96}
+              height={96}
+              className="w-full h-full object-contain drop-shadow-md transition-transform hover:scale-105 duration-200"
             />
           ) : (
-            <div className={`w-full h-full flex items-center justify-center drop-shadow-md ${isDark ? 'text-white/80' : 'text-slate-800'}`}>
-              <User size={compact ? 48 : 64} strokeWidth={1.5} />
+            <div className={`w-full h-full flex items-center justify-center drop-shadow-xs ${isDark ? 'text-white/80' : 'text-slate-800'}`}>
+              <User size={compact ? 44 : 56} strokeWidth={1.5} />
             </div>
           )}
         </div>
@@ -182,12 +185,12 @@ export default function ProfileHeader({
 
   // ── Layout: Shape ──────────────────────────────────────────────────────────
   if (layout === 'shape') {
-    const sizeClasses = compact ? 'w-18 h-18' : 'w-24 h-24 sm:w-28 sm:h-28';
+    const sizeClasses = compact ? 'w-16 h-16' : 'w-20 h-20 sm:w-24 sm:h-24';
     return (
-      <div className={`flex flex-col items-center text-center ${compact ? 'gap-1.5 py-2' : 'gap-2 py-4'}`}>
-        <div className="relative inline-flex items-center justify-center my-1">
+      <div className={`flex flex-col items-center text-center ${compact ? 'gap-1.5 py-1' : 'gap-2 py-3'}`}>
+        <div className="relative inline-flex items-center justify-center my-0.5">
           <div
-            className={`${sizeClasses} overflow-hidden shadow-card border-2 border-orange-500/80 bg-slate-900 transition-transform hover:rotate-3 duration-300 shadow-[0_0_20px_rgba(249,115,22,0.35)]`}
+            className={`${sizeClasses} overflow-hidden shadow-soft border-2 border-orange-500/80 bg-slate-900 transition-transform hover:rotate-3 duration-300`}
             style={{
               borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%',
             }}
@@ -196,12 +199,12 @@ export default function ProfileHeader({
               <Image
                 src={avatarUrl}
                 alt={displayName}
-                width={112}
-                height={112}
+                width={96}
+                height={96}
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-white text-xl font-bold">
+              <div className="w-full h-full flex items-center justify-center text-white text-lg font-bold">
                 {displayName.charAt(0).toUpperCase()}
               </div>
             )}
@@ -212,19 +215,17 @@ export default function ProfileHeader({
     );
   }
 
-  // ── Default / Classic: Large circular avatar with warm glowing ring ────────
-  const avatarSize = compact ? 72 : 96;
+  // ── Default / Classic: Clean circular avatar with soft subtle ring ──────────
+  const avatarSize = compact ? 72 : 88;
 
   return (
-    <div className={`flex flex-col items-center text-center ${compact ? 'gap-2 py-2' : 'gap-3 py-4'}`}>
+    <div className={`flex flex-col items-center text-center ${compact ? 'gap-1.5 py-1' : 'gap-2 py-2.5'}`}>
       <div className="relative inline-flex items-center justify-center">
-        {/* Warm orange glowing ambient aura behind avatar */}
-        <div className="absolute -inset-2 rounded-full bg-orange-500/30 blur-md pointer-events-none" />
         <Avatar
           src={avatarUrl}
           alt={displayName}
           size={avatarSize}
-          className="relative shadow-2xl ring-[3px] ring-orange-500/90 shadow-[0_0_25px_rgba(249,115,22,0.4)]"
+          className="relative shadow-soft ring-2 ring-black/10 dark:ring-white/20"
         />
       </div>
 

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import Button from './Button';
+import Heading from './Heading';
 
 /**
  * Accessible modal dialog with light and dark theme styling.
@@ -57,7 +58,7 @@ export default function Modal({
       onClick={handleBackdropClick}
       className={[
         'w-full m-auto rounded-3xl border border-slate-200/90 dark:border-slate-800',
-        'bg-white dark:bg-[#0d1020] text-slate-900 dark:text-slate-100',
+        'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100',
         'shadow-2xl p-0 outline-none',
         'open:animate-scale-in',
         'backdrop:bg-slate-900/40 dark:backdrop:bg-black/60 backdrop:backdrop-blur-xs',
@@ -67,8 +68,12 @@ export default function Modal({
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
         <div>
-          {title && <h2 className="text-base font-bold text-slate-900 dark:text-white">{title}</h2>}
-          {description && <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{description}</p>}
+          {title && (
+            <Heading as="h2" className="text-base font-bold text-slate-900 dark:text-white">
+              {title}
+            </Heading>
+          )}
+          {description && <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{description}</p>}
         </div>
         <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close modal">
           <X size={18} className="text-slate-500 dark:text-slate-400" />

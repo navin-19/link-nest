@@ -7,7 +7,7 @@ export default function ProductRedirectPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/dashboard/links?tab=products');
+    router.replace('/dashboard/products');
   }, [router]);
 
   return (

@@ -107,5 +107,22 @@ export function useLinks(userId, initialData = null) {
     );
   }, []);
 
-  return { links, loading, error, addLink, updateLink, deleteLink, reorderLinks, refetch: fetchLinks };
+  const totalLinks = links.length;
+  const activeLinks = links.filter((l) => l.is_active).length;
+  const totalClicks = links.reduce((acc, l) => acc + (l.click_count || 0), 0);
+
+  return {
+    links,
+    totalLinks,
+    activeLinks,
+    totalClicks,
+    loading,
+    error,
+    addLink,
+    updateLink,
+    deleteLink,
+    reorderLinks,
+    refetch: fetchLinks,
+  };
 }
+

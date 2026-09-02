@@ -17,6 +17,7 @@ import {
 } from '@dnd-kit/sortable';
 import AddProductForm from '@/components/products/AddProductForm';
 import ProductEditorItem from '@/components/products/ProductEditorItem';
+import Heading from '@/components/ui/Heading';
 import { ShoppingBag, AlertCircle } from 'lucide-react';
 
 export default function ProductsTab({
@@ -98,10 +99,10 @@ export default function ProductsTab({
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Heading as="h3" className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <ShoppingBag size={18} className="text-emerald-500" /> Products & Store
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            </Heading>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Showcase your digital products, merch, courses, or services directly on your LinkNest.
             </p>
           </div>

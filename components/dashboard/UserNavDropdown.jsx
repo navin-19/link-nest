@@ -2,8 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabaseClient';
 import Avatar from '@/components/profile/Avatar';
 import {
   ChevronDown,
@@ -14,15 +12,11 @@ import {
   LogOut,
   Palette,
   QrCode,
-  Users,
 } from 'lucide-react';
 
 export default function UserNavDropdown({ user, profile }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [allProfiles, setAllProfiles] = useState([]);
-  const [loadingProfiles, setLoadingProfiles] = useState(false);
   const dropdownRef = useRef(null);
-  const router = useRouter();
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -40,37 +34,6 @@ export default function UserNavDropdown({ user, profile }) {
     };
   }, [isOpen]);
 
-  // Fetch all registered profiles when dropdown opens
-  useEffect(() => {
-    if (!isOpen) return;
-
-    let isMounted = true;
-    async function fetchProfiles() {
-      setLoadingProfiles(true);
-      try {
-        const supabase = createClient();
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('id, username, display_name, avatar_url, bio')
-          .order('created_at', { ascending: false })
-          .limit(20);
-
-        if (!error && data && isMounted) {
-          setAllProfiles(data);
-        }
-      } catch (err) {
-        console.warn('Failed to load profiles:', err);
-      } finally {
-        if (isMounted) setLoadingProfiles(false);
-      }
-    }
-
-    fetchProfiles();
-    return () => {
-      isMounted = false;
-    };
-  }, [isOpen]);
-
   async function handleSignOut() {
     setIsOpen(false);
     window.location.href = '/api/auth/signout';
@@ -79,8 +42,6 @@ export default function UserNavDropdown({ user, profile }) {
   const username = profile?.username || '';
   const displayName = profile?.display_name || username || 'User';
   const email = user?.email || '';
-
-  const otherProfiles = allProfiles.filter((p) => p.id !== profile?.id);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -189,65 +150,6 @@ export default function UserNavDropdown({ user, profile }) {
                 </span>
               </div>
             </Link>
-          </div>
-
-          {/* All Users / Profiles Section */}
-          <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-            <div className="flex items-center justify-between px-2 py-1.5">
-              <span className="text-[10px] font-bold tracking-wider uppercase text-slate-400 flex items-center gap-1.5">
-                <Users size={12} />
-                All Registered Users ({allProfiles.length || 1})
-              </span>
-            </div>
-
-            <div className="space-y-1 max-h-44 overflow-y-auto pr-1">
-              {loadingProfiles && allProfiles.length === 0 ? (
-                <div className="p-3 text-center text-xs text-slate-400">
-                  Loading users...
-                </div>
-              ) : otherProfiles.length === 0 ? (
-                <div className="px-3 py-2 text-[11px] text-slate-400 dark:text-slate-500 italic">
-                  No other profiles found.
-                </div>
-              ) : (
-                otherProfiles.map((other) => (
-                  <div
-                    key={other.id}
-                    className="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors group"
-                  >
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer"
-                    >
-                      <Avatar
-                        src={other.avatar_url}
-                        alt={other.display_name || other.username}
-                        size={30}
-                        className="shrink-0"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
-                          {other.display_name || other.username}
-                        </div>
-                        <div className="text-[10px] font-mono text-slate-400 truncate">
-                          @{other.username}
-                        </div>
-                      </div>
-                    </Link>
-
-                    <a
-                      href={`/${other.username}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-1.5 rounded-lg hover:bg-slate-200/70 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors shrink-0"
-                    >
-                      <ExternalLink size={12} />
-                    </a>
-                  </div>
-                ))
-              )}
-            </div>
           </div>
 
           <div className="h-px bg-slate-100 dark:bg-slate-800 my-2" />

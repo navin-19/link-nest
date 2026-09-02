@@ -5,6 +5,7 @@ import { useUser } from '@/hooks/useUser';
 import { getProfileUrl } from '@/utils/qrGenerator';
 import BusinessCardStudio from '@/components/card/BusinessCardStudio';
 import QRCodeCustomizer from '@/components/card/QRCodeCustomizer';
+import Heading from '@/components/ui/Heading';
 import { CreditCard, QrCode, Sparkles } from 'lucide-react';
 
 export default function CardStudioPage() {
@@ -29,9 +30,9 @@ export default function CardStudioPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5 mb-1.5">
-            <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+            <Heading as="h1" className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
               QR & Business Card Studio
-            </h1>
+            </Heading>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60">
               <Sparkles size={12} /> PRO
             </span>

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Heading from '@/components/ui/Heading';
 import {
   QrCode,
   Scissors,
@@ -11,6 +12,15 @@ import {
 } from 'lucide-react';
 
 const TOOLS = [
+  {
+    label: 'Analytics Dashboard',
+    href: '/dashboard/analytics',
+    icon: BarChart3,
+    desc: 'View comprehensive traffic, clicks, top locations, and engagement over time.',
+    badge: 'Insights',
+    badgeColor: 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200/80 dark:border-purple-800/60',
+    iconBg: 'bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400',
+  },
   {
     label: 'QR Code',
     href: '/dashboard/card',
@@ -29,15 +39,6 @@ const TOOLS = [
     badgeColor: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/60',
     iconBg: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400',
   },
-  {
-    label: 'Analytics Dashboard',
-    href: '/dashboard/analytics',
-    icon: BarChart3,
-    desc: 'View comprehensive traffic, clicks, top locations, and engagement over time.',
-    badge: 'Insights',
-    badgeColor: 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200/80 dark:border-purple-800/60',
-    iconBg: 'bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400',
-  },
 ];
 
 export default function ToolsPage() {
@@ -46,9 +47,9 @@ export default function ToolsPage() {
       {/* Page Header */}
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+          <Heading as="h1" className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
             <Wrench size={22} className="text-emerald-600 dark:text-emerald-400" /> Tools & Utilities
-          </h1>
+          </Heading>
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60">
             <Sparkles size={12} /> PRO Suite
           </span>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Star } from 'lucide-react';
+import { Star, ExternalLink } from 'lucide-react';
 
 /**
  * GoogleIcon: Multicolor official Google G logo
@@ -35,12 +35,18 @@ function GoogleIcon({ size = 18 }) {
 }
 
 /**
- * GoogleReviewsSummary: Transparent glass pill containing Google rating, stars, count, and caption.
- * Clicking opens the Google Reviews page in a new tab.
+ * GoogleReviewsSummary / Public Review Button:
+ * Renders an interactive rating card + "Review Us on Google" button.
  */
-export default function GoogleReviewsSummary({ placeId, mapsUrl, preview = false }) {
+export default function GoogleReviewsSummary({
+  placeId,
+  mapsUrl,
+  preview = false,
+  contrastMode = 'dark',
+  font,
+}) {
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(Boolean(placeId));
 
   useEffect(() => {
     if (!placeId) {
@@ -75,8 +81,7 @@ export default function GoogleReviewsSummary({ placeId, mapsUrl, preview = false
     };
   }, [placeId]);
 
-  if (!placeId) return null;
-  if (!loading && !data && !preview) return null;
+  if (!placeId && !mapsUrl) return null;
 
   const rating = typeof data?.rating === 'number' ? data.rating : 4.9;
   const totalReviews = data?.totalReviews || (data ? 0 : 128);
@@ -85,48 +90,70 @@ export default function GoogleReviewsSummary({ placeId, mapsUrl, preview = false
   const googleReviewTargetUrl =
     mapsUrl && mapsUrl.startsWith('http')
       ? mapsUrl
-      : `https://search.google.com/local/reviews?placeid=${encodeURIComponent(placeId)}`;
+      : placeId
+      ? `https://search.google.com/local/writereview?placeid=${encodeURIComponent(placeId)}`
+      : '#';
 
-  if (loading && !data && !preview) {
-    return null;
-  }
+  const isLight = contrastMode === 'light';
+  const customFontStyle = font ? { fontFamily: font } : {};
 
   return (
-    <div className="flex flex-col items-center justify-center my-1 select-none">
+    <div style={customFontStyle} className="w-full flex flex-col items-center justify-center my-1 select-none">
       <a
         href={preview ? '#' : googleReviewTargetUrl}
         target={preview ? '_self' : '_blank'}
         rel="noopener noreferrer"
         onClick={(e) => {
-          if (preview) e.preventDefault();
+          if (preview || googleReviewTargetUrl === '#') e.preventDefault();
         }}
-        title="View Google Reviews"
-        className="group flex flex-col items-center gap-1 px-5 py-2 rounded-2xl bg-white/10 dark:bg-black/30 hover:bg-white/15 dark:hover:bg-black/45 border border-white/15 backdrop-blur-md shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+        title="Leave a Review on Google"
+        className={`group flex items-center justify-between w-full px-4 py-3 sm:px-5 sm:py-3.5 rounded-2xl border shadow-soft transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] cursor-pointer ${
+          isLight
+            ? 'bg-white hover:bg-slate-50 text-slate-900 border-slate-200/90 hover:border-slate-300 hover:shadow-card'
+            : 'bg-[#111322]/80 hover:bg-[#181c33] text-white border-white/15 hover:border-white/25 hover:shadow-card'
+        }`}
       >
-        {/* Rating row */}
-        <div className="flex items-center gap-2">
-          <GoogleIcon size={18} />
-          <span className="text-sm font-bold text-white tracking-tight">{rating.toFixed(1)}</span>
-          <div className="flex items-center gap-0.5 text-amber-400">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                size={13}
-                className={
-                  i < roundedRating
-                    ? 'fill-amber-400 text-amber-400'
-                    : 'fill-white/20 text-white/20'
-                }
-              />
-            ))}
+        {/* Left: Google Icon + Rating & Stars */}
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-2xs shrink-0">
+            <GoogleIcon size={18} />
           </div>
-          <span className="text-xs text-white/75 group-hover:text-white transition-colors">({totalReviews})</span>
+
+          <div className="text-left">
+            <div className="flex items-center gap-1.5">
+              <span className={`text-sm font-bold tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                {rating.toFixed(1)}
+              </span>
+              <div className="flex items-center gap-0.5 text-amber-400">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    size={12}
+                    className={
+                      i < roundedRating
+                        ? 'fill-amber-400 text-amber-400'
+                        : isLight
+                        ? 'fill-slate-200 text-slate-200'
+                        : 'fill-white/20 text-white/20'
+                    }
+                  />
+                ))}
+              </div>
+              <span className={`text-xs ${isLight ? 'text-slate-500' : 'text-white/60'}`}>
+                ({totalReviews})
+              </span>
+            </div>
+            <p className={`text-[11px] font-semibold ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
+              Google Reviews
+            </p>
+          </div>
         </div>
 
-        {/* Caption */}
-        <span className="text-[10px] text-white/70 group-hover:text-white/90 tracking-wider uppercase font-semibold transition-colors">
-          Google Reviews ↗
-        </span>
+        {/* Right: Review Action Pill */}
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-xs transition-colors shrink-0">
+          <Star size={12} className="fill-white" />
+          <span>Review</span>
+        </div>
       </a>
     </div>
   );

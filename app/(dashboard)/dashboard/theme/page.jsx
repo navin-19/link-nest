@@ -6,6 +6,7 @@ import { useLinks } from '@/hooks/useLinks';
 import { useProducts } from '@/hooks/useProducts';
 import { useTheme } from '@/hooks/useTheme';
 import CustomThemeDesigner from '@/components/theme/CustomThemeDesigner';
+import Heading from '@/components/ui/Heading';
 import LivePreview from '@/components/dashboard/LivePreview';
 
 export default function ThemePage() {
@@ -55,9 +56,9 @@ export default function ThemePage() {
       {/* Left: Theme Editor */}
       <div className="lg:col-span-7 space-y-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+          <Heading as="h1" className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
             Appearance & Theme
-          </h1>
+          </Heading>
           <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
             Pick presets or craft custom backgrounds, card styles, and typography.
           </p>

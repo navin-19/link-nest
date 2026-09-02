@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Heading from '@/components/ui/Heading';
 import {
   MousePointerClick,
   TrendingUp,
@@ -124,9 +125,9 @@ export default function AnalyticsDashboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+          <Heading as="h1" className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
             Analytics Dashboard
-          </h1>
+          </Heading>
           <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
             Monitor profile views, link clicks, and subscriber activity.
           </p>

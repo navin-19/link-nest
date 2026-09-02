@@ -13,6 +13,9 @@ const PRESET_DESCRIPTIONS = {
   Sunset: 'Vibrant purple & magenta',
   Ocean: 'Deep blue & cyan wave',
   Forest: 'Rich emerald gradient',
+  Cloud: 'Soft white with subtle gray gradient',
+  Blossom: 'Pastel pink and cream glow',
+  Sand: 'Warm beige and cream tones',
 };
 
 export default function PresetThemes({
@@ -26,7 +29,7 @@ export default function PresetThemes({
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  // Exclusively render the 6 official preset themes in exact order
+  // Exclusively render the 9 official preset themes (6 dark + 3 light)
   const presetThemes = OFFICIAL_PRESET_THEMES;
 
   async function handlePickPreset(theme) {
@@ -62,12 +65,12 @@ export default function PresetThemes({
         </div>
       )}
 
-      {/* Grid of 6 Preset Themes */}
+      {/* Grid of 9 Preset Themes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {presetThemes.map((theme) => {
           const isSelected = activeThemeId === theme.id || previewTheme?.id === theme.id;
           const isApplying = applyingId === theme.id;
-          const description = PRESET_DESCRIPTIONS[theme.name] || `${theme.font || 'Inter'} • ${theme.button_style || 'rounded'}`;
+          const description = theme.description || PRESET_DESCRIPTIONS[theme.name] || `${theme.font || 'Inter'} • ${theme.button_style || 'rounded'}`;
 
           let bgStyle = {};
           if (theme.background?.type === 'solid') bgStyle = { backgroundColor: theme.background.value };
@@ -92,7 +95,7 @@ export default function PresetThemes({
                 className="w-full h-28 rounded-xl mb-3 flex flex-col items-center justify-center p-3 border border-slate-200/60 dark:border-slate-800 shadow-inner transition-transform group-hover:scale-[1.02] relative"
               >
                 {/* Mini Link Card Mockup */}
-                <div className="w-full max-w-[140px] h-6 rounded-lg bg-white/90 dark:bg-slate-900/90 backdrop-blur-xs border border-white/40 dark:border-slate-700/60 shadow-xs flex items-center justify-center">
+                <div className="w-full max-w-[140px] h-6 rounded-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-xs border border-white/40 dark:border-slate-700/60 shadow-xs flex items-center justify-center">
                   <span className="text-[10px] text-slate-800 dark:text-slate-200 font-semibold truncate px-2" style={{ fontFamily: theme.font }}>
                     {theme.font || 'Inter'}
                   </span>

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Sora:wght@100..800&family=Space+Grotesk:wght@300..700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,16 +8,18 @@
   --foreground-rgb: 15, 23, 42;
   --background-start-rgb: 250, 250, 249;
   --background-end-rgb: 248, 250, 252;
+  --heading-accent: linear-gradient(90deg, #10b981, #059669);
 }
 
 .dark {
   --foreground-rgb: 248, 250, 252;
+  --heading-accent: linear-gradient(90deg, #34d399, #10b981);
 }
 
 body {
   color: rgb(var(--foreground-rgb));
   background: #fafaf9;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--theme-font, 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -76,4 +80,51 @@ select::placeholder {
 
 .scrollbar-none::-webkit-scrollbar {
   display: none;
+}
+
+/* ── Unified Heading Underline & Highlight Treatment ── */
+.heading-highlight {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.heading-highlight::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 3px;
+  width: 28px;
+  border-radius: 9999px;
+  background: var(--heading-accent, linear-gradient(90deg, #10b981, #059669));
+  transition: width 0.2s ease;
+}
+
+.heading-highlight:hover::after {
+  width: 36px;
+}
+
+.heading-highlight-center {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.heading-highlight-center::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -4px;
+  height: 2.5px;
+  width: 22px;
+  border-radius: 9999px;
+  background: var(--heading-accent, linear-gradient(90deg, #10b981, #059669));
 }

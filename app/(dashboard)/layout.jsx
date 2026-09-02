@@ -32,6 +32,28 @@ export default async function DashboardLayout({ children }) {
     profile = fallbackProf;
   }
 
+  // If profile still doesn't exist (e.g. first-time Google OAuth sign-in before trigger), create default row
+  if (!profile && user) {
+    const metaUsername = user.user_metadata?.username;
+    const metaFullName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0];
+    const generatedUsername = metaUsername || `user_${user.id.slice(0, 8)}`;
+
+    const { data: newProf } = await supabase
+      .from('profiles')
+      .upsert({
+        id: user.id,
+        username: generatedUsername,
+        display_name: metaFullName || 'Creator',
+        avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+      }, { onConflict: 'id' })
+      .select('*, themes!profiles_theme_id_fkey(*)')
+      .maybeSingle();
+
+    if (newProf) {
+      profile = newProf;
+    }
+  }
+
   // Enforce account suspension block
   if (profile?.is_suspended) {
     return (
@@ -85,10 +107,10 @@ export default async function DashboardLayout({ children }) {
               My LinkNest
             </Link>
             <Link
-              href="/dashboard/links"
+              href="/dashboard/quick-links"
               className="px-3 py-1.5 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all"
             >
-              Link
+              Quick Action
             </Link>
             <Link
               href="/dashboard/theme"

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import PresetThemes from './PresetThemes';
 import Button from '@/components/ui/Button';
+import Heading from '@/components/ui/Heading';
 import { createClient } from '@/lib/supabaseClient';
 import { BUTTON_STYLES } from '@/components/links/buttonStyles';
 import { OFFICIAL_PRESET_THEMES } from '@/utils/presetThemes';
@@ -282,10 +283,10 @@ export default function CustomThemeDesigner({
         <div className="p-6 sm:p-8 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-5 animate-in fade-in duration-150">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Heading as="h3" className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Palette size={18} className="text-emerald-500" /> Preset Themes
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              </Heading>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Select from 6 professionally crafted themes. Free and paid plans include all presets.
               </p>
             </div>
@@ -319,10 +320,10 @@ export default function CustomThemeDesigner({
           {/* ── 1. Background Image ────────────────────────────────────── */}
           <div className="p-6 sm:p-8 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-4">
             <div>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Heading as="h4" className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <ImageIcon size={16} className="text-emerald-500" /> Background Image
-              </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              </Heading>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Set a custom background image for your public profile.
               </p>
             </div>
@@ -402,10 +403,10 @@ export default function CustomThemeDesigner({
           {/* ── 2. Typography & Font ────────────────────────────────────── */}
           <div className="p-6 sm:p-8 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-4">
             <div>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Heading as="h4" className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Type size={16} className="text-emerald-500" /> Typography & Font
-              </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              </Heading>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Select a modern font style for your profile text and button links.
               </p>
             </div>
@@ -451,10 +452,10 @@ export default function CustomThemeDesigner({
           {/* ── 3. Text Color (Single Text Color Customization) ─────────── */}
           <div className="p-6 sm:p-8 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-4">
             <div>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Heading as="h4" className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Palette size={16} className="text-emerald-500" /> Text Color
-              </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              </Heading>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Customize the text color for your profile name, bio, links, and sections.
               </p>
             </div>
@@ -497,10 +498,10 @@ export default function CustomThemeDesigner({
           {/* ── 4. Card Design (Initial 4 Primary Cards + More Accordion) ── */}
           <div className="p-6 sm:p-8 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-4">
             <div>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Heading as="h4" className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <LayoutGrid size={16} className="text-emerald-500" /> Card Design
-              </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              </Heading>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Select a card structure for your link buttons and content sections.
               </p>
             </div>

@@ -4,6 +4,8 @@ import { useState, useMemo } from 'react';
 import { useUser } from '@/hooks/useUser';
 import { useSubscribers } from '@/hooks/useSubscribers';
 import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
+import Heading from '@/components/ui/Heading';
 import {
   Users,
   Phone,
@@ -131,10 +133,10 @@ export default function LeadsPage() {
       {/* Header & Export Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight flex items-center gap-2.5">
+          <Heading as="h1" className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight flex items-center gap-2.5">
             <Users size={28} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
             <span>Leads & Subscribers</span>
-          </h1>
+          </Heading>
           <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
             Collect, view, and export visitor contact details captured from your public profile subscribe page.
           </p>

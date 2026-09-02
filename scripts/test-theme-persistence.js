@@ -4,18 +4,18 @@ const assert = require('assert');
 
 console.log('=== Running Test Suite: Theme Redesign & Persistence ===\n');
 
-// 1. Verify 6 Official Preset Themes
+// 1. Verify 9 Official Preset Themes
 console.log('--- Test 1: Official Preset Themes Definition ---');
 const { OFFICIAL_PRESET_THEMES, getPresetThemeById } = require('../utils/presetThemes.js');
-assert.strictEqual(OFFICIAL_PRESET_THEMES.length, 6, 'Must have exactly 6 official preset themes');
+assert.strictEqual(OFFICIAL_PRESET_THEMES.length, 9, 'Must have exactly 9 official preset themes');
 
-const expectedThemeNames = ['Ember', 'Midnight', 'Aurora', 'Sunset', 'Ocean', 'Forest'];
+const expectedThemeNames = ['Ember', 'Midnight', 'Aurora', 'Sunset', 'Ocean', 'Forest', 'Cloud', 'Blossom', 'Sand'];
 const actualNames = OFFICIAL_PRESET_THEMES.map((t) => t.name);
 assert.deepStrictEqual(actualNames, expectedThemeNames, `Theme names must be ${expectedThemeNames.join(', ')}`);
 
 const emberTheme = getPresetThemeById('00000000-0000-0000-0000-000000000007');
 assert.strictEqual(emberTheme.name, 'Ember', 'Ember must resolve correctly');
-console.log('✅ Test 1 Passed: Exactly 6 official preset themes defined (Ember, Midnight, Aurora, Sunset, Ocean, Forest).');
+console.log('✅ Test 1 Passed: Exactly 9 official preset themes defined (6 Dark + 3 Light).');
 
 // 2. Verify PresetThemes.jsx Component
 console.log('\n--- Test 2: PresetThemes.jsx UI Inspection ---');

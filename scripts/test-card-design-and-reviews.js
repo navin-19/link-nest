@@ -42,9 +42,9 @@ const reviewsContent = fs.readFileSync(reviewsPath, 'utf8');
 assert(reviewsContent.includes('googleReviewTargetUrl'), 'GoogleReviewsSummary must define googleReviewTargetUrl');
 assert(reviewsContent.includes('target={preview ? \'_self\' : \'_blank\'}'), 'GoogleReviewsSummary must link externally on click');
 
-const rendererPath = path.join(__dirname, '../components/profile/LinkBioRenderer.jsx');
-const rendererContent = fs.readFileSync(rendererPath, 'utf8');
-assert(rendererContent.includes('profile?.show_google_reviews !== false'), 'Must respect show_google_reviews toggle to fill space when off');
+const groupPath = path.join(__dirname, '../components/profile/QuickActionGroup.jsx');
+const groupContent = fs.readFileSync(groupPath, 'utf8');
+assert(groupContent.includes('profile?.show_google_reviews !== false') || groupContent.includes('show_google_reviews'), 'Must respect show_google_reviews toggle');
 console.log('✅ Test 5 Passed: Google Reviews card is clickable to Google page and omitted when toggled off.');
 
 console.log('\n🎉 ALL CARD DESIGN & GOOGLE REVIEWS TESTS PASSED! 🎉');

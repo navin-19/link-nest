@@ -8,39 +8,29 @@ import {
   AlertCircle,
   Info,
   Save,
-  Phone,
-  Mail,
   Globe,
 } from 'lucide-react';
 import {
   InstagramIcon,
   YouTubeIcon,
+  TikTokIcon,
   TwitterXIcon,
   FacebookIcon,
   LinkedInIcon,
-  WhatsAppIcon,
+  GitHubIcon,
+  TwitchIcon,
   TelegramIcon,
+  WebsiteIcon,
 } from '@/components/ui/BrandIcons';
+import Heading from '@/components/ui/Heading';
 import { SOCIAL_FIELDS } from './socialLinksHelper';
 
 function BrandSwatch({ platformId }) {
   switch (platformId) {
-    case 'whatsapp':
-      return (
-        <div className="w-8 h-8 rounded-lg bg-[#25D366] flex items-center justify-center text-white shrink-0 shadow-2xs">
-          <WhatsAppIcon size={20} />
-        </div>
-      );
     case 'instagram':
       return (
         <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0 shadow-2xs overflow-hidden">
           <InstagramIcon size={20} />
-        </div>
-      );
-    case 'facebook':
-      return (
-        <div className="w-8 h-8 rounded-lg bg-[#1877F2] flex items-center justify-center text-white shrink-0 shadow-2xs">
-          <FacebookIcon size={20} />
         </div>
       );
     case 'youtube':
@@ -49,10 +39,23 @@ function BrandSwatch({ platformId }) {
           <YouTubeIcon size={20} />
         </div>
       );
+    case 'tiktok':
+      return (
+        <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <TikTokIcon size={20} />
+        </div>
+      );
     case 'twitter':
+    case 'x':
       return (
         <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-white shrink-0 shadow-2xs">
           <TwitterXIcon size={20} />
+        </div>
+      );
+    case 'facebook':
+      return (
+        <div className="w-8 h-8 rounded-lg bg-[#1877F2] flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <FacebookIcon size={20} />
         </div>
       );
     case 'linkedin':
@@ -61,25 +64,30 @@ function BrandSwatch({ platformId }) {
           <LinkedInIcon size={20} />
         </div>
       );
+    case 'github':
+      return (
+        <div className="w-8 h-8 rounded-lg bg-[#24292F] flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <GitHubIcon size={20} />
+        </div>
+      );
+    case 'twitch':
+      return (
+        <div className="w-8 h-8 rounded-lg bg-[#9146FF] flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <TwitchIcon size={20} />
+        </div>
+      );
     case 'telegram':
       return (
         <div className="w-8 h-8 rounded-lg bg-[#229ED9] flex items-center justify-center text-white shrink-0 shadow-2xs">
           <TelegramIcon size={20} />
         </div>
       );
-    case 'phone':
-      return (
-        <div className="w-8 h-8 rounded-lg bg-slate-700 dark:bg-slate-800 flex items-center justify-center text-white shrink-0 shadow-2xs">
-          <Phone size={15} />
-        </div>
-      );
-    case 'email':
-      return (
-        <div className="w-8 h-8 rounded-lg bg-slate-700 dark:bg-slate-800 flex items-center justify-center text-white shrink-0 shadow-2xs">
-          <Mail size={15} />
-        </div>
-      );
     case 'website':
+      return (
+        <div className="w-8 h-8 rounded-lg bg-[#4F46E5] flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <WebsiteIcon size={20} />
+        </div>
+      );
     default:
       return (
         <div className="w-8 h-8 rounded-lg bg-slate-700 dark:bg-slate-800 flex items-center justify-center text-white shrink-0 shadow-2xs">
@@ -149,14 +157,14 @@ export default function SocialLinksEditor({ profile, onLocalProfileChange }) {
       <div className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-6 transition-colors">
         <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800/80">
           <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Heading as="h3" className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <div className="w-6 h-6 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                 <Share2 size={13} />
               </div>
               Social Links
-            </h3>
+            </Heading>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Add your social media channels, contact methods, and website. Only filled fields appear on your profile.
+              Add your social media channels and website. Only filled fields appear on your public profile&apos;s Follow Us row.
             </p>
           </div>
         </div>
@@ -208,7 +216,7 @@ export default function SocialLinksEditor({ profile, onLocalProfileChange }) {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
             <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
               <Info size={14} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span>Changes reflect in your live preview immediately.</span>
+              <span>Social links reflect on your public profile immediately.</span>
             </div>
 
             <button
@@ -221,7 +229,7 @@ export default function SocialLinksEditor({ profile, onLocalProfileChange }) {
               ) : (
                 <Save size={14} />
               )}
-              <span>Save Changes</span>
+              <span>Save Social Links</span>
             </button>
           </div>
         </form>

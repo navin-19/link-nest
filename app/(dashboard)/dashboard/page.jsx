@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { useLinks } from '@/hooks/useLinks';
 import { useProducts } from '@/hooks/useProducts';
+import Heading from '@/components/ui/Heading';
 import LivePreview from '@/components/dashboard/LivePreview';
 import { getProfileUrl } from '@/utils/qrGenerator';
 import {
@@ -60,7 +61,7 @@ export default function MyLinkNestDashboard() {
   }
 
   function handleNavigateToLinks() {
-    router.push('/dashboard/links');
+    router.push('/dashboard/quick-links');
   }
 
   if (userLoading) {
@@ -77,9 +78,9 @@ export default function MyLinkNestDashboard() {
       {/* 1. Header with Title on Left and Primary Edit Button on Top-Right */}
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <Heading as="h1" className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             My LinkNest
-          </h1>
+          </Heading>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
             Your digital profile, links, and audience — all in one place.
           </p>
@@ -87,7 +88,7 @@ export default function MyLinkNestDashboard() {
 
         {/* Primary Edit Button (Top-Right) */}
         <Link
-          href="/dashboard/links"
+          href="/dashboard/quick-links"
           className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-btn hover:shadow-btn-hover transition-all active:scale-[0.98] cursor-pointer shrink-0"
           title="Edit links, products, and theme"
         >

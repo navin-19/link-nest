@@ -2,15 +2,17 @@
 
 import { useState } from 'react';
 import ProfileHeader from '@/components/profile/ProfileHeader';
-import GoogleReviewsSummary from '@/components/profile/GoogleReviewsSummary';
-import LinkList from '@/components/links/LinkList';
-import ReachUsSection from '@/components/profile/ReachUsSection';
-import ProductsStoreSection from '@/components/profile/ProductsStoreSection';
-import SocialIcons from '@/components/profile/SocialIcons';
 import SubscribeBar from '@/components/profile/SubscribeBar';
+import QuickActionGroup from '@/components/profile/QuickActionGroup';
+import SocialIcons from '@/components/profile/SocialIcons';
+import ProductsStoreSection from '@/components/profile/ProductsStoreSection';
+import GoogleReviewsSummary from '@/components/profile/GoogleReviewsSummary';
+import LinkButton from '@/components/links/LinkButton';
+import Heading from '@/components/ui/Heading';
 import Link from 'next/link';
-import { Crown } from 'lucide-react';
+import { Link2 } from 'lucide-react';
 import { getContrastMode } from '@/utils/getContrastMode';
+import { resolveCustomerFormConfig } from '@/utils/customerFormConfig';
 
 /**
  * LinkBioRenderer: The single shared source-of-truth component
@@ -25,15 +27,11 @@ export default function LinkBioRenderer({
   compact = false,
   username,
 }) {
-  // All accordion sections start COLLAPSED by default on page load
-  const [expandedSection, setExpandedSection] = useState(null); // 'quick-links' | 'reach-us' | 'products' | null
-
-  const toggleSection = (sectionId) => {
-    setExpandedSection((prev) => (prev === sectionId ? null : sectionId));
-  };
+  const [activePopup, setActivePopup] = useState(null); // 'quick-links' | 'reach-us' | 'content-form' | 'callback' | null
 
   const effectiveTheme = theme || profile?.themes;
   const effectiveUsername = username || profile?.username;
+  const formConfig = resolveCustomerFormConfig(profile?.customer_form_config);
 
   // Background style resolution supporting object and string formats
   const bg = effectiveTheme?.background;
@@ -77,102 +75,133 @@ export default function LinkBioRenderer({
 
   const content = (
     <div
-      style={{ fontFamily: font, color: textColor }}
-      className="w-full flex flex-col justify-between min-h-full space-y-4"
+      style={{ fontFamily: font, color: textColor, '--theme-font': font }}
+      className="w-full flex flex-col justify-between min-h-full space-y-4 relative"
     >
       <div className="space-y-4 w-full">
         {/* Top Header / Subscribe Bar */}
         {preview ? (
           <div className="w-full flex items-center justify-between py-1 mb-1 shrink-0 opacity-95 select-none pointer-events-none">
             {/* Logo */}
-            <div className="flex items-center gap-1.5 text-white/90 font-bold text-[10px] tracking-tight bg-[#111322]/80 px-2.5 py-1.5 rounded-full border border-white/15 shadow-xs">
+            <div className={`flex items-center gap-1.5 font-bold text-[10px] tracking-tight px-2.5 py-1.5 rounded-full border shadow-2xs backdrop-blur-md ${
+              isDark ? 'text-white/90 bg-[#111322]/80 border-white/15' : 'text-slate-800 bg-white/80 border-slate-200/90'
+            }`}>
               <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white font-bold text-[8px]">
-                L
+                <Link2 size={9} strokeWidth={3} />
               </div>
               <span>LinkNest</span>
             </div>
 
-            {/* Subscribe Button + Overflow Menu */}
+            {/* Overflow Menu Mock */}
             <div className="flex items-center gap-1.5">
-              <div className="px-3 py-1 rounded-full bg-white text-slate-950 text-[10px] font-bold shadow-md flex items-center gap-1">
-                <Crown size={10} className="text-amber-500 fill-amber-500" />
-                <span>Subscribe</span>
-              </div>
-              <div className="w-6 h-6 rounded-full bg-[#111322]/80 border border-white/15 flex items-center justify-center text-white/80">
+              <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${
+                isDark ? 'bg-[#111322]/80 border-white/15 text-white/80' : 'bg-white/80 border-slate-200/90 text-slate-700'
+              }`}>
                 <span className="text-[10px] font-bold leading-none">⋮</span>
               </div>
             </div>
           </div>
         ) : (
-          <SubscribeBar username={effectiveUsername} profile={profile} />
+          <SubscribeBar
+            username={effectiveUsername}
+            profile={profile}
+            contrastMode={contrastMode}
+          />
         )}
 
-        {/* Profile Header */}
+        {/* Profile Header (Avatar, Display Name, Bio, Verified Badge) */}
         <ProfileHeader
           profile={profile}
           compact={compact}
           contrastMode={contrastMode}
           theme={effectiveTheme}
+          font={font}
         />
 
-        {/* Compact Google Reviews Summary (Respects show_google_reviews toggle and navigates to Google Reviews) */}
-        {profile?.show_google_reviews !== false && (profile?.google_place_id || (preview && profile?.google_place_id)) && (
-          <GoogleReviewsSummary
-            placeId={profile?.google_place_id}
-            mapsUrl={profile?.google_maps_url || profile?.reach_out?.mapsUrl}
-            preview={preview}
-          />
-        )}
-
-        {/* Quick Links Section (Social Links expandable accordion cards - Collapsed by default) */}
-        <LinkList
+        {/* ── 1. QUICK ACTION (4 Buttons: Quick Links, Reach Us, Content Form, Call Back) ── */}
+        <QuickActionGroup
           profile={profile}
-          socialLinks={profile?.social_links}
+          formConfig={formConfig}
           links={links}
-          isExpanded={expandedSection === 'quick-links'}
-          onToggle={() => toggleSection('quick-links')}
+          products={products}
           buttonStyle={buttonStyle}
           font={font}
           username={effectiveUsername}
           preview={preview}
           contrastMode={contrastMode}
+          activePopup={activePopup}
+          setActivePopup={setActivePopup}
         />
 
-        {/* Reach Us Section (Collapsed by default) */}
-        <ReachUsSection
-          profile={profile}
-          reachOut={profile?.reach_out}
-          isExpanded={expandedSection === 'reach-us'}
-          onToggle={() => toggleSection('reach-us')}
-          buttonStyle={buttonStyle}
-          font={font}
-          preview={preview}
-          contrastMode={contrastMode}
-        />
+        {/* ── 2. CUSTOM PROFILE LINKS (Custom added buttons) ──────────────────── */}
+        {links && links.filter((l) => l.is_active !== false).length > 0 && (
+          <div className="w-full flex flex-col gap-2.5 pt-1">
+            {links
+              .filter((l) => l.is_active !== false)
+              .map((link) => (
+                <LinkButton
+                  key={link.id}
+                  link={link}
+                  buttonStyle={buttonStyle}
+                  font={font}
+                  username={effectiveUsername}
+                  preview={preview}
+                />
+              ))}
+          </div>
+        )}
 
-        {/* Products & Services Section (Collapsed by default) */}
+        {/* ── 3. FOLLOW US (Heading + Plain Circular Icon Row) ────────────────── */}
+        <div className="w-full flex flex-col space-y-1 pt-1">
+          <Heading
+            as="h3"
+            align="center"
+            underline={true}
+            className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-0.5 select-none"
+          >
+            Follow Us
+          </Heading>
+          <SocialIcons
+            profile={profile}
+            socialLinks={profile?.social_links}
+            preview={preview}
+            contrastMode={contrastMode}
+          />
+        </div>
+
+        {/* ── 4. PRODUCTS & SERVICES (Independent Section below Follow Us) ────── */}
         <ProductsStoreSection
           products={products}
           profile={profile}
-          isExpanded={expandedSection === 'products'}
-          onToggle={() => toggleSection('products')}
           buttonStyle={buttonStyle}
           font={font}
           preview={preview}
           contrastMode={contrastMode}
         />
 
-        {/* Social Icons Row at bottom */}
-        <SocialIcons
-          profile={profile}
-          socialLinks={profile?.social_links}
-          preview={preview}
-        />
+        {/* ── 5. GOOGLE REVIEWS SECTION (If configured) ──────────────────────── */}
+        {profile?.show_google_reviews !== false &&
+          Boolean(
+            profile?.google_place_id ||
+              profile?.google_maps_url ||
+              profile?.reach_out?.google_place_id ||
+              profile?.reach_out?.mapsUrl
+          ) && (
+            <div className="w-full pt-1">
+              <GoogleReviewsSummary
+                placeId={profile?.google_place_id || profile?.reach_out?.google_place_id}
+                mapsUrl={profile?.google_maps_url || profile?.reach_out?.mapsUrl}
+                preview={preview}
+                contrastMode={contrastMode}
+                font={font}
+              />
+            </div>
+          )}
       </div>
 
       {/* Footer */}
       {preview ? (
-        <div className="py-3 text-center">
+        <div className="py-3 text-center" style={{ fontFamily: font }}>
           <span
             className={`text-[9px] tracking-widest uppercase font-bold px-3 py-1 rounded-full border shadow-xs backdrop-blur-xs transition-colors ${
               isDark
@@ -184,7 +213,7 @@ export default function LinkBioRenderer({
           </span>
         </div>
       ) : (
-        <div className="py-6 text-center">
+        <div className="py-6 text-center" style={{ fontFamily: font }}>
           <Link
             href="/"
             className={`inline-flex items-center gap-1.5 text-[11px] tracking-wider uppercase font-bold px-4 py-1.5 rounded-full border shadow-xs hover:shadow-soft transition-all backdrop-blur-xs ${
@@ -210,7 +239,7 @@ export default function LinkBioRenderer({
   // Full page wrapper for public profile view
   return (
     <main
-      style={bgStyle}
+      style={{ ...bgStyle, fontFamily: font, '--theme-font': font }}
       className={`min-h-screen flex flex-col justify-between py-8 px-4 selection:bg-orange-500 selection:text-white ${
         isDark ? 'text-white' : 'text-slate-900'
       }`}

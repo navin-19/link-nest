@@ -292,3 +292,22 @@ export function TelegramIcon({ size = 28, className = '' }) {
     </svg>
   );
 }
+
+export function TwitchIcon({ size = 28, className = '' }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <rect width="48" height="48" rx="14" fill="#9146FF" />
+      <path
+        d="M14 12L10 16V34H17V38L21 34H26L36 24V12H14ZM33 22.5L29 26.5H24L20 30.5V26.5H16V15H33V22.5ZM30 18H28V23H30V18ZM24 18H22V23H24V18Z"
+        fill="#FFFFFF"
+      />
+    </svg>
+  );
+}

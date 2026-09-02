@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Heading from '@/components/ui/Heading';
 import { Scissors, Link2, Copy, Check, Sparkles } from 'lucide-react';
 
 /**
@@ -24,9 +25,9 @@ export default function LinkShortenerPage() {
       {/* Header */}
       <div>
         <div className="flex items-center gap-2.5 mb-1.5">
-          <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+          <Heading as="h1" className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
             Link Shortener
-          </h1>
+          </Heading>
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60">
             <Sparkles size={12} />
             Coming Soon
@@ -39,7 +40,7 @@ export default function LinkShortenerPage() {
 
       {/* Shortener input card */}
       <div className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-4">
-        <h2 className="text-base font-bold text-slate-900 dark:text-white">Shorten a URL</h2>
+        <Heading as="h2" className="text-base font-bold text-slate-900 dark:text-white">Shorten a URL</Heading>
 
         {/* URL input row */}
         <div className="flex gap-3 flex-col sm:flex-row">

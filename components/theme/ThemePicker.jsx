@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Check, Sparkles, AlertCircle } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import Heading from '@/components/ui/Heading';
 import BackgroundPicker from './BackgroundPicker';
 import PresetThemes from './PresetThemes';
 
@@ -69,8 +70,10 @@ export default function ThemePicker({
 
       {/* Preset Themes Section */}
       <div>
-        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Preset Themes</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">Choose from crafted modern themes or build your own.</p>
+        <Heading as="h3" className="text-base font-bold text-slate-900 dark:text-white mb-1">
+          Preset Themes
+        </Heading>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 mt-1">Choose from crafted modern themes or build your own.</p>
         
         <PresetThemes
           themes={themes}
@@ -85,10 +88,10 @@ export default function ThemePicker({
       <div className="p-6 rounded-3xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0c0f1d] shadow-card space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Heading as="h3" className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Sparkles size={16} className="text-emerald-500" /> Custom Theme Designer
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Personalize background, button styling, and typography</p>
+            </Heading>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Personalize background, button styling, and typography</p>
           </div>
           <Button
             size="sm"

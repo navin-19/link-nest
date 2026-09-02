@@ -16,11 +16,28 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: subscribers, error } = await supabase
+    // Try selecting all lead fields including source
+    let { data: subscribers, error } = await supabase
       .from('subscribers')
-      .select('id, profile_user_id, name, email, country_code, mobile_number, place, address, custom_data, created_at')
+      .select('id, profile_user_id, name, email, country_code, mobile_number, place, address, source, custom_data, created_at')
       .eq('profile_user_id', user.id)
       .order('created_at', { ascending: false });
+
+    // Fallback if source column hasn't been migrated yet in the live database
+    if (error && (error.code === '42703' || error.message?.includes('source'))) {
+      const fallback = await supabase
+        .from('subscribers')
+        .select('id, profile_user_id, name, email, country_code, mobile_number, place, address, custom_data, created_at')
+        .eq('profile_user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (!fallback.error && fallback.data) {
+        subscribers = fallback.data.map((s) => ({ ...s, source: s.source || null }));
+        error = null;
+      } else {
+        error = fallback.error;
+      }
+    }
 
     if (error) {
       // If table pending schema creation, gracefully return empty array
@@ -56,6 +73,7 @@ export async function POST(request) {
       mobile_number,
       place,
       address,
+      source,
       custom_data = {},
       customData = {},
       captchaToken,
@@ -87,24 +105,36 @@ export async function POST(request) {
       );
     }
 
-    const formConfig = resolveCustomerFormConfig(profile.customer_form_config);
-    if (!formConfig.enabled) {
-      return NextResponse.json(
-        { error: 'Subscriptions are currently disabled for this profile.' },
-        { status: 400 }
-      );
-    }
+    const isCallback = source === 'callback';
 
-    // Validate email if present or enabled
-    const emailField = formConfig.fields.find((f) => f.key === 'email' || f.id === 'email');
-    if (emailField?.enabled && emailField?.required && !email) {
-      return NextResponse.json({ error: 'Email address is required.' }, { status: 400 });
-    }
+    if (!isCallback) {
+      const formConfig = resolveCustomerFormConfig(profile.customer_form_config);
+      if (!formConfig.enabled) {
+        return NextResponse.json(
+          { error: 'Subscriptions are currently disabled for this profile.' },
+          { status: 400 }
+        );
+      }
 
-    if (email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email.trim())) {
-        return NextResponse.json({ error: 'Invalid email address.' }, { status: 400 });
+      // Validate email if present or required by config
+      const emailField = formConfig.fields.find((f) => f.key === 'email' || f.id === 'email');
+      if (emailField?.enabled && emailField?.required && !email) {
+        return NextResponse.json({ error: 'Email address is required.' }, { status: 400 });
+      }
+
+      if (email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.trim())) {
+          return NextResponse.json({ error: 'Invalid email address.' }, { status: 400 });
+        }
+      }
+    } else {
+      // Call back form requires Name and Phone
+      if (!name || (typeof name === 'string' && !name.trim())) {
+        return NextResponse.json({ error: 'Your name is required.' }, { status: 400 });
+      }
+      if (!rawMobile || (typeof rawMobile === 'string' && !rawMobile.trim())) {
+        return NextResponse.json({ error: 'Phone number is required.' }, { status: 400 });
       }
     }
 
@@ -154,12 +184,22 @@ export async function POST(request) {
       mobile_number: sanitizedMobile,
       place: place && typeof place === 'string' ? place.trim() : null,
       address: address && typeof address === 'string' ? address.trim() : null,
+      source: source && typeof source === 'string' ? source.trim() : null,
       custom_data: Object.keys(mergedCustomData).length > 0 ? mergedCustomData : {},
     };
 
-    const { error: insertError } = await supabase
+    let { error: insertError } = await supabase
       .from('subscribers')
       .insert(insertPayload);
+
+    // Fallback if source column is not yet present in the live database schema
+    if (insertError && (insertError.code === '42703' || insertError.message?.includes('source'))) {
+      const { source: _s, ...payloadWithoutSource } = insertPayload;
+      const retryResult = await supabase
+        .from('subscribers')
+        .insert(payloadWithoutSource);
+      insertError = retryResult.error;
+    }
 
     if (insertError) {
       console.error('Subscription error:', insertError);

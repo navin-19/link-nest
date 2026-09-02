@@ -91,6 +91,10 @@ async function handleProfileUpdate(request) {
       updates.social_links = typeof body.social_links === 'object' && body.social_links !== null ? body.social_links : {};
     }
 
+    if (body.quick_links !== undefined) {
+      updates.quick_links = typeof body.quick_links === 'object' && body.quick_links !== null ? body.quick_links : {};
+    }
+
     if (body.reach_out !== undefined) {
       updates.reach_out = typeof body.reach_out === 'object' && body.reach_out !== null ? body.reach_out : null;
     }
@@ -101,6 +105,10 @@ async function handleProfileUpdate(request) {
 
     if (body.customer_form_config !== undefined) {
       updates.customer_form_config = typeof body.customer_form_config === 'object' && body.customer_form_config !== null ? body.customer_form_config : null;
+    }
+
+    if (body.customer_form_enabled !== undefined) {
+      updates.customer_form_enabled = Boolean(body.customer_form_enabled);
     }
 
     if (body.username !== undefined) {
@@ -138,6 +146,19 @@ async function handleProfileUpdate(request) {
       .eq('id', user.id)
       .select('*, themes!profiles_theme_id_fkey(*)')
       .single();
+
+    // If quick_links column does not exist on unmigrated database instance, fallback
+    if (updateError && (updateError.code === '42703' || updateError.message?.includes('quick_links')) && updates.quick_links !== undefined) {
+      const { quick_links: _, ...fallbackUpdates } = updates;
+      const fallbackRes = await supabase
+        .from('profiles')
+        .update(fallbackUpdates)
+        .eq('id', user.id)
+        .select('*, themes!profiles_theme_id_fkey(*)')
+        .single();
+      profile = fallbackRes.data;
+      updateError = fallbackRes.error;
+    }
 
     // If theme foreign key error occurred, attempt auto-recovery
     if (updateError && updateError.message?.includes('profiles_theme_id_fkey') && updates.theme_id) {

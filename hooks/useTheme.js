@@ -116,8 +116,14 @@ export function useTheme(profileThemeId) {
       });
 
       if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        throw new Error(errJson.error || 'Failed to create custom theme');
+        let errMessage = '';
+        try {
+          const errJson = await res.json();
+          errMessage = errJson.error || JSON.stringify(errJson);
+        } catch {
+          errMessage = await res.text().catch(() => '');
+        }
+        throw new Error(errMessage || `Failed to create custom theme (HTTP ${res.status})`);
       }
 
       const { theme, profile: updatedProfile } = await res.json();
@@ -145,8 +151,14 @@ export function useTheme(profileThemeId) {
       });
 
       if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        throw new Error(errJson.error || 'Failed to update custom theme');
+        let errMessage = '';
+        try {
+          const errJson = await res.json();
+          errMessage = errJson.error || JSON.stringify(errJson);
+        } catch {
+          errMessage = await res.text().catch(() => '');
+        }
+        throw new Error(errMessage || `Failed to update custom theme (HTTP ${res.status})`);
       }
 
       const { theme } = await res.json();

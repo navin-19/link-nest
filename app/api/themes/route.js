@@ -43,7 +43,14 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { name, background, button_style, font, text_color } = body;
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  const { name, background, button_style, font, text_color } = body || {};
 
   const insertPayload = {
     user_id: user.id,
