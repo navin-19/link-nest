@@ -6,7 +6,7 @@ import SubscribeBar from '@/components/profile/SubscribeBar';
 import QuickActionGroup from '@/components/profile/QuickActionGroup';
 import SocialIcons from '@/components/profile/SocialIcons';
 import ProductsStoreSection from '@/components/profile/ProductsStoreSection';
-import GoogleReviewsSummary from '@/components/profile/GoogleReviewsSummary';
+import GoogleReviewsSection from '@/components/profile/GoogleReviewsSection';
 import LinkButton from '@/components/links/LinkButton';
 import Heading from '@/components/ui/Heading';
 import Link from 'next/link';
@@ -27,7 +27,7 @@ export default function LinkBioRenderer({
   compact = false,
   username,
 }) {
-  const [activePopup, setActivePopup] = useState(null); // 'quick-links' | 'reach-us' | 'content-form' | 'callback' | null
+  const [activePopup, setActivePopup] = useState(null); // 'quick-links' | 'reach-us' | 'content-form' | null
 
   const effectiveTheme = theme || profile?.themes;
   const effectiveUsername = username || profile?.username;
@@ -118,7 +118,7 @@ export default function LinkBioRenderer({
           font={font}
         />
 
-        {/* ── 1. QUICK ACTION (4 Buttons: Quick Links, Reach Us, Content Form, Call Back) ── */}
+        {/* ── 1. QUICK ACTION (3 Buttons: Quick Links, Reach Us, Content Form) ── */}
         <QuickActionGroup
           profile={profile}
           formConfig={formConfig}
@@ -151,35 +151,7 @@ export default function LinkBioRenderer({
           </div>
         )}
 
-        {/* ── 3. FOLLOW US (Heading + Plain Circular Icon Row) ────────────────── */}
-        <div className="w-full flex flex-col space-y-1 pt-1">
-          <Heading
-            as="h3"
-            align="center"
-            underline={true}
-            className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-0.5 select-none"
-          >
-            Follow Us
-          </Heading>
-          <SocialIcons
-            profile={profile}
-            socialLinks={profile?.social_links}
-            preview={preview}
-            contrastMode={contrastMode}
-          />
-        </div>
-
-        {/* ── 4. PRODUCTS & SERVICES (Independent Section below Follow Us) ────── */}
-        <ProductsStoreSection
-          products={products}
-          profile={profile}
-          buttonStyle={buttonStyle}
-          font={font}
-          preview={preview}
-          contrastMode={contrastMode}
-        />
-
-        {/* ── 5. GOOGLE REVIEWS SECTION (If configured) ──────────────────────── */}
+        {/* ── 3. WHAT OUR CUSTOMERS SAY (Google Reviews Section) ─────────────── */}
         {profile?.show_google_reviews !== false &&
           Boolean(
             profile?.google_place_id ||
@@ -188,44 +160,66 @@ export default function LinkBioRenderer({
               profile?.reach_out?.mapsUrl
           ) && (
             <div className="w-full pt-1">
-              <GoogleReviewsSummary
+              <GoogleReviewsSection
+                profile={profile}
                 placeId={profile?.google_place_id || profile?.reach_out?.google_place_id}
                 mapsUrl={profile?.google_maps_url || profile?.reach_out?.mapsUrl}
                 preview={preview}
                 contrastMode={contrastMode}
                 font={font}
+                buttonStyle={buttonStyle}
               />
             </div>
           )}
-      </div>
 
-      {/* Footer */}
-      {preview ? (
-        <div className="py-3 text-center" style={{ fontFamily: font }}>
-          <span
-            className={`text-[9px] tracking-widest uppercase font-bold px-3 py-1 rounded-full border shadow-xs backdrop-blur-xs transition-colors ${
-              isDark
-                ? 'text-white/70 bg-[#111322]/80 border-white/10'
-                : 'text-slate-500 bg-white/70 border-slate-200/60'
+        {/* ── 4. FOLLOW US (Plain Centered Heading + Bare Monochrome Icon Row) ─ */}
+        <div className="w-full flex flex-col pt-1">
+          <h3
+            className={`text-center text-sm font-bold uppercase tracking-wide my-6 select-none ${
+              isDark ? 'text-slate-400' : 'text-slate-500'
             }`}
           >
-            LinkNest
-          </span>
+            FOLLOW US
+          </h3>
+          <SocialIcons
+            profile={profile}
+            socialLinks={profile?.social_links}
+            preview={preview}
+            contrastMode={contrastMode}
+          />
+        </div>
+
+        {/* ── 5. PRODUCTS & SERVICES (Independent Section below Follow Us) ────── */}
+        <ProductsStoreSection
+          products={products}
+          profile={profile}
+          buttonStyle={buttonStyle}
+          font={font}
+          preview={preview}
+          contrastMode={contrastMode}
+        />
+      </div>
+
+      {/* ── 6. Bottom CTA (Plain centered text, no button chrome) ─────────────── */}
+      {preview ? (
+        <div className="py-6 text-center" style={{ fontFamily: font }}>
+          <p
+            className={`text-center text-xs font-bold tracking-wide uppercase select-none ${
+              isDark ? 'text-slate-400' : 'text-slate-800'
+            }`}
+          >
+            CREATE YOUR LINKNEST
+          </p>
         </div>
       ) : (
         <div className="py-6 text-center" style={{ fontFamily: font }}>
           <Link
             href="/"
-            className={`inline-flex items-center gap-1.5 text-[11px] tracking-wider uppercase font-bold px-4 py-1.5 rounded-full border shadow-xs hover:shadow-soft transition-all backdrop-blur-xs ${
-              isDark
-                ? 'text-white/80 hover:text-white bg-[#111322]/80 hover:bg-[#181c33] border-white/15'
-                : 'text-slate-500 hover:text-slate-800 bg-white/80 hover:bg-white border-slate-200/80'
+            className={`inline-block text-center text-xs font-bold tracking-wide uppercase transition-opacity hover:opacity-75 ${
+              isDark ? 'text-slate-300 hover:text-white' : 'text-slate-800 hover:text-slate-950'
             }`}
           >
-            <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white text-[8px] font-bold">
-              L
-            </div>
-            <span>Create your LinkNest</span>
+            CREATE YOUR LINKNEST
           </Link>
         </div>
       )}

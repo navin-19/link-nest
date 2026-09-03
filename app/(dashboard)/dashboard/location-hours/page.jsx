@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useUser } from '@/hooks/useUser';
 import { useProducts } from '@/hooks/useProducts';
 import ReachOutConfig from '@/components/settings/ReachOutConfig';
+import GoogleReviewsConfig from '@/components/products/GoogleReviewsConfig';
 import Heading from '@/components/ui/Heading';
 import LivePreview from '@/components/dashboard/LivePreview';
 import {
@@ -63,6 +64,11 @@ export default function LocationHoursPage() {
           </div>
 
           <ReachOutConfig
+            profile={effectiveProfile}
+            onLocalProfileChange={handleLocalProfileChange}
+          />
+
+          <GoogleReviewsConfig
             profile={effectiveProfile}
             onLocalProfileChange={handleLocalProfileChange}
           />

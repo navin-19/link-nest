@@ -47,14 +47,16 @@ export default function ReachUsSection({
   const customFontStyle = font ? { fontFamily: font } : {};
   const buttonClass = buttonStyles[buttonStyle] ?? buttonStyles.rounded;
 
-  // Construct safe embed URL from address or business name
+  // Construct safe embed URL from placeId, address, or business name
   const queryForMap = address || businessName;
-  const validEmbedUrl = getValidMapEmbedUrl(data?.mapEmbedUrl, queryForMap);
+  const validEmbedUrl = getValidMapEmbedUrl(data?.mapEmbedUrl, queryForMap, placeId);
 
   // Directions target URL
   const directionsTarget =
     mapsUrl && (mapsUrl.startsWith('http://') || mapsUrl.startsWith('https://')) && !mapsUrl.includes('output=embed')
       ? mapsUrl
+      : placeId
+      ? `https://www.google.com/maps/place/?q=place_id:${encodeURIComponent(placeId)}`
       : address
       ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
       : businessName

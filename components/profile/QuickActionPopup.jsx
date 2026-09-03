@@ -3,12 +3,11 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import Heading from '@/components/ui/Heading';
 
 /**
  * QuickActionPopup: Modal dialog overlay for Quick Action sections
  * Supports both standalone viewport (fixed) and LivePreview device mockup (absolute).
- * Inherits theme font family and ensures unified light/dark modal styling.
+ * Inherits theme font family and ensures unified theme-aware light/dark modal styling.
  */
 export default function QuickActionPopup({
   isOpen,
@@ -45,7 +44,7 @@ export default function QuickActionPopup({
 
   if (!isOpen) return null;
 
-  const isLight = contrastMode === 'light';
+  const isDark = contrastMode === 'dark';
   const customFontStyle = font ? { fontFamily: font } : {};
 
   return (
@@ -70,30 +69,26 @@ export default function QuickActionPopup({
           exit={{ opacity: 0, scale: 0.94, y: 10 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
           className={`w-full max-w-sm sm:max-w-md max-h-[85%] flex flex-col rounded-3xl p-5 shadow-2xl border outline-none overflow-hidden ${
-            isLight
-              ? 'bg-white text-slate-900 border-slate-200'
-              : 'bg-[#0f1222] text-white border-white/15'
+            isDark
+              ? 'bg-slate-900 text-white border-slate-700'
+              : 'bg-white text-slate-900 border-slate-200'
           } backdrop-blur-md`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div
             className={`flex items-center justify-between pb-3.5 mb-2 border-b shrink-0 ${
-              isLight ? 'border-slate-100' : 'border-white/10'
+              isDark ? 'border-slate-800' : 'border-slate-100'
             }`}
           >
             <div className="min-w-0 pr-2">
-              <Heading
-                as="h3"
-                underline={true}
-                className="text-sm sm:text-base font-extrabold tracking-tight truncate"
-              >
+              <h3 className={`text-sm sm:text-base font-extrabold tracking-tight truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {title}
-              </Heading>
+              </h3>
               {subtitle && (
                 <p
-                  className={`text-[11px] truncate mt-1 ${
-                    isLight ? 'text-slate-500' : 'text-slate-400'
+                  className={`text-[11px] truncate mt-0.5 ${
+                    isDark ? 'text-slate-400' : 'text-slate-500'
                   }`}
                 >
                   {subtitle}
@@ -105,9 +100,9 @@ export default function QuickActionPopup({
               type="button"
               onClick={onClose}
               className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0 ${
-                isLight
-                  ? 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                  : 'bg-white/10 hover:bg-white/20 text-white/90'
+                isDark
+                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
               }`}
               aria-label="Close dialog"
             >

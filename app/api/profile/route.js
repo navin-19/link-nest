@@ -83,6 +83,29 @@ async function handleProfileUpdate(request) {
       updates.show_google_reviews = Boolean(body.show_google_reviews);
     }
 
+    if (body.google_reviews_config !== undefined) {
+      updates.google_reviews_config =
+        typeof body.google_reviews_config === 'object' && body.google_reviews_config !== null
+          ? body.google_reviews_config
+          : null;
+    }
+
+    if (body.google_rating !== undefined) {
+      updates.google_rating = typeof body.google_rating === 'number' ? body.google_rating : null;
+    }
+
+    if (body.google_review_count !== undefined) {
+      updates.google_review_count = typeof body.google_review_count === 'number' ? body.google_review_count : null;
+    }
+
+    if (body.google_reviews !== undefined) {
+      updates.google_reviews = Array.isArray(body.google_reviews) ? body.google_reviews : null;
+    }
+
+    if (body.google_reviews_last_updated !== undefined) {
+      updates.google_reviews_last_updated = body.google_reviews_last_updated;
+    }
+
     if (body.show_products !== undefined) {
       updates.show_products = Boolean(body.show_products);
     }

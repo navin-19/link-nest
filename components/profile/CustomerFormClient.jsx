@@ -258,7 +258,7 @@ export default function CustomerFormClient({
         className={`w-full max-w-lg rounded-3xl p-5 sm:p-7 space-y-5 max-h-[90%] overflow-y-auto shadow-2xl border transition-all animate-in zoom-in-95 duration-150 relative ${
           isLight
             ? 'bg-white text-slate-900 border-slate-200'
-            : 'bg-[#0f1222]/95 text-white border-white/15 backdrop-blur-xl'
+            : 'bg-slate-900 text-white border-slate-700 backdrop-blur-xl'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -270,7 +270,7 @@ export default function CustomerFormClient({
           className={`absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0 ${
             isLight
               ? 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-              : 'bg-white/10 hover:bg-white/20 text-white/90'
+              : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
           }`}
         >
           <X size={15} />
@@ -525,6 +525,8 @@ export default function CustomerFormClient({
                           ? 'email'
                           : field.type === 'number'
                           ? 'number'
+                          : field.type === 'url'
+                          ? 'url'
                           : 'text'
                       }
                       label={label}

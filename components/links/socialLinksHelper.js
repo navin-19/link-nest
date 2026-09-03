@@ -2,7 +2,7 @@
  * Supported Social Links & Quick Links Configuration
  * 
  * 1. SOCIAL_FIELDS: Pure social media channels (feeds "Follow Us" row)
- * 2. QUICK_LINK_FIELDS: Direct customer/contact action buttons (feeds "Quick Links" popup)
+ * 2. QUICK_LINK_FIELDS: Direct customer/contact action buttons (feeds "Quick Links" / "Contact Details" popup)
  */
 
 export const SOCIAL_FIELDS = [
@@ -83,13 +83,13 @@ export function formatSocialLinkUrl(key, val) {
     case 'website':
       return `https://${trimmed}`;
     case 'whatsapp': {
-      const digitsOnly = trimmed.replace(/[^\d+]/g, '').replace(/^\+/, '');
+      const digitsOnly = trimmed.replace(/[^\d]/g, '');
       return `https://wa.me/${digitsOnly}`;
     }
     case 'phone':
       return `tel:${trimmed.replace(/[^\d+]/g, '')}`;
     case 'email':
-      return `mailto:${trimmed}`;
+      return `mailto:${trimmed.replace(/^mailto:/, '')}`;
     default:
       return `https://${trimmed}`;
   }
@@ -124,13 +124,14 @@ export function getSocialLinksList(socialLinks = {}) {
 }
 
 /**
- * Converts quick_links (with backward compatibility fallback to social_links) into Quick Links modal items.
+ * Converts quick_links (with backward compatibility fallback to social_links and reach_out) into Contact Details modal items.
+ * Returns each item with its title, value (phone number, WhatsApp number, email ID), formatted URL, and icon.
  */
-export function getQuickLinksList(quickLinks = {}, socialLinks = {}) {
+export function getQuickLinksList(quickLinks = {}, socialLinks = {}, reachOut = {}) {
   const merged = {
     whatsapp: (quickLinks && quickLinks.whatsapp) || (socialLinks && socialLinks.whatsapp) || '',
-    phone: (quickLinks && quickLinks.phone) || (socialLinks && socialLinks.phone) || '',
-    email: (quickLinks && quickLinks.email) || (socialLinks && socialLinks.email) || '',
+    phone: (quickLinks && quickLinks.phone) || (socialLinks && socialLinks.phone) || (reachOut && reachOut.phone) || '',
+    email: (quickLinks && quickLinks.email) || (socialLinks && socialLinks.email) || (reachOut && reachOut.email) || '',
   };
 
   const items = [];
@@ -142,6 +143,7 @@ export function getQuickLinksList(quickLinks = {}, socialLinks = {}) {
         id: `quick-${field.id}`,
         key: field.id,
         title: QUICK_LINK_DISPLAY_TITLES[field.id] || field.label,
+        value: rawVal.trim(),
         url: formattedUrl,
         icon: field.icon,
         is_active: true,

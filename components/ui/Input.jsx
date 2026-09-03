@@ -1,6 +1,7 @@
 'use client';
 
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 /**
  * Reusable Input component styled for light and dark themes.
@@ -18,12 +19,35 @@ const Input = forwardRef(function Input(
     onTrailingClick,
     type = 'text',
     contrastMode,
+    showPasswordToggle = true,
     ...props
   },
   ref
 ) {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPasswordField = type === 'password';
+
   const isExplicitLight = contrastMode === 'light';
   const isExplicitDark = contrastMode === 'dark';
+
+  const effectiveType = isPasswordField
+    ? (showPassword ? 'text' : 'password')
+    : type;
+
+  const hasCustomTrailing = Boolean(TrailingIcon);
+  const showEyeToggle = isPasswordField && showPasswordToggle && !hasCustomTrailing;
+
+  const ActiveTrailingIcon = showEyeToggle
+    ? (showPassword ? EyeOff : Eye)
+    : TrailingIcon;
+
+  const handleTrailingClick = showEyeToggle
+    ? () => setShowPassword((prev) => !prev)
+    : onTrailingClick;
+
+  const trailingButtonAriaLabel = showEyeToggle
+    ? (showPassword ? 'Hide password' : 'Show password')
+    : undefined;
 
   const baseThemeClasses = isExplicitLight
     ? 'bg-white text-slate-900 placeholder:text-slate-400 border-slate-200 hover:border-slate-300 focus:border-emerald-500'
@@ -72,7 +96,7 @@ const Input = forwardRef(function Input(
         <input
           ref={ref}
           id={id}
-          type={type}
+          type={effectiveType}
           className={[
             'w-full rounded-xl border shadow-xs font-medium',
             'px-4 py-2.5 text-sm',
@@ -81,27 +105,29 @@ const Input = forwardRef(function Input(
             baseThemeClasses,
             errorClasses,
             LeadingIcon ? 'pl-10' : '',
-            TrailingIcon ? 'pr-10' : '',
+            ActiveTrailingIcon ? 'pr-10' : '',
             className,
           ]
             .filter(Boolean)
             .join(' ')}
           {...props}
         />
-        {TrailingIcon && (
+        {ActiveTrailingIcon && (
           <button
             type="button"
-            onClick={onTrailingClick}
-            className={`absolute inset-y-0 right-3 flex items-center transition-colors ${
+            onClick={handleTrailingClick}
+            aria-label={trailingButtonAriaLabel}
+            title={trailingButtonAriaLabel}
+            className={`absolute inset-y-0 right-3 flex items-center transition-colors cursor-pointer ${
               isExplicitLight
                 ? 'text-slate-400 hover:text-slate-700'
                 : isExplicitDark
                 ? 'text-slate-500 hover:text-slate-300'
                 : 'text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
             }`}
-            tabIndex={-1}
+            tabIndex={showEyeToggle ? 0 : -1}
           >
-            <TrailingIcon size={16} />
+            <ActiveTrailingIcon size={16} />
           </button>
         )}
       </div>

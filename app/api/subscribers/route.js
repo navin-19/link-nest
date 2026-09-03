@@ -65,13 +65,20 @@ export async function POST(request) {
     const body = await request.json().catch(() => ({}));
     const {
       name,
+      fullName,
+      full_name,
       email,
       username,
+      profile_username,
+      profileUsername,
+      profileId,
       countryCode,
       country_code,
       mobileNumber,
       mobile_number,
+      phone,
       place,
+      city,
       address,
       source,
       custom_data = {},
@@ -81,10 +88,14 @@ export async function POST(request) {
       ...otherFields
     } = body;
 
-    const rawMobile = mobileNumber || mobile_number;
+    const targetUsername = username || profile_username || profileUsername;
+    const resolvedName = name || fullName || full_name;
+    const rawMobile = mobileNumber || mobile_number || phone;
     const rawCountryCode = countryCode || country_code;
+    const resolvedPlace = place || city;
+    const resolvedAddress = address;
 
-    if (!username) {
+    if (!targetUsername) {
       return NextResponse.json({ error: 'Profile username is required.' }, { status: 400 });
     }
 
@@ -95,7 +106,7 @@ export async function POST(request) {
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('id, customer_form_config')
-      .eq('username', username.toLowerCase())
+      .eq('username', targetUsername.toLowerCase())
       .maybeSingle();
 
     if (profileError || !profile) {
@@ -105,10 +116,10 @@ export async function POST(request) {
       );
     }
 
+    const formConfig = resolveCustomerFormConfig(profile.customer_form_config);
     const isCallback = source === 'callback';
 
     if (!isCallback) {
-      const formConfig = resolveCustomerFormConfig(profile.customer_form_config);
       if (!formConfig.enabled) {
         return NextResponse.json(
           { error: 'Subscriptions are currently disabled for this profile.' },
@@ -117,7 +128,7 @@ export async function POST(request) {
       }
 
       // Validate email if present or required by config
-      const emailField = formConfig.fields.find((f) => f.key === 'email' || f.id === 'email');
+      const emailField = formConfig.fields?.find((f) => f.key === 'email' || f.id === 'email');
       if (emailField?.enabled && emailField?.required && !email) {
         return NextResponse.json({ error: 'Email address is required.' }, { status: 400 });
       }
@@ -130,7 +141,7 @@ export async function POST(request) {
       }
     } else {
       // Call back form requires Name and Phone
-      if (!name || (typeof name === 'string' && !name.trim())) {
+      if (!resolvedName || (typeof resolvedName === 'string' && !resolvedName.trim())) {
         return NextResponse.json({ error: 'Your name is required.' }, { status: 400 });
       }
       if (!rawMobile || (typeof rawMobile === 'string' && !rawMobile.trim())) {
@@ -168,7 +179,18 @@ export async function POST(request) {
     };
 
     // Filter out standard fields from otherFields and add to mergedCustomData
-    const standardKeys = new Set(['name', 'email', 'username', 'countryCode', 'country_code', 'mobileNumber', 'mobile_number', 'place', 'address', 'captchaToken', 'token', 'custom_data', 'customData']);
+    const standardKeys = new Set([
+      'name', 'fullName', 'full_name',
+      'email',
+      'username', 'profile_username', 'profileUsername', 'profileId',
+      'countryCode', 'country_code',
+      'mobileNumber', 'mobile_number', 'phone',
+      'place', 'city',
+      'address',
+      'source',
+      'captchaToken', 'token',
+      'custom_data', 'customData'
+    ]);
     Object.entries(otherFields).forEach(([k, v]) => {
       if (!standardKeys.has(k) && v !== undefined && v !== null && v !== '') {
         mergedCustomData[k] = v;
@@ -178,12 +200,12 @@ export async function POST(request) {
     // 2. Insert the subscriber lead with all provided contact fields
     const insertPayload = {
       profile_user_id: profile.id,
-      name: name && typeof name === 'string' ? name.trim() : null,
+      name: resolvedName && typeof resolvedName === 'string' ? resolvedName.trim() : null,
       email: email ? email.trim().toLowerCase() : null,
       country_code: rawCountryCode && typeof rawCountryCode === 'string' ? rawCountryCode.trim() : null,
       mobile_number: sanitizedMobile,
-      place: place && typeof place === 'string' ? place.trim() : null,
-      address: address && typeof address === 'string' ? address.trim() : null,
+      place: resolvedPlace && typeof resolvedPlace === 'string' ? resolvedPlace.trim() : null,
+      address: resolvedAddress && typeof resolvedAddress === 'string' ? resolvedAddress.trim() : null,
       source: source && typeof source === 'string' ? source.trim() : null,
       custom_data: Object.keys(mergedCustomData).length > 0 ? mergedCustomData : {},
     };
@@ -226,7 +248,7 @@ export async function POST(request) {
 
     return NextResponse.json({
       success: true,
-      message: formConfig.successMessage || 'Subscribed successfully!',
+      message: formConfig?.successMessage || 'Subscribed successfully!',
     }, { status: 201 });
   } catch (err) {
     console.error('Subscription API exception:', err);

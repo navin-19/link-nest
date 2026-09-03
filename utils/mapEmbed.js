@@ -5,7 +5,7 @@
  * Never treats regular share links as iframe src to prevent browser iframe connection errors.
  */
 
-export function getValidMapEmbedUrl(rawUrl, fallbackQuery = '') {
+export function getValidMapEmbedUrl(rawUrl, fallbackQuery = '', placeId = '') {
   if (rawUrl && typeof rawUrl === 'string') {
     let url = rawUrl.trim();
     // Extract URL from raw iframe string if user pasted <iframe src="...">
@@ -22,6 +22,23 @@ export function getValidMapEmbedUrl(rawUrl, fallbackQuery = '') {
     ) {
       return url;
     }
+  }
+
+  const cleanPlaceId = typeof placeId === 'string' ? placeId.trim() : '';
+  const apiKey =
+    typeof process !== 'undefined'
+      ? process.env?.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || process.env?.GOOGLE_MAPS_API_KEY
+      : '';
+
+  if (cleanPlaceId && apiKey) {
+    return `https://www.google.com/maps/embed/v1/place?key=${encodeURIComponent(apiKey)}&q=place_id:${encodeURIComponent(cleanPlaceId)}`;
+  }
+
+  if (cleanPlaceId) {
+    const q = fallbackQuery && typeof fallbackQuery === 'string' && fallbackQuery.trim()
+      ? fallbackQuery.trim()
+      : `place_id:${cleanPlaceId}`;
+    return `https://maps.google.com/maps?q=${encodeURIComponent(q)}&output=embed`;
   }
 
   // Construct trusted query embed URL if address or name query is provided

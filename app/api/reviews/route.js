@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getGoogleReviews } from '@/lib/googleReviews';
+import { getGoogleReviews, invalidateGoogleReviewsCache } from '@/lib/googleReviews';
 
 /**
  * Server-side API endpoint for Google Business / Places reviews.
@@ -9,26 +9,33 @@ import { getGoogleReviews } from '@/lib/googleReviews';
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const placeId = searchParams.get('placeId');
+    const placeId = searchParams.get('placeId') || searchParams.get('place_id');
+    const refresh = searchParams.get('refresh') === 'true';
 
     if (!placeId || !placeId.trim()) {
       return NextResponse.json(
-        { error: 'Missing or empty placeId parameter.' },
+        { error: 'Please enter a Google Maps Place ID.' },
         { status: 400 }
       );
     }
 
-    const data = await getGoogleReviews(placeId.trim());
+    const cleanPlaceId = placeId.trim();
+
+    if (refresh) {
+      invalidateGoogleReviewsCache(cleanPlaceId);
+    }
+
+    const data = await getGoogleReviews(cleanPlaceId);
 
     return NextResponse.json(data, {
       headers: {
-        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+        'Cache-Control': refresh ? 'no-cache, no-store' : 'public, s-maxage=3600, stale-while-revalidate=86400',
       },
     });
   } catch (err) {
     const statusCode = err.statusCode || 500;
     return NextResponse.json(
-      { error: err.message || 'Failed to retrieve Google reviews.' },
+      { error: err.message || 'Unable to load Google Reviews right now. Please try again later.' },
       { status: statusCode }
     );
   }

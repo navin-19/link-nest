@@ -66,12 +66,18 @@ export default function ReachOutSection({
   const customFontStyle = font ? { fontFamily: font } : {};
   const buttonClass = buttonStyles[buttonStyle] ?? buttonStyles.rounded;
 
-  const { address, mapEmbedUrl, phone, email, hours } = data;
-  const validEmbedUrl = getValidMapEmbedUrl(mapEmbedUrl, address);
+  const { address, mapEmbedUrl, phone, email, hours, google_place_id, mapsUrl } = data;
+  const placeId = profile?.google_place_id || google_place_id;
+  const validEmbedUrl = getValidMapEmbedUrl(mapEmbedUrl, address, placeId);
 
-  const directionsUrl = address
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
-    : '#';
+  const directionsUrl =
+    mapsUrl && (mapsUrl.startsWith('http://') || mapsUrl.startsWith('https://')) && !mapsUrl.includes('output=embed')
+      ? mapsUrl
+      : placeId
+      ? `https://www.google.com/maps/place/?q=place_id:${encodeURIComponent(placeId)}`
+      : address
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+      : '#';
 
   return (
     <section style={customFontStyle} className="w-full space-y-2.5">
